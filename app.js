@@ -66,10 +66,10 @@ function submitBuy() {
 
 /* ========== Login ========== */
 const R = [
-  ['student', '🎒 Student'],
-  ['teacher', '👩‍🏫 Teacher'],
-  ['parent', '👪 Parent'],
-  ['principal', '🏫 Principal']
+  ['student', 'Student'],
+  ['teacher', 'Teacher'],
+  ['parent', 'Parent'],
+  ['principal', 'Principal']
 ];
 function drawRoles() {
   $('#roles').innerHTML = R.map(r =>
@@ -80,40 +80,40 @@ drawRoles();
 
 const NAV = {
   student: [
-    { k: 'home', ico: '🏠', label: 'Home' },
-    { k: 'subj', ico: '📚', label: 'My Courses' },
-    { k: 'todo', ico: '✅', label: 'To-Do' },
-    { k: 'disc', ico: '💬', label: 'Discussions' },
-    { k: 'cal', ico: '📅', label: 'Calendar' },
-    { k: 'msg', ico: '✉️', label: 'Messages' },
-    { k: 'res', ico: '📁', label: 'Resources' },
-    { k: 'up', ico: '📎', label: 'Submit Work' },
-    { k: 'quiz', ico: '📝', label: 'Quiz' },
-    { k: 'alerts', ico: '🔔', label: 'Notifications' }
+    { k: 'home', ico: 'Ho', label: 'Home' },
+    { k: 'subj', ico: 'Co', label: 'My Courses' },
+    { k: 'todo', ico: 'Td', label: 'To-Do' },
+    { k: 'disc', ico: 'Di', label: 'Discussions' },
+    { k: 'cal', ico: 'Ca', label: 'Calendar' },
+    { k: 'msg', ico: 'Ms', label: 'Messages' },
+    { k: 'res', ico: 'Rs', label: 'Resources' },
+    { k: 'up', ico: 'Up', label: 'Submit Work' },
+    { k: 'quiz', ico: 'Qz', label: 'Quiz' },
+    { k: 'alerts', ico: 'Nt', label: 'Notifications' }
   ],
   teacher: [
-    { k: 'home', ico: '🏠', label: 'Home' },
-    { k: 'cls', ico: '🗂', label: 'My Classes' },
-    { k: 'recent', ico: '📣', label: 'Recent Posts' },
-    { k: 'disc', ico: '💬', label: 'Discussions' },
-    { k: 'cal', ico: '📅', label: 'Calendar' },
-    { k: 'msg', ico: '✉️', label: 'Messages' },
-    { k: 'res', ico: '📁', label: 'Resources' },
-    { k: 'grades', ico: '📊', label: 'Grade Center' }
+    { k: 'home', ico: 'Ho', label: 'Home' },
+    { k: 'cls', ico: 'Cl', label: 'My Classes' },
+    { k: 'recent', ico: 'Rp', label: 'Recent Posts' },
+    { k: 'disc', ico: 'Di', label: 'Discussions' },
+    { k: 'cal', ico: 'Ca', label: 'Calendar' },
+    { k: 'msg', ico: 'Ms', label: 'Messages' },
+    { k: 'res', ico: 'Rs', label: 'Resources' },
+    { k: 'grades', ico: 'Gr', label: 'Grade Center' }
   ],
   parent: [
-    { k: 'home', ico: '🏠', label: 'Home' },
-    { k: 'rad', ico: '🚦', label: 'Progress' },
-    { k: 'sf9', ico: '📄', label: 'Report Card' },
-    { k: 'cal', ico: '📅', label: 'Calendar' },
-    { k: 'msg', ico: '✉️', label: 'Messages' }
+    { k: 'home', ico: 'Ho', label: 'Home' },
+    { k: 'rad', ico: 'Pr', label: 'Progress' },
+    { k: 'sf9', ico: 'RC', label: 'Report Card' },
+    { k: 'cal', ico: 'Ca', label: 'Calendar' },
+    { k: 'msg', ico: 'Ms', label: 'Messages' }
   ],
   principal: [
-    { k: 'home', ico: '🏠', label: 'Home' },
-    { k: 'ops', ico: '📈', label: 'Operations' },
-    { k: 'comp', ico: '📋', label: 'Compliance' },
-    { k: 'lic', ico: '🔑', label: 'Licenses' },
-    { k: 'msg', ico: '✉️', label: 'Messages' }
+    { k: 'home', ico: 'Ho', label: 'Home' },
+    { k: 'ops', ico: 'Op', label: 'Operations' },
+    { k: 'comp', ico: 'Cm', label: 'Compliance' },
+    { k: 'lic', ico: 'Lc', label: 'Licenses' },
+    { k: 'msg', ico: 'Ms', label: 'Messages' }
   ]
 };
 
@@ -133,7 +133,7 @@ function doLogin() {
   state.discId = null;
   state.msgThread = null;
   view('dash');
-  const roleLabel = R.find(r => r[0] === state.role)[1].slice(3);
+  const roleLabel = R.find(r => r[0] === state.role)[1];
   $('#userName').textContent = USER_NAMES[state.role];
   $('#userRole').textContent = roleLabel;
   $('#av').textContent = USER_NAMES[state.role].charAt(0);
@@ -146,7 +146,7 @@ function doLogin() {
 function buildSideNav() {
   const items = NAV[state.role] || [];
   $('#sideNav').innerHTML = items.map(n =>
-    `<button data-tab="${n.k}" class="${state.tab === n.k ? 'on' : ''}" onclick="tab('${n.k}')">${n.ico} ${n.label}</button>`
+    `<button data-tab="${n.k}" class="${state.tab === n.k ? 'on' : ''}" onclick="tab('${n.k}')"><span class="nav-ico">${n.ico}</span> ${n.label}</button>`
   ).join('');
 }
 
@@ -203,12 +203,12 @@ const dayLabel = d => {
 
 const seed = () => ({
   classes: [
-    { id: 'm1', subj: 'Mathematics', sec: '7-Rizal', ico: '➗', col: '#1E3A8A', t: 'You', mine: 1 },
-    { id: 'm2', subj: 'Mathematics', sec: '7-Bonifacio', ico: '➗', col: '#1E3A8A', t: 'You', mine: 1 },
-    { id: 's1', subj: 'Science', sec: '7-Rizal', ico: '🔬', col: '#047857', t: 'You', mine: 1 },
-    { id: 'e1', subj: 'English', sec: '7-Rizal', ico: '📖', col: '#B45309', t: 'Mrs. Villanueva' },
-    { id: 'f1', subj: 'Filipino', sec: '7-Rizal', ico: '🇵🇭', col: '#B91C1C', t: 'Mr. Aquino' },
-    { id: 'a1', subj: 'Araling Panlipunan', sec: '7-Rizal', ico: '🗺️', col: '#6D28D9', t: 'Ms. Castillo' }
+    { id: 'm1', subj: 'Mathematics', sec: '7-Rizal', ico: 'MA', col: '#1B2A4A', t: 'You', mine: 1 },
+    { id: 'm2', subj: 'Mathematics', sec: '7-Bonifacio', ico: 'MA', col: '#1B2A4A', t: 'You', mine: 1 },
+    { id: 's1', subj: 'Science', sec: '7-Rizal', ico: 'SC', col: '#059669', t: 'You', mine: 1 },
+    { id: 'e1', subj: 'English', sec: '7-Rizal', ico: 'EN', col: '#2563EB', t: 'Mrs. Villanueva' },
+    { id: 'f1', subj: 'Filipino', sec: '7-Rizal', ico: 'FL', col: '#7C3AED', t: 'Mr. Aquino' },
+    { id: 'a1', subj: 'Araling Panlipunan', sec: '7-Rizal', ico: 'AP', col: '#D97706', t: 'Ms. Castillo' }
   ],
   items: [
     { id: 1, cid: 'm1', type: 'homework', title: 'Worksheet 5: Fractions', body: 'Answer items 1–20 in your notebook. Show your solutions.', due: day(1), at: Date.now() - 9e6 },
@@ -273,21 +273,21 @@ const seed = () => ({
 
 let DB;
 (function () {
-  try { DB = JSON.parse(localStorage.getItem('learningWheel_db_v2')); } catch (e) {}
+  try { DB = JSON.parse(localStorage.getItem('learningWheel_db_v3')); } catch (e) {}
   if (!DB || !DB.items) DB = seed();
 })();
-const save = () => { try { localStorage.setItem('learningWheel_db_v2', JSON.stringify(DB)); } catch (e) {} };
+const save = () => { try { localStorage.setItem('learningWheel_db_v3', JSON.stringify(DB)); } catch (e) {} };
 function resetDB() {
   DB = seed();
   save();
-  T('Demo data reset ✔');
+  T('Demo data reset');
   if (!$('#dash').hidden) tab(state.tab);
 }
 
 const cls = id => DB.classes.find(c => c.id == id);
 const mine = () => DB.classes.filter(c => c.mine);
 const mySec = '7-Rizal';
-const TYPE = { task: ['📝', 'Task'], homework: ['🏠', 'Homework'], announcement: ['📣', 'Announcement'] };
+const TYPE = { task: ['Task', 'Task'], homework: ['HW', 'Homework'], announcement: ['Ann', 'Announcement'] };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const days = d => Math.round((new Date(d) - new Date(day(0))) / 864e5);
 const sItems = () => DB.items.filter(i => cls(i.cid) && cls(i.cid).sec == mySec).sort((a, b) => b.at - a.at);
@@ -304,14 +304,14 @@ function updateNotifBadge() {
 }
 
 function stat(i) {
-  if (DB.done[i.id]) return ['grn', 'Done ✔'];
+  if (DB.done[i.id]) return ['grn', 'Done'];
   if (!i.due) return ['org', 'No due date'];
   const n = days(i.due);
   return [n <= 2 ? 'red' : 'org', n < 0 ? 'Overdue' : n === 0 ? 'Due today' : 'Due in ' + n + ' day' + (n > 1 ? 's' : '')];
 }
 
 const chips = (i, subj) =>
-  `<span class="chip">${TYPE[i.type][0]} ${TYPE[i.type][1]}</span>` +
+  `<span class="chip">${TYPE[i.type][1]}</span>` +
   (subj ? `<span class="chip" style="background:${cls(i.cid).col};color:#fff">${cls(i.cid).subj}${cls(i.cid).mine ? ' ' + cls(i.cid).sec : ''}</span>` : '');
 
 const empty = m => `<div class="card muted" style="text-align:center;padding:32px">${m}</div>`;
@@ -324,7 +324,7 @@ function rHome() {
     const urgent = todo.filter(i => i.due && days(i.due) <= 2).length;
     const msgs = DB.messages.filter(m => m.to === 'me' && !m.read).length;
     el.innerHTML = `
-      <h2>Welcome back, Ana 👋</h2>
+      <h2>Welcome back, Ana</h2>
       <p class="muted">Here’s what’s happening in your classes today.</p>
       <div class="stat-grid">
         <div class="stat-card"><div class="label">To-Do</div><div class="value">${todo.length}</div><div class="sub">${urgent} urgent</div></div>
@@ -342,7 +342,7 @@ function rHome() {
           <h3>Recent activity</h3>
           ${sItems().slice(0, 4).map(i => `
             <div class="feed-item">
-              <div class="feed-avatar">${cls(i.cid).ico}</div>
+              <div class="feed-avatar" style="background:${cls(i.cid).col};color:#fff">${cls(i.cid).ico}</div>
               <div class="feed-body">
                 <b>${esc(i.title)}</b>
                 <div class="feed-meta">${cls(i.cid).subj} · ${TYPE[i.type][1]} · ${dayLabel(new Date(i.at).toISOString().slice(0,10))}</div>
@@ -365,9 +365,9 @@ function rHome() {
         <div class="card">
           <h3>Quick actions</h3>
           <div style="display:flex;flex-direction:column;gap:8px">
-            <button class="btn" onclick="tab('cls')">🗂 Open a class</button>
-            <button class="btn ghost" onclick="tab('disc')">💬 View discussions</button>
-            <button class="btn ghost" onclick="tab('grades')">📊 Grade Center</button>
+            <button class="btn" onclick="tab('cls')">Open a class</button>
+            <button class="btn ghost" onclick="tab('disc')">View discussions</button>
+            <button class="btn ghost" onclick="tab('grades')">Grade Center</button>
           </div>
         </div>
         <div class="card">
@@ -389,9 +389,9 @@ function rHome() {
       <div class="card">
         <h3>Quick links</h3>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn" onclick="tab('rad')">🚦 Full progress</button>
-          <button class="btn ghost" onclick="tab('sf9')">📄 Report card</button>
-          <button class="btn ghost" onclick="tab('msg')">✉️ Messages</button>
+          <button class="btn" onclick="tab('rad')">Full progress</button>
+          <button class="btn ghost" onclick="tab('sf9')">Report card</button>
+          <button class="btn ghost" onclick="tab('msg')">Messages</button>
         </div>
       </div>`;
   } else {
@@ -407,9 +407,9 @@ function rHome() {
       <div class="card">
         <h3>Quick links</h3>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn" onclick="tab('ops')">📈 Operations</button>
-          <button class="btn ghost" onclick="tab('comp')">📋 Compliance</button>
-          <button class="btn ghost" onclick="tab('lic')">🔑 Licenses</button>
+          <button class="btn" onclick="tab('ops')">Operations</button>
+          <button class="btn ghost" onclick="tab('comp')">Compliance</button>
+          <button class="btn ghost" onclick="tab('lic')">Licenses</button>
         </div>
       </div>`;
   }
@@ -426,7 +426,7 @@ function sItem(i, subj, noBtn) {
       <div class="muted">${esc(i.body)}</div>
       ${isT(i) ? `<div class="muted"><b>${s[1]}</b>${i.due ? ' · ' + i.due : ''}</div>` : ''}
     </div>
-    ${isT(i) && !noBtn ? `<button class="btn ${DB.done[i.id] ? 'ghost' : 'ok'} sm" style="width:auto;flex-shrink:0" onclick="tog(${i.id})">${DB.done[i.id] ? 'Undo' : '✔ Done'}</button>` : ''}
+    ${isT(i) && !noBtn ? `<button class="btn ${DB.done[i.id] ? 'ghost' : 'ok'} sm" style="width:auto;flex-shrink:0" onclick="tog(${i.id})">${DB.done[i.id] ? 'Undo' : 'Mark done'}</button>` : ''}
   </div>`;
 }
 function tog(id) {
@@ -454,7 +454,7 @@ function rSubj() {
         const p = it.filter(i => isT(i) && !DB.done[i.id]).length;
         const u = it.filter(i => !DB.read[i.id]).length;
         return `<button class="click" onclick="openSubj('${c.id}')" style="border-top:6px solid ${c.col}">
-          <div style="font-size:2rem">${c.ico}</div>
+          <div class="feed-avatar" style="margin-bottom:10px;background:${c.col};color:#fff">${c.ico}</div>
           <h3>${c.subj}</h3>
           <p class="muted">${c.t}</p>
           <span class="pill y">${p} to do</span> ${u ? `<span class="pill r">${u} new</span>` : ''}
@@ -468,11 +468,11 @@ function rSubj() {
   el.innerHTML = `
     <button class="btn ghost sm" style="width:auto" onclick="state.subj=null;tab('subj')">← All Courses</button>
     <div class="card" style="margin:14px 0;border-left:6px solid ${c.col}">
-      <h2>${c.ico} ${c.subj}</h2>
+      <h2>${c.subj}</h2>
       <div class="muted">Teacher: ${c.t} · Grade ${c.sec}</div>
     </div>
     <div class="tabs">
-      ${[['all', '🔔 All'], ['todo', '✅ To-Do'], ['ann', '📣 Announcements']].map(t =>
+      ${[['all', 'All'], ['todo', 'To-Do'], ['ann', 'Announcements']].map(t =>
         `<button class="${state.st === t[0] ? 'on' : ''}" onclick="state.st='${t[0]}';tab('subj')">${t[1]}</button>`
       ).join('')}
     </div>
@@ -481,8 +481,8 @@ function rSubj() {
 function rTodo() {
   const l = sItems().filter(isT).sort((a, b) => (!!DB.done[a.id] - !!DB.done[b.id]) || (a.due > b.due ? 1 : -1));
   $('#p-todo').innerHTML = `<h2>My To-Do</h2>
-    <p class="muted">🔴 Urgent · 🟠 Later · 🟢 Done</p>
-    ${l.map(i => sItem(i, 1)).join('') || empty('No tasks yet. You’re all caught up!')}`;
+    <p class="muted">Color bar: urgent · later · done</p>
+    ${l.map(i => sItem(i, 1)).join('') || empty("No tasks yet. You are all caught up.")}`;
 }
 function rAlerts() {
   const u = sItems().filter(i => !DB.read[i.id]);
@@ -492,7 +492,7 @@ function rAlerts() {
       ? `<p><button class="btn ghost sm" style="width:auto" onclick="markAllRead()">Mark all as read</button></p>
          ${um.map(m => `<div class="task ann" style="cursor:pointer" onclick="tab('msg')"><div style="flex:1"><span class="chip new">MSG</span><div><b>${esc(m.subj)}</b></div><div class="muted">From ${esc(m.from)}</div></div></div>`).join('')}
          ${u.map(i => `<div style="cursor:pointer" onclick="state.tab='subj';openSubj('${i.cid}')">${sItem(i, 1, 1)}</div>`).join('')}`
-      : empty('You are all caught up 🎉')}`;
+      : empty('You are all caught up.')}`;
 }
 function markAllRead() {
   DB.items.forEach(i => DB.read[i.id] = 1);
@@ -526,7 +526,7 @@ function tItem(i, showCls) {
       <div class="muted">${esc(i.body)}</div>
       <div class="muted">${isT(i) ? `Due ${i.due || '—'} · Submitted ${n}/${stu.length}` : 'Visible to all learners'}</div>
     </div>
-    <button class="btn ghost sm" style="width:auto;flex-shrink:0" onclick="del(${i.id})">🗑</button>
+    <button class="btn ghost sm" style="width:auto;flex-shrink:0" onclick="del(${i.id})">Delete</button>
   </div>`;
 }
 function del(id) {
@@ -552,7 +552,7 @@ function post(cid) {
   save();
   state.ct = 'stream';
   tab('cls');
-  T(`Posted to ${ids.length} class${ids.length > 1 ? 'es' : ''} ✔`);
+  T(`Posted to ${ids.length} class${ids.length > 1 ? 'es' : ''}`);
 }
 function rCls() {
   const el = $('#p-cls');
@@ -561,10 +561,10 @@ function rCls() {
       <p class="muted">Tap a class to post tasks, homework, and announcements.</p>
       <div class="grid">${mine().map(c =>
         `<button class="click" onclick="openCls('${c.id}')" style="border-top:6px solid ${c.col}">
-          <div style="font-size:2rem">${c.ico}</div>
+          <div class="feed-avatar" style="margin-bottom:10px;background:${c.col};color:#fff">${c.ico}</div>
           <h3>${c.subj}</h3>
           <p class="muted">Grade ${c.sec} · ${stu.length} learners</p>
-          <span class="pill g">${DB.items.filter(i => i.cid == c.id).length} posts</span>
+          <span class="pill n">${DB.items.filter(i => i.cid == c.id).length} posts</span>
         </button>`
       ).join('')}</div>`;
     return;
@@ -578,7 +578,7 @@ function rCls() {
     body = `<div class="card">
       <h3>Post to ${c.subj} · ${c.sec}</h3>
       <label for="pt">Type</label>
-      <select id="pt"><option value="task">📝 Task</option><option value="homework">🏠 Homework</option><option value="announcement">📣 Announcement</option></select>
+      <select id="pt"><option value="task">Task</option><option value="homework">Homework</option><option value="announcement">Announcement</option></select>
       <label for="ptl">Title</label>
       <input id="ptl" placeholder="e.g. Chapter 3 Reading">
       <label for="pb">Details</label>
@@ -589,7 +589,7 @@ function rCls() {
       ${mine().filter(x => x.id != c.id).map(x =>
         `<label class="opt"><input type="checkbox" class="xc" value="${x.id}">${x.subj} · ${x.sec}</label>`
       ).join('')}
-      <p style="margin-top:12px"><button class="btn ok" onclick="post('${c.id}')">📤 Post</button></p>
+      <p style="margin-top:12px"><button class="btn ok" onclick="post('${c.id}')">Post</button></p>
     </div>`;
   } else {
     body = `<div class="card">
@@ -603,17 +603,17 @@ function rCls() {
           ).join('')}<td id="i${i}"></td><td class="out" id="t${i}"></td></tr>`
         ).join('')}</tbody>
       </table></div>
-      <p style="margin-top:12px"><button class="btn" onclick="toast('SF9/SF10 report cards exported (simulated)')">📄 Export SF9/SF10</button></p>
+      <p style="margin-top:12px"><button class="btn" onclick="toast('SF9/SF10 report cards exported (simulated)')">Export SF9/SF10</button></p>
     </div>`;
   }
   el.innerHTML = `
     <button class="btn ghost sm" style="width:auto" onclick="state.cls=null;tab('cls')">← All Classes</button>
     <div class="card" style="margin:14px 0;border-left:6px solid ${c.col}">
-      <h2>${c.ico} ${c.subj} · ${c.sec}</h2>
+      <h2>${c.subj} · ${c.sec}</h2>
       <div class="muted">${stu.length} learners</div>
     </div>
     <div class="tabs">
-      ${[['stream', '📋 Stream'], ['post', '➕ Post New'], ['grade', '📊 Gradebook']].map(t =>
+      ${[['stream', 'Stream'], ['post', 'Post new'], ['grade', 'Gradebook']].map(t =>
         `<button class="${ct === t[0] ? 'on' : ''}" onclick="state.ct='${t[0]}';tab('cls')">${t[1]}</button>`
       ).join('')}
     </div>
@@ -632,7 +632,7 @@ function rGrades() {
     <p class="muted">Select a class to open its gradebook (DepEd Order 8, s. 2015).</p>
     <div class="grid">${mine().map(c =>
       `<button class="click" onclick="state.cls='${c.id}';state.ct='grade';tab('cls')" style="border-top:6px solid ${c.col}">
-        <div style="font-size:2rem">${c.ico}</div>
+        <div class="feed-avatar" style="margin-bottom:10px;background:${c.col};color:#fff">${c.ico}</div>
         <h3>${c.subj}</h3>
         <p class="muted">${c.sec} · ${stu.length} learners</p>
       </button>`
@@ -686,7 +686,7 @@ function rDisc() {
     ${DB.discussions.sort((a, b) => b.at - a.at).map(d => {
       const c = cls(d.cid);
       return `<div class="disc-item" style="cursor:pointer" onclick="state.discId=${d.id};tab('disc')">
-        <div class="feed-avatar">${c ? c.ico : '💬'}</div>
+        <div class="feed-avatar">${c ? c.ico : 'Di'}</div>
         <div class="feed-body">
           <b>${esc(d.title)}</b>
           <div class="muted">${c ? c.subj : ''} · ${esc(d.author)} · ${d.replies.length} ${d.replies.length === 1 ? 'reply' : 'replies'}</div>
@@ -705,7 +705,7 @@ function newDisc() {
   });
   save();
   tab('disc');
-  T('Discussion posted ✔');
+  T('Discussion posted');
 }
 function postReply(id) {
   const b = $('#replyBody').value.trim();
@@ -714,7 +714,7 @@ function postReply(id) {
   d.replies.push({ author: USER_NAMES[state.role], body: b, at: Date.now() });
   save();
   tab('disc');
-  T('Reply posted ✔');
+  T('Reply posted');
 }
 
 /* ========== Calendar ========== */
@@ -756,7 +756,7 @@ function rCal() {
         <h3>Upcoming</h3>
         ${upcoming.map(e => `
           <div class="feed-item">
-            <div class="feed-avatar">${e.type === 'due' ? '📌' : e.type === 'quiz' ? '📝' : '📅'}</div>
+            <div class="feed-avatar">${e.type === 'due' ? 'Due' : e.type === 'quiz' ? 'Quiz' : 'Evt'}</div>
             <div class="feed-body">
               <b>${esc(e.title)}</b>
               <div class="feed-meta">${dayLabel(e.date)} · ${e.date}</div>
@@ -808,7 +808,7 @@ function rMsg() {
     <h3>Inbox</h3>
     ${list.map(m => `
       <div class="msg-item" style="cursor:pointer" onclick="state.msgThread=${m.id};tab('msg')">
-        <div class="feed-avatar">${m.read ? '✉️' : '📩'}</div>
+        <div class="feed-avatar">${m.read ? 'Rd' : 'New'}</div>
         <div class="feed-body">
           <b>${esc(m.subj)}</b> ${!m.read && m.to === 'me' ? '<span class="chip new">NEW</span>' : ''}
           <div class="muted">${esc(m.from)} → ${esc(m.to)} · ${new Date(m.at).toLocaleDateString()}</div>
@@ -825,7 +825,7 @@ function sendMsg() {
   });
   save();
   tab('msg');
-  T('Message sent ✔');
+  T('Message sent');
 }
 function sendReply(id) {
   const body = $('#replyMsg').value.trim();
@@ -838,7 +838,7 @@ function sendReply(id) {
   save();
   state.msgThread = null;
   tab('msg');
-  T('Reply sent ✔');
+  T('Reply sent');
 }
 
 /* ========== Resources ========== */
@@ -863,7 +863,7 @@ function rRes() {
     <div class="grid">${list.map(r => {
       const c = cls(r.cid);
       return `<div class="card">
-        <div style="font-size:1.8rem;margin-bottom:8px">${r.type === 'PDF' ? '📄' : r.type === 'MP4' ? '🎬' : r.type === 'PNG' ? '🖼️' : '📎'}</div>
+        <div class="feed-avatar" style="margin-bottom:10px">${r.type === 'PDF' ? 'PDF' : r.type === 'MP4' ? 'VID' : r.type === 'PNG' ? 'IMG' : 'FILE'}</div>
         <h3 style="font-size:1rem">${esc(r.title)}</h3>
         <div class="muted">${c ? c.subj : ''} · ${r.type} · ${r.size}</div>
         <div class="muted" style="font-size:.85rem;margin-top:4px">Added ${r.at}</div>
@@ -880,7 +880,7 @@ function addRes() {
   });
   save();
   tab('res');
-  T('Resource added ✔');
+  T('Resource added');
 }
 
 /* ========== Student extras ========== */
@@ -896,7 +896,7 @@ function compress() {
     $('#pm').textContent = 'Compressing… ' + p + '%';
     if (p >= 100) {
       clearInterval(iv);
-      $('#pm').textContent = '✅ 5 MB → 150 KB. Submitted!';
+      $('#pm').textContent = '5 MB → 150 KB. Submitted.';
       b.disabled = false;
       T('Submitted using 97% less data');
     }
@@ -913,7 +913,7 @@ function load() { try { qa = JSON.parse(localStorage.getItem('learningWheel_quiz
 function pick(q, o) {
   qa[q] = o;
   try { localStorage.setItem('learningWheel_quiz', JSON.stringify(qa)); } catch (e) {}
-  T('Answer saved 💾');
+  T('Answer saved');
 }
 function drawQuiz() {
   $('#qz').innerHTML = Q.map((q, i) =>
@@ -923,12 +923,12 @@ function drawQuiz() {
   ).join('');
 }
 function brownout() {
-  $('#qz').innerHTML = '<p class="bad-t out">⚡ Power lost… restarting</p>';
+  $('#qz').innerHTML = '<p class="bad-t out">Power lost… restarting</p>';
   qa = {};
   setTimeout(() => {
     load();
     drawQuiz();
-    $('#qm').textContent = '✅ Recovered ' + Object.keys(qa).length + ' saved answer(s) from this device.';
+    $('#qm').textContent = 'Recovered ' + Object.keys(qa).length + ' saved answer(s) from this device.';
   }, 1200);
 }
 function gradeQuiz() {
@@ -948,9 +948,9 @@ function renderParent() {
   const k = kids[state.kid];
   if ($('#kn')) $('#kn').textContent = k.n + ' · ' + k.g;
   const L = [
-    ['📚 General Average', k.gen, col(k.gen, 85, 75), k.gen >= 85 ? 'On track' : k.gen >= 75 ? 'Watch closely' : 'Needs help'],
-    ['📝 Pending Tasks', k.pend, col(-k.pend, -2, -4), k.pend + ' to finish'],
-    ['🗓 Attendance', k.att + '%', col(k.att, 95, 90), k.att >= 95 ? 'Excellent' : k.att >= 90 ? 'Some absences' : 'Too many absences']
+    ['General average', k.gen, col(k.gen, 85, 75), k.gen >= 85 ? 'On track' : k.gen >= 75 ? 'Watch closely' : 'Needs help'],
+    ['Pending tasks', k.pend, col(-k.pend, -2, -4), k.pend + ' to finish'],
+    ['Attendance', k.att + '%', col(k.att, 95, 90), k.att >= 95 ? 'Excellent' : k.att >= 90 ? 'Some absences' : 'Too many absences']
   ];
   if ($('#tl')) {
     $('#tl').innerHTML = L.map(l =>
@@ -997,7 +997,7 @@ function clearSig() {
   if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height);
 }
 function approve(m) {
-  $('#ap').textContent = `✔ ${kids[state.kid].n}'s report card approved via ${m} · ${new Date().toLocaleDateString()}`;
+  $('#ap').textContent = `${kids[state.kid].n}'s report card approved via ${m} · ${new Date().toLocaleDateString()}`;
   T('Report card approved');
 }
 
