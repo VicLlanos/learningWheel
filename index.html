@@ -1,7 +1,5 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
+<html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>learningWheel LMS – Philippine Schools</title>
 <meta name="description" content="learningWheel: DepEd-compliant Learning Management System for Philippine schools.">
@@ -9,9 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%93%98%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="styles.css">
-</head>
-<body>
+<link rel="stylesheet" href="styles.css"></head><body>
 
 <!-- LANDING -->
 <div class="view" id="landing">
@@ -34,12 +30,13 @@
 <p><button class="btn ghost" style="width:100%" onclick="resetDB()">↺ Reset demo data</button></p></div></div></div></div>
 
 <!-- DASHBOARD -->
-<div class="view" id="dash" hidden>
-<nav class="top"><div class="brand">📘 learning<span>Wheel</span> · <span id="rl"></span></div>
-<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><select id="kid" hidden style="width:auto" aria-label="Switch child" onchange="state.kid=+this.value;renderParent()"></select>
-<button class="btn" onclick="view('login')">⎋ Log Out</button></div></nav>
-<div class="wrap"><div class="tabs" id="tabs"></div>
+<div class="view" id="dash" hidden><div class="shell">
+<aside class="side"><div class="brand">📘 learning<span>Wheel</span></div><div id="tabs"></div><div class="who"><span class="av" id="av"></span><div><b id="rl"></b><div class="muted2">Signed in</div></div></div></aside>
+<main><header class="bar"><input id="q" type="search" placeholder="Search posts, tasks, materials…" aria-label="Search" oninput="state.q=this.value.toLowerCase();tab(state.tab)"><select id="kid" hidden aria-label="Switch child" onchange="state.kid=+this.value;renderParent()"></select><button class="btn ghost" id="bell" hidden onclick="tab('alerts')" aria-label="Alerts">🔔 <span id="bc"></span></button><button class="btn ghost" onclick="view('login')">⎋ Log out</button></header>
+<div class="wrap">
 
+<div class="panel" id="p-home" hidden></div>
+<div class="panel" id="p-cal" hidden></div>
 <!-- Teacher -->
 <div class="panel" id="p-cls" hidden></div>
 <div class="panel" id="p-recent" hidden></div>
@@ -47,6 +44,7 @@
 <div class="panel" id="p-subj" hidden></div>
 <div class="panel" id="p-todo" hidden></div>
 <div class="panel" id="p-alerts" hidden></div>
+<div class="panel" id="p-grades" hidden></div>
 <div class="panel" id="p-up" hidden><div class="card"><h2>Smart Submission</h2>
 <p>Poor signal? We shrink your file before sending.</p><p><b>📎 science-project.pdf</b> — <span id="sz">5.0 MB</span></p>
 <div class="bar"><i id="pb"></i></div><p id="pm" class="muted">Ready to compress.</p>
@@ -61,11 +59,11 @@
 <p><button class="btn ghost" onclick="clearSig()">Clear</button> <button class="btn ok" onclick="approve('Signature')">✍ Sign &amp; Approve</button> <button class="btn" onclick="approve('Biometric')">🖐 Biometric Approve</button></p><p id="ap" class="out ok-t"></p></div></div>
 
 <!-- Principal -->
-<div class="panel" id="p-ops" hidden><div class="grid"><div class="card bars"><h3>Enrollment by Grade</h3><div id="c1"></div></div><div class="card bars"><h3>Average GPA</h3><div id="c2"></div></div><div class="card bars"><h3>Attendance %</h3><div id="c3"></div></div></div></div>
-<div class="panel" id="p-comp" hidden><div class="card scroll"><h2>Teacher Compliance Ledger</h2><table><thead><tr><th>Teacher</th><th>Assignments Reviewed</th><th>Lesson Logs</th><th>Status</th></tr></thead><tbody id="cl"></tbody></table></div></div>
+<div class="panel" id="p-ops" hidden><div class="grid" id="st" style="margin-bottom:18px"></div><div class="grid"><div class="card bars"><h3>Enrollment by Grade</h3><div id="c1"></div></div><div class="card bars"><h3>Class Averages (live)</h3><div id="c2"></div></div><div class="card bars"><h3>Attendance %</h3><div id="c3"></div></div></div></div>
+<div class="panel" id="p-comp" hidden><div class="card scroll"><h2>Teacher Compliance Ledger</h2><table><thead><tr><th>Teacher</th><th>Posts</th><th>Work Reviewed</th><th>Lesson Log</th><th>Status</th></tr></thead><tbody id="cl"></tbody></table></div></div>
 <div class="panel" id="p-lic" hidden><div class="grid"><div class="card"><h2>License Slots</h2><p class="out" style="font-size:2rem">750 / 1000 filled</p><div class="bar"><i style="width:75%"></i></div><p class="muted">250 slots remaining</p></div>
 <div class="card"><h2>Billing</h2><p><span class="pill g">ACTIVE</span> Academy Plan</p><p>Renews: Jun 30, 2027<br>Amount: ₱79,900 / year</p><button class="btn ghost" onclick="toast('Invoice sent to finance@school.edu.ph')">Download Invoice</button></div></div></div>
-</div></div>
+</div></main></div></div>
 
 <!-- MODAL -->
 <div class="modal" id="buy" hidden><div class="card"><div id="bf"><h2>Request a Subscription</h2>
@@ -77,6 +75,4 @@
 <p class="muted">Next: 1) Onboarding call within 2 days 2) Data import 3) Teacher training 4) Go-live.</p><button class="btn" onclick="$('#buy').hidden=true">Done</button></div></div></div>
 <div class="toast" id="toast" hidden></div>
 
-<script src="app.js"></script>
-</body>
-</html>
+<script src="app.js"></script></body></html>
