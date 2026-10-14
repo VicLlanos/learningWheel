@@ -85,40 +85,40 @@ drawRoles();
 
 const NAV = {
   student: [
-    { k: 'home', ico: 'Ho', label: 'Home' },
-    { k: 'subj', ico: 'Co', label: 'My Courses' },
-    { k: 'todo', ico: 'Td', label: 'To-Do' },
-    { k: 'disc', ico: 'Di', label: 'Discussions' },
-    { k: 'cal', ico: 'Ca', label: 'Calendar' },
-    { k: 'msg', ico: 'Ms', label: 'Messages' },
-    { k: 'res', ico: 'Rs', label: 'Resources' },
-    { k: 'up', ico: 'Up', label: 'Submit Work' },
-    { k: 'quiz', ico: 'Qz', label: 'Quiz' },
-    { k: 'alerts', ico: 'Nt', label: 'Notifications' }
+    { k: 'home', ico: 'bi-house', label: 'Home' },
+    { k: 'subj', ico: 'bi-journal-bookmark', label: 'My Courses' },
+    { k: 'todo', ico: 'bi-check2-square', label: 'To-Do' },
+    { k: 'disc', ico: 'bi-chat-dots', label: 'Discussions' },
+    { k: 'cal', ico: 'bi-calendar3', label: 'Calendar' },
+    { k: 'msg', ico: 'bi-envelope', label: 'Messages' },
+    { k: 'res', ico: 'bi-folder2-open', label: 'Resources' },
+    { k: 'up', ico: 'bi-cloud-upload', label: 'Submit Work' },
+    { k: 'quiz', ico: 'bi-pencil-square', label: 'Quiz' },
+    { k: 'alerts', ico: 'bi-bell', label: 'Notifications' }
   ],
   teacher: [
-    { k: 'home', ico: 'Ho', label: 'Home' },
-    { k: 'cls', ico: 'Cl', label: 'My Classes' },
-    { k: 'recent', ico: 'Rp', label: 'Recent Posts' },
-    { k: 'disc', ico: 'Di', label: 'Discussions' },
-    { k: 'cal', ico: 'Ca', label: 'Calendar' },
-    { k: 'msg', ico: 'Ms', label: 'Messages' },
-    { k: 'res', ico: 'Rs', label: 'Resources' },
-    { k: 'grades', ico: 'Gr', label: 'Grade Center' }
+    { k: 'home', ico: 'bi-house', label: 'Home' },
+    { k: 'cls', ico: 'bi-collection', label: 'My Classes' },
+    { k: 'recent', ico: 'bi-megaphone', label: 'Recent Posts' },
+    { k: 'disc', ico: 'bi-chat-dots', label: 'Discussions' },
+    { k: 'cal', ico: 'bi-calendar3', label: 'Calendar' },
+    { k: 'msg', ico: 'bi-envelope', label: 'Messages' },
+    { k: 'res', ico: 'bi-folder2-open', label: 'Resources' },
+    { k: 'grades', ico: 'bi-bar-chart', label: 'Grade Center' }
   ],
   parent: [
-    { k: 'home', ico: 'Ho', label: 'Home' },
-    { k: 'rad', ico: 'Pr', label: 'Progress' },
-    { k: 'sf9', ico: 'RC', label: 'Report Card' },
-    { k: 'cal', ico: 'Ca', label: 'Calendar' },
-    { k: 'msg', ico: 'Ms', label: 'Messages' }
+    { k: 'home', ico: 'bi-house', label: 'Home' },
+    { k: 'rad', ico: 'bi-speedometer2', label: 'Progress' },
+    { k: 'sf9', ico: 'bi-file-earmark-text', label: 'Report Card' },
+    { k: 'cal', ico: 'bi-calendar3', label: 'Calendar' },
+    { k: 'msg', ico: 'bi-envelope', label: 'Messages' }
   ],
   principal: [
-    { k: 'home', ico: 'Ho', label: 'Home' },
-    { k: 'ops', ico: 'Op', label: 'Operations' },
-    { k: 'comp', ico: 'Cm', label: 'Compliance' },
-    { k: 'lic', ico: 'Lc', label: 'Licenses' },
-    { k: 'msg', ico: 'Ms', label: 'Messages' }
+    { k: 'home', ico: 'bi-house', label: 'Home' },
+    { k: 'ops', ico: 'bi-graph-up', label: 'Operations' },
+    { k: 'comp', ico: 'bi-clipboard-check', label: 'Compliance' },
+    { k: 'lic', ico: 'bi-key', label: 'Licenses' },
+    { k: 'msg', ico: 'bi-envelope', label: 'Messages' }
   ]
 };
 
@@ -152,7 +152,7 @@ function buildSideNav() {
   const items = NAV[state.role] || [];
   $('#sideNav').innerHTML = items.map(n =>
     `<a href="#" class="nav-link ${state.tab === n.k ? 'active' : ''}" onclick="tab('${n.k}');return false">
-      <span class="nav-ico">${n.ico}</span> ${n.label}
+      <i class="bi ${n.ico}"></i> ${n.label}
     </a>`
   ).join('');
 }
@@ -314,123 +314,266 @@ function rHome() {
     const todo = sItems().filter(i => isT(i) && !DB.done[i.id]);
     const urgent = todo.filter(i => i.due && days(i.due) <= 2).length;
     const msgs = DB.messages.filter(m => m.to === 'me' && !m.read).length;
+    const courses = DB.classes.filter(c => c.sec == mySec);
     el.innerHTML = `
-      <h1 class="h4 mb-1">Welcome back, Ana</h1>
-      <p class="text-secondary small mb-4">Here is what is happening in your classes today.</p>
+      <div class="dash-hero">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <div>
+            <h1 class="h4 mb-1">Welcome back, Ana</h1>
+            <p class="text-secondary small mb-0">Here is what is happening in your classes today.</p>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm" onclick="tab('todo')"><i class="bi bi-check2-square me-1"></i>To-Do</button>
+            <button class="btn btn-primary btn-sm" onclick="tab('subj')"><i class="bi bi-journal-bookmark me-1"></i>Courses</button>
+          </div>
+        </div>
+      </div>
       <div class="row g-3 mb-4">
-        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3">
-          <div class="stat-label">To-Do</div><div class="stat-value">${todo.length}</div>
+        <div class="col-6 col-xl-3"><div class="card stat-card h-100"><div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="stat-label">To-Do</div>
+            <i class="bi bi-check2-square text-secondary"></i>
+          </div>
+          <div class="stat-value">${todo.length}</div>
           <div class="text-secondary small">${urgent} urgent</div>
         </div></div></div>
-        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3">
-          <div class="stat-label">Unread</div><div class="stat-value">${unread()}</div>
+        <div class="col-6 col-xl-3"><div class="card stat-card h-100"><div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="stat-label">Unread</div>
+            <i class="bi bi-bell text-secondary"></i>
+          </div>
+          <div class="stat-value">${unread()}</div>
           <div class="text-secondary small">alerts & messages</div>
         </div></div></div>
-        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3">
-          <div class="stat-label">Courses</div><div class="stat-value">${DB.classes.filter(c => c.sec == mySec).length}</div>
+        <div class="col-6 col-xl-3"><div class="card stat-card h-100"><div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="stat-label">Courses</div>
+            <i class="bi bi-journal-bookmark text-secondary"></i>
+          </div>
+          <div class="stat-value">${courses.length}</div>
           <div class="text-secondary small">active this term</div>
         </div></div></div>
-        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3">
-          <div class="stat-label">Messages</div><div class="stat-value">${msgs}</div>
+        <div class="col-6 col-xl-3"><div class="card stat-card h-100"><div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="stat-label">Messages</div>
+            <i class="bi bi-envelope text-secondary"></i>
+          </div>
+          <div class="stat-value">${msgs}</div>
           <div class="text-secondary small">unread</div>
         </div></div></div>
       </div>
       <div class="row g-3">
-        <div class="col-lg-6">
-          <div class="card"><div class="card-body">
-            <h2 class="h6 mb-3">Upcoming due dates</h2>
-            ${todo.slice(0, 4).map(i => sItem(i, 1, 1)).join('') || empty('Nothing due soon.')}
-            <button class="btn btn-link btn-sm px-0" onclick="tab('todo')">View all to-do</button>
+        <div class="col-xl-7">
+          <div class="card h-100"><div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h2 class="h6 mb-0"><i class="bi bi-clock me-1"></i>Upcoming due dates</h2>
+              <button class="btn btn-link btn-sm px-0" onclick="tab('todo')">View all</button>
+            </div>
+            ${todo.slice(0, 5).map(i => sItem(i, 1, 1)).join('') || empty('Nothing due soon.')}
           </div></div>
         </div>
-        <div class="col-lg-6">
-          <div class="card"><div class="card-body">
-            <h2 class="h6 mb-3">Recent activity</h2>
-            ${sItems().slice(0, 4).map(i => `
-              <div class="d-flex gap-2 py-2 border-bottom">
+        <div class="col-xl-5">
+          <div class="card h-100"><div class="card-body">
+            <h2 class="h6 mb-3"><i class="bi bi-activity me-1"></i>Recent activity</h2>
+            ${sItems().slice(0, 6).map(i => `
+              <div class="d-flex gap-2 py-2 border-bottom align-items-center">
                 <div class="course-badge" style="background:${cls(i.cid).col}">${cls(i.cid).ico}</div>
-                <div class="min-w-0">
-                  <div class="fw-semibold small">${esc(i.title)}</div>
+                <div class="min-w-0 flex-grow-1">
+                  <div class="fw-semibold small text-truncate">${esc(i.title)}</div>
                   <div class="text-secondary" style="font-size:0.75rem">${cls(i.cid).subj} · ${TYPE[i.type]} · ${dayLabel(new Date(i.at).toISOString().slice(0,10))}</div>
                 </div>
               </div>`).join('') || empty('No activity yet.')}
           </div></div>
         </div>
-      </div>`;
+      </div>
+      <h2 class="h6 mt-4 mb-3"><i class="bi bi-journal-bookmark me-1"></i>Your courses</h2>
+      <div class="row g-3">${courses.map(c => {
+        const it = DB.items.filter(i => i.cid == c.id);
+        const p = it.filter(i => isT(i) && !DB.done[i.id]).length;
+        return `<div class="col-sm-6 col-lg-4 col-xxl-3">
+          <button class="course-tile" style="border-top:3px solid ${c.col}" onclick="openSubj('${c.id}')">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <div class="course-badge" style="background:${c.col}">${c.ico}</div>
+              <div class="min-w-0"><div class="fw-semibold small text-truncate">${c.subj}</div>
+              <div class="text-secondary" style="font-size:0.75rem">${c.t}</div></div>
+            </div>
+            <span class="badge text-bg-light text-secondary border">${p} to do</span>
+          </button>
+        </div>`;
+      }).join('')}</div>`;
   } else if (state.role === 'teacher') {
     const posts = DB.items.filter(i => cls(i.cid).mine);
     el.innerHTML = `
-      <h1 class="h4 mb-1">Teacher dashboard</h1>
-      <p class="text-secondary small mb-4">Manage classes, post work, and track compliance.</p>
+      <div class="dash-hero">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <div>
+            <h1 class="h4 mb-1">Teacher dashboard</h1>
+            <p class="text-secondary small mb-0">Manage classes, post work, and track progress.</p>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm" onclick="tab('disc')"><i class="bi bi-chat-dots me-1"></i>Discussions</button>
+            <button class="btn btn-primary btn-sm" onclick="tab('cls')"><i class="bi bi-plus-lg me-1"></i>Post to class</button>
+          </div>
+        </div>
+      </div>
       <div class="row g-3 mb-4">
-        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3"><div class="stat-label">Classes</div><div class="stat-value">${mine().length}</div></div></div></div>
-        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3"><div class="stat-label">Posts</div><div class="stat-value">${posts.length}</div></div></div></div>
-        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3"><div class="stat-label">Discussions</div><div class="stat-value">${DB.discussions.length}</div></div></div></div>
-        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3"><div class="stat-label">Learners</div><div class="stat-value">${stu.length * mine().length}</div></div></div></div>
+        <div class="col-6 col-xl-3"><div class="card stat-card h-100"><div class="card-body">
+          <div class="d-flex justify-content-between"><div class="stat-label">Classes</div><i class="bi bi-collection text-secondary"></i></div>
+          <div class="stat-value">${mine().length}</div>
+        </div></div></div>
+        <div class="col-6 col-xl-3"><div class="card stat-card h-100"><div class="card-body">
+          <div class="d-flex justify-content-between"><div class="stat-label">Posts</div><i class="bi bi-megaphone text-secondary"></i></div>
+          <div class="stat-value">${posts.length}</div>
+        </div></div></div>
+        <div class="col-6 col-xl-3"><div class="card stat-card h-100"><div class="card-body">
+          <div class="d-flex justify-content-between"><div class="stat-label">Discussions</div><i class="bi bi-chat-dots text-secondary"></i></div>
+          <div class="stat-value">${DB.discussions.length}</div>
+        </div></div></div>
+        <div class="col-6 col-xl-3"><div class="card stat-card h-100"><div class="card-body">
+          <div class="d-flex justify-content-between"><div class="stat-label">Learners</div><i class="bi bi-people text-secondary"></i></div>
+          <div class="stat-value">${stu.length * mine().length}</div>
+        </div></div></div>
       </div>
       <div class="row g-3">
-        <div class="col-lg-5">
-          <div class="card"><div class="card-body">
-            <h2 class="h6 mb-3">Quick actions</h2>
+        <div class="col-xl-4">
+          <div class="card h-100"><div class="card-body">
+            <h2 class="h6 mb-3"><i class="bi bi-lightning me-1"></i>Quick actions</h2>
             <div class="d-grid gap-2">
-              <button class="btn btn-primary btn-sm" onclick="tab('cls')">Open a class</button>
-              <button class="btn btn-outline-secondary btn-sm" onclick="tab('disc')">View discussions</button>
-              <button class="btn btn-outline-secondary btn-sm" onclick="tab('grades')">Grade Center</button>
+              <button class="btn btn-primary btn-sm text-start" onclick="tab('cls')"><i class="bi bi-collection me-2"></i>Open a class</button>
+              <button class="btn btn-outline-secondary btn-sm text-start" onclick="tab('grades')"><i class="bi bi-bar-chart me-2"></i>Grade Center</button>
+              <button class="btn btn-outline-secondary btn-sm text-start" onclick="tab('disc')"><i class="bi bi-chat-dots me-2"></i>Discussions</button>
+              <button class="btn btn-outline-secondary btn-sm text-start" onclick="tab('res')"><i class="bi bi-folder2-open me-2"></i>Resources</button>
             </div>
           </div></div>
         </div>
-        <div class="col-lg-7">
-          <div class="card"><div class="card-body">
-            <h2 class="h6 mb-3">Recent posts</h2>
-            ${posts.slice(0, 3).map(i => tItem(i, 1)).join('') || empty('No posts yet.')}
+        <div class="col-xl-8">
+          <div class="card h-100"><div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h2 class="h6 mb-0"><i class="bi bi-megaphone me-1"></i>Recent posts</h2>
+              <button class="btn btn-link btn-sm px-0" onclick="tab('recent')">View all</button>
+            </div>
+            ${posts.slice(0, 5).map(i => tItem(i, 1)).join('') || empty('No posts yet.')}
           </div></div>
         </div>
-      </div>`;
+      </div>
+      <h2 class="h6 mt-4 mb-3"><i class="bi bi-collection me-1"></i>Your classes</h2>
+      <div class="row g-3">${mine().map(c =>
+        `<div class="col-sm-6 col-lg-4 col-xxl-3">
+          <button class="course-tile" style="border-top:3px solid ${c.col}" onclick="openCls('${c.id}')">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <div class="course-badge" style="background:${c.col}">${c.ico}</div>
+              <div class="min-w-0"><div class="fw-semibold small">${c.subj}</div>
+              <div class="text-secondary" style="font-size:0.75rem">${c.sec} · ${stu.length} learners</div></div>
+            </div>
+            <span class="badge text-bg-light text-secondary border">${DB.items.filter(i => i.cid == c.id).length} posts</span>
+          </button>
+        </div>`
+      ).join('')}</div>`;
   } else if (state.role === 'parent') {
     const k = kids[state.kid];
     el.innerHTML = `
-      <h1 class="h4 mb-1">Parent home</h1>
-      <p class="text-secondary small mb-4">Overview for ${k.n} · ${k.g}</p>
+      <div class="dash-hero">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <div>
+            <h1 class="h4 mb-1">Parent home</h1>
+            <p class="text-secondary small mb-0">Overview for ${k.n} · ${k.g}</p>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm" onclick="tab('msg')"><i class="bi bi-envelope me-1"></i>Messages</button>
+            <button class="btn btn-primary btn-sm" onclick="tab('sf9')"><i class="bi bi-file-earmark-text me-1"></i>Report card</button>
+          </div>
+        </div>
+      </div>
       <div class="row g-3 mb-4">
-        <div class="col-md-4"><div class="card stat-card"><div class="card-body py-3">
-          <div class="stat-label">General average</div><div class="stat-value">${k.gen}</div>
+        <div class="col-md-4"><div class="card stat-card h-100"><div class="card-body">
+          <div class="d-flex justify-content-between"><div class="stat-label">General average</div><i class="bi bi-mortarboard text-secondary"></i></div>
+          <div class="stat-value">${k.gen}</div>
           <div class="text-secondary small">${k.gen >= 85 ? 'On track' : k.gen >= 75 ? 'Watch closely' : 'Needs help'}</div>
         </div></div></div>
-        <div class="col-md-4"><div class="card stat-card"><div class="card-body py-3">
-          <div class="stat-label">Pending tasks</div><div class="stat-value">${k.pend}</div>
+        <div class="col-md-4"><div class="card stat-card h-100"><div class="card-body">
+          <div class="d-flex justify-content-between"><div class="stat-label">Pending tasks</div><i class="bi bi-list-task text-secondary"></i></div>
+          <div class="stat-value">${k.pend}</div>
         </div></div></div>
-        <div class="col-md-4"><div class="card stat-card"><div class="card-body py-3">
-          <div class="stat-label">Attendance</div><div class="stat-value">${k.att}%</div>
+        <div class="col-md-4"><div class="card stat-card h-100"><div class="card-body">
+          <div class="d-flex justify-content-between"><div class="stat-label">Attendance</div><i class="bi bi-calendar-check text-secondary"></i></div>
+          <div class="stat-value">${k.att}%</div>
         </div></div></div>
       </div>
-      <div class="card"><div class="card-body">
-        <h2 class="h6 mb-3">Quick links</h2>
-        <div class="d-flex flex-wrap gap-2">
-          <button class="btn btn-primary btn-sm" onclick="tab('rad')">Full progress</button>
-          <button class="btn btn-outline-secondary btn-sm" onclick="tab('sf9')">Report card</button>
-          <button class="btn btn-outline-secondary btn-sm" onclick="tab('msg')">Messages</button>
+      <div class="row g-3">
+        <div class="col-lg-6">
+          <div class="card h-100"><div class="card-body">
+            <h2 class="h6 mb-3"><i class="bi bi-lightning me-1"></i>Quick links</h2>
+            <div class="d-grid gap-2">
+              <button class="btn btn-primary btn-sm text-start" onclick="tab('rad')"><i class="bi bi-speedometer2 me-2"></i>Full progress</button>
+              <button class="btn btn-outline-secondary btn-sm text-start" onclick="tab('sf9')"><i class="bi bi-file-earmark-text me-2"></i>Report card (SF9)</button>
+              <button class="btn btn-outline-secondary btn-sm text-start" onclick="tab('cal')"><i class="bi bi-calendar3 me-2"></i>Calendar</button>
+              <button class="btn btn-outline-secondary btn-sm text-start" onclick="tab('msg')"><i class="bi bi-envelope me-2"></i>Messages</button>
+            </div>
+          </div></div>
         </div>
-      </div></div>`;
+        <div class="col-lg-6">
+          <div class="card h-100"><div class="card-body">
+            <h2 class="h6 mb-3"><i class="bi bi-info-circle me-1"></i>About this portal</h2>
+            <p class="text-secondary small mb-0">Track grades, attendance, and pending work for each child. Switch children from the top bar when available. Approve report cards digitally from the Report Card tab.</p>
+          </div></div>
+        </div>
+      </div>`;
   } else {
     el.innerHTML = `
-      <h1 class="h4 mb-1">Principal dashboard</h1>
-      <p class="text-secondary small mb-4">School-wide operations at a glance.</p>
-      <div class="row g-3 mb-4">
-        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3"><div class="stat-label">Enrollment</div><div class="stat-value">1,120</div></div></div></div>
-        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3"><div class="stat-label">Avg GPA</div><div class="stat-value">82.3</div></div></div></div>
-        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3"><div class="stat-label">Attendance</div><div class="stat-value">93.5%</div></div></div></div>
-        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3"><div class="stat-label">License</div><div class="stat-value">75%</div><div class="text-secondary small">750 / 1000</div></div></div></div>
-      </div>
-      <div class="card"><div class="card-body">
-        <h2 class="h6 mb-3">Quick links</h2>
-        <div class="d-flex flex-wrap gap-2">
-          <button class="btn btn-primary btn-sm" onclick="tab('ops')">Operations</button>
-          <button class="btn btn-outline-secondary btn-sm" onclick="tab('comp')">Compliance</button>
-          <button class="btn btn-outline-secondary btn-sm" onclick="tab('lic')">Licenses</button>
+      <div class="dash-hero">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <div>
+            <h1 class="h4 mb-1">Principal dashboard</h1>
+            <p class="text-secondary small mb-0">School-wide operations at a glance.</p>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm" onclick="tab('comp')"><i class="bi bi-clipboard-check me-1"></i>Compliance</button>
+            <button class="btn btn-primary btn-sm" onclick="tab('ops')"><i class="bi bi-graph-up me-1"></i>Operations</button>
+          </div>
         </div>
-      </div></div>`;
+      </div>
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-xl-3"><div class="card stat-card h-100"><div class="card-body">
+          <div class="d-flex justify-content-between"><div class="stat-label">Enrollment</div><i class="bi bi-people text-secondary"></i></div>
+          <div class="stat-value">1,120</div>
+        </div></div></div>
+        <div class="col-6 col-xl-3"><div class="card stat-card h-100"><div class="card-body">
+          <div class="d-flex justify-content-between"><div class="stat-label">Avg GPA</div><i class="bi bi-mortarboard text-secondary"></i></div>
+          <div class="stat-value">82.3</div>
+        </div></div></div>
+        <div class="col-6 col-xl-3"><div class="card stat-card h-100"><div class="card-body">
+          <div class="d-flex justify-content-between"><div class="stat-label">Attendance</div><i class="bi bi-calendar-check text-secondary"></i></div>
+          <div class="stat-value">93.5%</div>
+        </div></div></div>
+        <div class="col-6 col-xl-3"><div class="card stat-card h-100"><div class="card-body">
+          <div class="d-flex justify-content-between"><div class="stat-label">License</div><i class="bi bi-key text-secondary"></i></div>
+          <div class="stat-value">75%</div>
+          <div class="text-secondary small">750 / 1000</div>
+        </div></div></div>
+      </div>
+      <div class="row g-3">
+        <div class="col-lg-4">
+          <div class="card h-100"><div class="card-body">
+            <h2 class="h6 mb-3"><i class="bi bi-lightning me-1"></i>Quick links</h2>
+            <div class="d-grid gap-2">
+              <button class="btn btn-primary btn-sm text-start" onclick="tab('ops')"><i class="bi bi-graph-up me-2"></i>Operations</button>
+              <button class="btn btn-outline-secondary btn-sm text-start" onclick="tab('comp')"><i class="bi bi-clipboard-check me-2"></i>Compliance ledger</button>
+              <button class="btn btn-outline-secondary btn-sm text-start" onclick="tab('lic')"><i class="bi bi-key me-2"></i>Licenses & billing</button>
+              <button class="btn btn-outline-secondary btn-sm text-start" onclick="tab('msg')"><i class="bi bi-envelope me-2"></i>Messages</button>
+            </div>
+          </div></div>
+        </div>
+        <div class="col-lg-8">
+          <div class="card h-100"><div class="card-body">
+            <h2 class="h6 mb-3"><i class="bi bi-info-circle me-1"></i>At a glance</h2>
+            <p class="text-secondary small mb-0">Monitor enrollment, academic performance, attendance, and license utilization. Use Compliance to review teacher assignment and lesson-log status across the school.</p>
+          </div></div>
+        </div>
+      </div>`;
   }
 }
+
+
 
 /* ========== Student items ========== */
 function sItem(i, subj, noBtn) {
