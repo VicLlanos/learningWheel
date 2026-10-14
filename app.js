@@ -1,6 +1,6 @@
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
-const state = { role: 'student', kid: 0, cls: null, subj: null, ct: 'stream', st: 'all', tab: 'home', discId: null, msgThread: null, fresh: [] };
+const state = { role: 'student', kid: 0, cls: null, subj: null, ct: 'stream', st: 'all', tab: 'home', discId: null, msgThread: null, fresh: [], quarter: 'Q3', examId: null, examEdit: null };
 
 const T = m => {
   const t = $('#toast');
@@ -88,17 +88,19 @@ const NAV = {
     { k: 'home', ico: 'bi-house', label: 'Home' },
     { k: 'subj', ico: 'bi-journal-bookmark', label: 'My Courses' },
     { k: 'todo', ico: 'bi-check2-square', label: 'To-Do' },
+    { k: 'exams', ico: 'bi-file-earmark-richtext', label: 'Assessments' },
     { k: 'disc', ico: 'bi-chat-dots', label: 'Discussions' },
     { k: 'cal', ico: 'bi-calendar3', label: 'Calendar' },
     { k: 'msg', ico: 'bi-envelope', label: 'Messages' },
     { k: 'res', ico: 'bi-folder2-open', label: 'Resources' },
     { k: 'up', ico: 'bi-cloud-upload', label: 'Submit Work' },
-    { k: 'quiz', ico: 'bi-pencil-square', label: 'Quiz' },
+    { k: 'quiz', ico: 'bi-pencil-square', label: 'Practice Quiz' },
     { k: 'alerts', ico: 'bi-bell', label: 'Notifications' }
   ],
   teacher: [
     { k: 'home', ico: 'bi-house', label: 'Home' },
     { k: 'cls', ico: 'bi-collection', label: 'My Classes' },
+    { k: 'exams', ico: 'bi-file-earmark-richtext', label: 'Assessments' },
     { k: 'recent', ico: 'bi-megaphone', label: 'Recent Posts' },
     { k: 'disc', ico: 'bi-chat-dots', label: 'Discussions' },
     { k: 'cal', ico: 'bi-calendar3', label: 'Calendar' },
@@ -144,6 +146,8 @@ function doLogin() {
   $('#av').textContent = USER_NAMES[state.role].charAt(0);
   $('#kid').hidden = state.role !== 'parent';
   buildSideNav();
+  const qel = $('#quarter');
+  if (qel) qel.value = state.quarter;
   tab('home');
   updateNotifBadge();
 }
@@ -168,7 +172,8 @@ function tab(k) {
   const renderers = {
     home: rHome, cls: rCls, recent: rRecent, subj: rSubj, todo: rTodo,
     alerts: rAlerts, disc: rDisc, cal: rCal, msg: rMsg, res: rRes,
-    grades: rGrades, rad: () => renderParent(),
+    grades: rGrades, exams: rExams, take: rTake,
+    rad: () => renderParent(),
     sf9: () => { renderParent(); initSig(); },
     quiz: drawQuiz, ops: () => {}, comp: () => {}, lic: () => {}, up: () => {}
   };
@@ -179,6 +184,13 @@ function tab(k) {
 function onSearch(q) {
   if (!q.trim()) return;
   T('Search: "' + q.trim() + '" (demo)');
+}
+function setQuarter(q) {
+  state.quarter = q;
+  const el = $('#quarter');
+  if (el) el.value = q;
+  if (!$('#dash').hidden) tab(state.tab);
+  T('Switched to ' + q + ' · S.Y. 2026–2027');
 }
 
 /* ========== Shared data ========== */
@@ -257,6 +269,48 @@ const seed = () => ({
     { date: day(7), title: 'Buwan ng Wika Showcase', type: 'event' },
     { date: day(11), title: 'Parent-Teacher Conference', type: 'event' }
   ],
+
+  exams: [
+    {
+      id: 1, title: 'Mathematics Quarterly Exam – Fractions & Decimals',
+      quarter: 'Q3', cids: ['m1', 'm2'],
+      duration: 45, points: 50,
+      instructions: 'Answer all items. Show solutions for problem-solving questions when applicable.',
+      published: true, at: Date.now() - 2e6,
+      questions: [
+        { id: 1, type: 'mc', prompt: 'What is 3/4 + 1/2?', choices: ['5/4', '1', '5/6', '7/8'], answer: 0, pts: 5 },
+        { id: 2, type: 'mc', prompt: '0.25 as a fraction in lowest terms is…', choices: ['1/2', '1/4', '2/5', '3/10'], answer: 1, pts: 5 },
+        { id: 3, type: 'mc', prompt: 'Which is greater: 2/3 or 3/5?', choices: ['2/3', '3/5', 'They are equal', 'Cannot tell'], answer: 0, pts: 5 },
+        { id: 4, type: 'tf', prompt: 'All improper fractions are greater than 1.', answer: true, pts: 5 },
+        { id: 5, type: 'mc', prompt: 'Simplify 12/18.', choices: ['2/3', '3/4', '4/6', '6/9'], answer: 0, pts: 5 }
+      ]
+    },
+    {
+      id: 2, title: 'Science – Photosynthesis Check',
+      quarter: 'Q3', cids: ['s1'],
+      duration: 20, points: 20,
+      instructions: 'Multiple choice. One answer per item.',
+      published: true, at: Date.now() - 1e6,
+      questions: [
+        { id: 1, type: 'mc', prompt: 'What gas do plants absorb during photosynthesis?', choices: ['Oxygen', 'Carbon dioxide', 'Nitrogen', 'Helium'], answer: 1, pts: 5 },
+        { id: 2, type: 'mc', prompt: 'The green pigment in leaves is called…', choices: ['Carotene', 'Chlorophyll', 'Xanthophyll', 'Melanin'], answer: 1, pts: 5 },
+        { id: 3, type: 'tf', prompt: 'Photosynthesis occurs only at night.', answer: false, pts: 5 },
+        { id: 4, type: 'mc', prompt: 'The main product of photosynthesis used by the plant for energy is…', choices: ['Water', 'Glucose', 'Salt', 'Protein'], answer: 1, pts: 5 }
+      ]
+    },
+    {
+      id: 3, title: 'English – Reading Comprehension (Draft)',
+      quarter: 'Q3', cids: ['e1'],
+      duration: 30, points: 30,
+      instructions: 'Draft — not yet published to students.',
+      published: false, at: Date.now() - 5e5,
+      questions: [
+        { id: 1, type: 'mc', prompt: 'The main idea of a paragraph is…', choices: ['The first word', 'The central point', 'A supporting detail', 'The title only'], answer: 1, pts: 10 }
+      ]
+    }
+  ],
+  examSubs: {},
+  examN: 10,
   done: {},
   read: {},
   grades: {},
@@ -267,10 +321,12 @@ const seed = () => ({
 
 let DB;
 (function () {
-  try { DB = JSON.parse(localStorage.getItem('learningWheel_db_v4')); } catch (e) {}
+  try { DB = JSON.parse(localStorage.getItem('learningWheel_db_v5')); } catch (e) {}
   if (!DB || !DB.items) DB = seed();
+  if (!DB.exams) { const s = seed(); DB.exams = s.exams; DB.examSubs = s.examSubs || {}; DB.examN = s.examN || 10; save(); }
+  if (!DB.examSubs) DB.examSubs = {};
 })();
-const save = () => { try { localStorage.setItem('learningWheel_db_v4', JSON.stringify(DB)); } catch (e) {} };
+const save = () => { try { localStorage.setItem('learningWheel_db_v5', JSON.stringify(DB)); } catch (e) {} };
 function resetDB() {
   DB = seed();
   save();
@@ -1173,5 +1229,353 @@ if (clEl) {
     ['Mr. Ramos', '10 of 10 reviewed', 'Up to date', 'success', 'Compliant']
   ].map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="badge text-bg-${r[3]}">${r[4]}</span></td></tr>`).join('');
 }
+
+
+
+/* ========== Assessments / Exams ========== */
+function mySectionIds() {
+  if (state.role === 'teacher') return mine().map(c => c.id);
+  return DB.classes.filter(c => c.sec == mySec).map(c => c.id);
+}
+function examsForUser() {
+  const ids = new Set(mySectionIds());
+  return (DB.exams || []).filter(e => {
+    if (state.role === 'student' && !e.published) return false;
+    if (e.quarter && e.quarter !== state.quarter) return false;
+    return e.cids.some(cid => ids.has(cid));
+  }).sort((a, b) => b.at - a.at);
+}
+function examSubKey(examId) {
+  return examId + '_' + (USER_NAMES[state.role] || 'user') + '_' + state.quarter;
+}
+function getSub(examId) {
+  return (DB.examSubs || {})[examSubKey(examId)];
+}
+
+function rExams() {
+  const el = $('#p-exams');
+  if (state.role === 'teacher') return rExamsTeacher(el);
+  return rExamsStudent(el);
+}
+
+function rExamsStudent(el) {
+  if (state.examId) return; // take panel handles
+  const list = examsForUser();
+  el.innerHTML = `
+    <div class="dash-hero">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div>
+          <h1 class="h4 mb-1"><i class="bi bi-file-earmark-richtext me-1"></i>Assessments</h1>
+          <p class="text-secondary small mb-0">${state.quarter} · S.Y. 2026–2027 — exams and quizzes assigned to your sections</p>
+        </div>
+      </div>
+    </div>
+    ${list.length ? list.map(e => {
+      const sub = getSub(e.id);
+      const cnames = e.cids.map(id => { const c = cls(id); return c ? c.subj : id; }).join(', ');
+      return `<div class="card mb-3"><div class="card-body">
+        <div class="d-flex flex-wrap justify-content-between gap-2">
+          <div>
+            <span class="badge text-bg-light text-secondary border me-1">${e.quarter}</span>
+            <span class="badge text-bg-primary">${e.points} pts</span>
+            <span class="badge text-bg-secondary">${e.duration} min</span>
+            <h2 class="h6 mt-2 mb-1">${esc(e.title)}</h2>
+            <div class="text-secondary small">${cnames} · ${e.questions.length} questions</div>
+          </div>
+          <div class="text-end">
+            ${sub
+              ? `<div class="fw-bold text-success mb-1">${sub.score} / ${e.points}</div>
+                 <button class="btn btn-outline-secondary btn-sm" onclick="openTake(${e.id}, true)">Review</button>`
+              : `<button class="btn btn-primary btn-sm" onclick="openTake(${e.id})"><i class="bi bi-pencil me-1"></i>Take exam</button>`}
+          </div>
+        </div>
+      </div></div>`;
+    }).join('') : empty('No assessments for ' + state.quarter + ' yet.')}`;
+}
+
+function rExamsTeacher(el) {
+  if (state.examEdit === 'new' || (state.examEdit && state.examEdit !== true)) return rExamBuilder(el);
+  const list = (DB.exams || []).filter(e => !e.quarter || e.quarter === state.quarter || true).sort((a,b) => b.at - a.at);
+  // show all quarters but highlight current
+  el.innerHTML = `
+    <div class="dash-hero">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div>
+          <h1 class="h4 mb-1"><i class="bi bi-file-earmark-richtext me-1"></i>Assessments</h1>
+          <p class="text-secondary small mb-0">Create exams, assign to sections, publish by quarter</p>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="state.examEdit='new';tab('exams')"><i class="bi bi-plus-lg me-1"></i>Create assessment</button>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-sm align-middle">
+        <thead><tr><th>Title</th><th>Quarter</th><th>Sections</th><th>Items</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          ${(DB.exams || []).sort((a,b)=>b.at-a.at).map(e => {
+            const secs = e.cids.map(id => { const c = cls(id); return c ? c.subj + ' ' + c.sec : id; }).join(', ');
+            const subs = Object.keys(DB.examSubs || {}).filter(k => k.startsWith(e.id + '_')).length;
+            return `<tr class="${e.quarter === state.quarter ? '' : 'table-light'}">
+              <td><div class="fw-semibold small">${esc(e.title)}</div>
+                <div class="text-secondary" style="font-size:0.75rem">${e.points} pts · ${e.duration} min · ${subs} submission(s)</div></td>
+              <td><span class="badge text-bg-light border">${e.quarter}</span></td>
+              <td class="small">${esc(secs)}</td>
+              <td>${e.questions.length}</td>
+              <td>${e.published ? '<span class="badge text-bg-success">Published</span>' : '<span class="badge text-bg-secondary">Draft</span>'}</td>
+              <td class="text-nowrap">
+                <button class="btn btn-outline-secondary btn-sm" onclick="togglePublish(${e.id})">${e.published ? 'Unpublish' : 'Publish'}</button>
+                <button class="btn btn-outline-danger btn-sm" onclick="deleteExam(${e.id})">Delete</button>
+              </td>
+            </tr>`;
+          }).join('') || '<tr><td colspan="6" class="text-secondary text-center py-4">No assessments yet. Create one to assign to your sections.</td></tr>'}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function togglePublish(id) {
+  const e = DB.exams.find(x => x.id == id);
+  if (!e) return;
+  e.published = !e.published;
+  save();
+  tab('exams');
+  T(e.published ? 'Published to assigned sections' : 'Unpublished (hidden from students)');
+}
+function deleteExam(id) {
+  DB.exams = DB.exams.filter(x => x.id != id);
+  save();
+  tab('exams');
+  T('Assessment deleted');
+}
+
+function rExamBuilder(el) {
+  const classes = mine();
+  el.innerHTML = `
+    <button class="btn btn-link btn-sm px-0 mb-2" onclick="state.examEdit=null;tab('exams')">← Back to assessments</button>
+    <div class="card"><div class="card-body">
+      <h1 class="h5 mb-3">Create assessment</h1>
+      <div class="row g-3">
+        <div class="col-md-8">
+          <label class="form-label small fw-semibold">Title</label>
+          <input class="form-control" id="exTitle" placeholder="e.g. Q3 Math Quarterly Exam">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small fw-semibold">Quarter</label>
+          <select class="form-select" id="exQ">
+            <option value="Q1">Q1</option><option value="Q2">Q2</option>
+            <option value="Q3" selected>Q3</option><option value="Q4">Q4</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small fw-semibold">Minutes</label>
+          <input type="number" class="form-control" id="exDur" value="40" min="5" max="180">
+        </div>
+        <div class="col-12">
+          <label class="form-label small fw-semibold">Assign to sections</label>
+          <div class="d-flex flex-wrap gap-3">
+            ${classes.map(c => `
+              <div class="form-check">
+                <input class="form-check-input ex-sec" type="checkbox" value="${c.id}" id="sec_${c.id}" checked>
+                <label class="form-check-label small" for="sec_${c.id}">${c.subj} · ${c.sec}</label>
+              </div>`).join('') || '<span class="text-secondary small">No classes</span>'}
+          </div>
+        </div>
+        <div class="col-12">
+          <label class="form-label small fw-semibold">Instructions</label>
+          <textarea class="form-control" id="exInstr" rows="2" placeholder="Instructions shown to students before they start"></textarea>
+        </div>
+      </div>
+      <hr>
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="h6 mb-0">Questions</h2>
+        <div class="btn-group btn-group-sm">
+          <button type="button" class="btn btn-outline-secondary" onclick="addExQ('mc')">+ Multiple choice</button>
+          <button type="button" class="btn btn-outline-secondary" onclick="addExQ('tf')">+ True / False</button>
+        </div>
+      </div>
+      <div id="exQuestions"></div>
+      <div class="mt-3 d-flex flex-wrap gap-2">
+        <button class="btn btn-primary" onclick="saveExam(true)"><i class="bi bi-send me-1"></i>Save & publish</button>
+        <button class="btn btn-outline-secondary" onclick="saveExam(false)">Save as draft</button>
+        <button class="btn btn-link" onclick="state.examEdit=null;tab('exams')">Cancel</button>
+      </div>
+    </div></div>`;
+  window._exQ = [];
+  addExQ('mc');
+  addExQ('mc');
+}
+
+function addExQ(type) {
+  if (!window._exQ) window._exQ = [];
+  const id = Date.now() + Math.random();
+  window._exQ.push({ id, type, prompt: '', choices: type === 'mc' ? ['', '', '', ''] : null, answer: type === 'tf' ? true : 0, pts: 5 });
+  renderExQ();
+}
+function renderExQ() {
+  const box = $('#exQuestions');
+  if (!box) return;
+  box.innerHTML = window._exQ.map((q, i) => `
+    <div class="card mb-2 border"><div class="card-body py-3">
+      <div class="d-flex justify-content-between mb-2">
+        <span class="small fw-semibold">Item ${i + 1} · ${q.type === 'mc' ? 'Multiple choice' : 'True / False'}</span>
+        <button type="button" class="btn btn-sm btn-outline-danger" onclick="window._exQ.splice(${i},1);renderExQ()">Remove</button>
+      </div>
+      <input class="form-control form-control-sm mb-2" placeholder="Question prompt" value="${esc(q.prompt)}" oninput="window._exQ[${i}].prompt=this.value">
+      <div class="row g-2 align-items-end">
+        <div class="col-auto">
+          <label class="form-label small mb-0">Points</label>
+          <input type="number" class="form-control form-control-sm" style="width:4.5rem" value="${q.pts}" min="1" oninput="window._exQ[${i}].pts=+this.value||1">
+        </div>
+        ${q.type === 'tf' ? `
+        <div class="col-auto">
+          <label class="form-label small mb-0">Correct answer</label>
+          <select class="form-select form-select-sm" onchange="window._exQ[${i}].answer=this.value==='true'">
+            <option value="true" ${q.answer === true ? 'selected' : ''}>True</option>
+            <option value="false" ${q.answer === false ? 'selected' : ''}>False</option>
+          </select>
+        </div>` : q.choices.map((ch, j) => `
+        <div class="col-md-6">
+          <div class="input-group input-group-sm">
+            <div class="input-group-text">
+              <input class="form-check-input mt-0" type="radio" name="ans${i}" ${q.answer === j ? 'checked' : ''} onchange="window._exQ[${i}].answer=${j}" title="Mark correct">
+            </div>
+            <input class="form-control" placeholder="Choice ${j + 1}" value="${esc(ch)}" oninput="window._exQ[${i}].choices[${j}]=this.value">
+          </div>
+        </div>`).join('')}
+      </div>
+    </div></div>`).join('') || '<p class="text-secondary small">Add at least one question.</p>';
+}
+
+function saveExam(publish) {
+  const title = ($('#exTitle') || {}).value?.trim();
+  if (!title) return T('Enter a title');
+  const cids = $$('.ex-sec:checked').map(x => x.value);
+  if (!cids.length) return T('Select at least one section');
+  const questions = (window._exQ || []).filter(q => q.prompt.trim());
+  if (!questions.length) return T('Add at least one question with a prompt');
+  for (const q of questions) {
+    if (q.type === 'mc' && (!q.choices || q.choices.filter(c => c.trim()).length < 2))
+      return T('Each multiple-choice item needs at least 2 choices');
+  }
+  const pts = questions.reduce((s, q) => s + (q.pts || 5), 0);
+  const exam = {
+    id: DB.examN++,
+    title,
+    quarter: $('#exQ').value,
+    cids,
+    duration: +$('#exDur').value || 40,
+    points: pts,
+    instructions: ($('#exInstr') || {}).value?.trim() || '',
+    published: !!publish,
+    at: Date.now(),
+    questions: questions.map((q, i) => ({
+      id: i + 1,
+      type: q.type,
+      prompt: q.prompt.trim(),
+      choices: q.type === 'mc' ? q.choices.map(c => c.trim()).filter(Boolean) : undefined,
+      answer: q.answer,
+      pts: q.pts || 5
+    }))
+  };
+  DB.exams.unshift(exam);
+  save();
+  state.examEdit = null;
+  tab('exams');
+  T(publish ? 'Assessment published to ' + cids.length + ' section(s)' : 'Draft saved');
+}
+
+function openTake(id, review) {
+  state.examId = id;
+  state.examReview = !!review;
+  tab('take');
+}
+
+function rTake() {
+  const el = $('#p-take');
+  const e = (DB.exams || []).find(x => x.id == state.examId);
+  if (!e) {
+    el.innerHTML = empty('Assessment not found.') + '<button class="btn btn-link" onclick="state.examId=null;tab(\'exams\')">Back</button>';
+    return;
+  }
+  const sub = getSub(e.id);
+  const review = state.examReview || !!sub;
+
+  if (review && sub) {
+    el.innerHTML = `
+      <button class="btn btn-link btn-sm px-0 mb-2" onclick="state.examId=null;tab('exams')">← Assessments</button>
+      <div class="card"><div class="card-body">
+        <h1 class="h5">${esc(e.title)}</h1>
+        <p class="text-secondary small">${e.quarter} · Score: <strong class="text-success">${sub.score} / ${e.points}</strong> (${Math.round(100 * sub.score / e.points)}%)</p>
+        ${e.questions.map((q, i) => {
+          const ua = sub.answers[i];
+          const ok = q.type === 'tf' ? ua === q.answer : ua === q.answer;
+          return `<div class="mb-3 p-3 rounded border ${ok ? 'border-success' : 'border-danger'}">
+            <div class="small fw-semibold mb-1">${i + 1}. ${esc(q.prompt)} <span class="text-secondary">(${q.pts} pts)</span></div>
+            ${q.type === 'mc' ? q.choices.map((c, j) =>
+              `<div class="small ${j === q.answer ? 'text-success fw-semibold' : ''} ${ua === j && j !== q.answer ? 'text-danger' : ''}">${ua === j ? '→ ' : ''}${esc(c)}${j === q.answer ? ' ✓' : ''}</div>`
+            ).join('') : `<div class="small">Your answer: <strong>${ua === true ? 'True' : ua === false ? 'False' : '—'}</strong> · Correct: ${q.answer ? 'True' : 'False'}</div>`}
+          </div>`;
+        }).join('')}
+      </div></div>`;
+    return;
+  }
+
+  el.innerHTML = `
+    <button class="btn btn-link btn-sm px-0 mb-2" onclick="state.examId=null;tab('exams')">← Assessments</button>
+    <div class="card"><div class="card-body">
+      <div class="d-flex flex-wrap justify-content-between gap-2 mb-3">
+        <div>
+          <h1 class="h5 mb-1">${esc(e.title)}</h1>
+          <p class="text-secondary small mb-0">${e.quarter} · ${e.questions.length} items · ${e.points} points · ${e.duration} minutes</p>
+        </div>
+        <span class="badge text-bg-light border align-self-start">${state.quarter}</span>
+      </div>
+      ${e.instructions ? `<p class="small border-start border-3 ps-2 mb-3">${esc(e.instructions)}</p>` : ''}
+      <div id="takeBody">
+        ${e.questions.map((q, i) => `
+          <div class="mb-4">
+            <div class="fw-semibold small mb-2">${i + 1}. ${esc(q.prompt)} <span class="text-secondary">(${q.pts} pts)</span></div>
+            ${q.type === 'mc' ? q.choices.map((c, j) => `
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="tq${i}" id="tq${i}_${j}" value="${j}">
+                <label class="form-check-label small" for="tq${i}_${j}">${esc(c)}</label>
+              </div>`).join('') : `
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="tq${i}" id="tq${i}_t" value="true">
+                <label class="form-check-label small" for="tq${i}_t">True</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="tq${i}" id="tq${i}_f" value="false">
+                <label class="form-check-label small" for="tq${i}_f">False</label>
+              </div>`}
+          </div>`).join('')}
+      </div>
+      <button class="btn btn-primary" onclick="submitExam(${e.id})"><i class="bi bi-check2 me-1"></i>Submit assessment</button>
+    </div></div>`;
+}
+
+function submitExam(id) {
+  const e = DB.exams.find(x => x.id == id);
+  if (!e) return;
+  const answers = [];
+  let score = 0;
+  e.questions.forEach((q, i) => {
+    const sel = document.querySelector(`input[name="tq${i}"]:checked`);
+    let ua = null;
+    if (sel) {
+      if (q.type === 'tf') ua = sel.value === 'true';
+      else ua = +sel.value;
+    }
+    answers.push(ua);
+    if (q.type === 'tf' ? ua === q.answer : ua === q.answer) score += q.pts;
+  });
+  if (answers.every(a => a === null)) return T('Answer at least one question');
+  if (!DB.examSubs) DB.examSubs = {};
+  DB.examSubs[examSubKey(id)] = { score, answers, at: Date.now(), points: e.points };
+  save();
+  state.examReview = true;
+  tab('take');
+  T('Submitted — score ' + score + ' / ' + e.points);
+}
+
 
 window.addEventListener('resize', () => { if ($('#p-sf9') && !$('#p-sf9').hidden) initSig(); });
