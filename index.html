@@ -169,49 +169,33 @@
   </footer>
 </div>
 
-<!-- ========== LOGIN ========== -->
-<div class="view" id="login" hidden>
-  <div class="row g-0">
-    <div class="col-lg-6 d-none d-lg-flex login-art align-items-center">
-      <div class="px-5 py-5" style="max-width:28rem">
-        <div class="mb-4 logo-login-wrap">
-          <img src="logolearningwheel.png" alt="learningWheel" class="logo-login">
-        </div>
-        <h1 class="h2 text-white mb-3">Welcome back.</h1>
-        <p class="text-muted-light mb-0">One gateway for students, teachers, parents, and principals.</p>
-        <ul>
-          <li>Gradebook &amp; SF9 / SF10</li>
-          <li>Discussions &amp; messaging</li>
-          <li>Calendar &amp; resources</li>
-          <li>Parent progress portal</li>
-        </ul>
-      </div>
+<!-- ========== LOGIN (REDESIGNED) ========== -->
+<div class="view login-view" id="login" hidden>
+  <div class="login-bg-glow"></div>
+  <div class="login-card">
+    <div class="login-logo-wrap">
+      <img src="logolearningwheel.png" alt="learningWheel" class="logo-login-card">
+      <span class="brand-text-login">learning<span class="brand-accent">Wheel</span></span>
     </div>
-    <div class="col-lg-6">
-      <div class="login-form-wrap">
-        <div style="width:100%;max-width:22rem">
-          <div class="d-lg-none d-flex align-items-center gap-2 mb-4">
-            <img src="logolearningwheel.png" alt="learningWheel" class="logo-nav">
-            <span class="brand-text">learning<span class="brand-accent">Wheel</span></span>
-          </div>
-          <h2 class="h4 mb-3">Sign in</h2>
-          <label class="form-label small fw-semibold">I am a…</label>
-          <div class="row g-2 mb-3" id="roles"></div>
-          <div class="mb-3">
-            <label class="form-label small fw-semibold" for="em">Email / LRN</label>
-            <input type="text" class="form-control" id="em" value="demo@school.edu.ph" autocomplete="username">
-          </div>
-          <div class="mb-3">
-            <label class="form-label small fw-semibold" for="pw">Password</label>
-            <input type="password" class="form-control" id="pw" placeholder="Any password works" autocomplete="current-password">
-          </div>
-          <button class="btn btn-primary w-100 mb-2" onclick="doLogin()">Sign in</button>
-          <button class="btn btn-outline-secondary w-100 mb-2" onclick="view('landing')">Back to website</button>
-          <button class="btn btn-outline-secondary w-100 mb-3" onclick="resetDB()">Reset demo data</button>
-          <p class="text-secondary small text-center mb-0">Demo mode — no real accounts required</p>
-        </div>
-      </div>
+    
+    <h2 class="h4 mb-1 text-center">Welcome back</h2>
+    <p class="text-secondary small text-center mb-4">Sign in to your portal</p>
+
+    <label class="form-label small fw-semibold">I am a…</label>
+    <div class="row g-2 mb-3" id="roles"></div>
+    
+    <div class="mb-3">
+      <label class="form-label small fw-semibold" for="em">Email / LRN</label>
+      <input type="text" class="form-control" id="em" value="demo@school.edu.ph" autocomplete="username">
     </div>
+    <div class="mb-3">
+      <label class="form-label small fw-semibold" for="pw">Password</label>
+      <input type="password" class="form-control" id="pw" placeholder="Any password works" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary w-100 mb-2" onclick="doLogin()">Sign in</button>
+    <button class="btn btn-outline-secondary w-100 mb-2" onclick="view('landing')">Back to website</button>
+    <button class="btn btn-outline-secondary w-100 mb-3" onclick="resetDB()">Reset demo data</button>
+    <p class="text-secondary small text-center mb-0">Demo mode — no real accounts required</p>
   </div>
 </div>
 
