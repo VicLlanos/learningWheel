@@ -1,5 +1,5 @@
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const state={role:'student',kid:0,cls:null,subj:null,ct:'stream',st:'all',fresh:[],tab:'subj'};
+const state={role:'student',kid:0};
 const T=(m)=>{const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(T.i);T.i=setTimeout(()=>t.hidden=true,2800)};const toast=T;
 function view(id){$$('.view').forEach(v=>v.hidden=v.id!==id);scrollTo(0,0)}
 /* Landing */
@@ -11,10 +11,10 @@ function submitBuy(){if(!$('#bs').value||!$('#bn').value)return T('Please fill i
 /* Login */
 const R=[['student','🎒 Student'],['teacher','👩‍🏫 Teacher'],['parent','👪 Parent'],['principal','🏫 Principal']];
 function drawRoles(){$('#roles').innerHTML=R.map(r=>`<button class="${state.role==r[0]?'on':''}" onclick="state.role='${r[0]}';drawRoles()">${r[1]}</button>`).join('')}drawRoles();
-const TABS={teacher:[['cls','🗂 My Classes'],['recent','📣 Recent Posts']],student:[['subj','📚 Subjects'],['todo','✅ To-Do'],['alerts','🔔 Alerts'],['up','📎 Submit'],['quiz','📝 Quiz']],parent:[['rad','🚦 Progress'],['sf9','📄 Report Card']],principal:[['ops','📈 Operations'],['comp','📋 Compliance'],['lic','🔑 Licenses']]};
-function doLogin(){state.cls=null;state.subj=null;state.ct='stream';state.st='all';state.fresh=[];state.tab=TABS[state.role][0][0];view('dash');$('#rl').textContent=R.find(r=>r[0]==state.role)[1].slice(3);$('#kid').hidden=state.role!='parent';tab(state.tab)}
-function tab(k){state.tab=k;({cls:rCls,recent:rRecent,subj:rSubj,todo:rTodo,alerts:rAlerts}[k]||(()=>{}))();$('#tabs').innerHTML=TABS[state.role].map(t=>`<button class="${t[0]==k?'on':''}" onclick="tab('${t[0]}')">${t[1]}${t[0]=='alerts'&&unread()?' ('+unread()+')':''}</button>`).join('');$$('.panel').forEach(p=>p.hidden=p.id!=='p-'+k);if(k=='quiz')drawQuiz();if(k=='sf9')initSig();if(state.role=='parent')renderParent()}
-/* ===== Shared data store (teacher posts show up for students) ===== */
+const TABS={teacher:[['home','🏠 Home'],['cls','🗂 Classes'],['recent','📣 Posts']],student:[['home','🏠 Home'],['subj','📚 Subjects'],['cal','📅 Calendar'],['alerts','🔔 Alerts'],['grades','🎓 Grades'],['quiz','📝 Quiz']],parent:[['rad','🚦 Progress'],['sf9','📄 Report Card']],principal:[['ops','📈 Operations'],['comp','📋 Compliance'],['lic','🔑 Licenses']]};
+function doLogin(){state.rev=state.ed=state.sub=null;state.cls=null;state.subj=null;state.ct='stream';state.st='all';state.fresh=[];view('dash');$('#rl').textContent=R.find(r=>r[0]==state.role)[1].slice(3);$('#kid').hidden=state.role!='parent';$('#bell').hidden=state.role!='student';$('#q').hidden=!['student','teacher'].includes(state.role);$('#av').textContent=({student:'MS',teacher:'DT',parent:'PS',principal:'PR'})[state.role];state.q='';$('#q').value='';tab(TABS[state.role][0][0])}
+function tab(k){$('#bc').textContent=unread()||'';state.tab=k;({cls:rCls,recent:rRecent,subj:rSubj,todo:rTodo,alerts:rAlerts,home:rHome,cal:rCal,grades:rGrades,ops:rPrin,comp:rPrin}[k]||(()=>{}))();$('#tabs').innerHTML=TABS[state.role].map(t=>`<button class="${t[0]==k?'on':''}" onclick="tab('${t[0]}')">${t[1].replace(/^(\S+) (.*)$/,'<span class="ti">$1</span><span>$2</span>')}${badge(t[0])}</button>`).join('');$$('.panel').forEach(p=>p.hidden=p.id!=='p-'+k);if(k=='quiz')drawQuiz();if(k=='sf9')initSig();if(state.role=='parent')renderParent()}
+/* ===== Shared data store (every portal reads/writes this) ===== */
 const day=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
 const seed=()=>({classes:[
 {id:'m1',subj:'Mathematics',sec:'7-Rizal',ico:'➗',col:'#1E3A8A',t:'You',mine:1},
@@ -24,140 +24,91 @@ const seed=()=>({classes:[
 {id:'f1',subj:'Filipino',sec:'7-Rizal',ico:'🇵🇭',col:'#B91C1C',t:'Mr. Aquino'},
 {id:'a1',subj:'Araling Panlipunan',sec:'7-Rizal',ico:'🗺️',col:'#6D28D9',t:'Ms. Castillo'}],
 items:[
-{id:1,cid:'m1',type:'homework',title:'Worksheet 5: Fractions',body:'Answer items 1–20 in your notebook.',due:day(1),at:Date.now()-9e6},
+{id:1,cid:'m1',type:'homework',title:'Worksheet 5: Fractions',body:'Answer items 1–20 in your notebook.',due:day(1),pts:20,at:Date.now()-9e6},
 {id:2,cid:'m1',type:'announcement',title:'Quiz on Friday',body:'Bring a calculator and pencil.',at:Date.now()-8e6},
-{id:3,cid:'s1',type:'task',title:'Plant Growth Project',body:'Submit photos of your plant every week.',due:day(0),at:Date.now()-7e6},
-{id:4,cid:'e1',type:'task',title:'Essay: My Hero',body:'Write 300 words.',due:day(5),at:Date.now()-6e6},
+{id:3,cid:'s1',type:'task',title:'Plant Growth Project',body:'Submit photos of your plant every week.',due:day(0),pts:50,at:Date.now()-7e6},
+{id:4,cid:'e1',type:'task',title:'Essay: My Hero',body:'Write 300 words.',due:day(5),pts:30,at:Date.now()-6e6},
 {id:5,cid:'f1',type:'announcement',title:'Buwan ng Wika Practice',body:'Rehearsal at the gym after class.',at:Date.now()-5e6},
-{id:6,cid:'a1',type:'homework',title:'Map of Luzon',body:'Label all provinces.',due:day(3),at:Date.now()-4e6}],
-done:{},read:{},grades:{},n:10});
-let DB;(function(){try{DB=JSON.parse(localStorage.getItem('learningWheel_db'))}catch(e){}if(!DB||!DB.items)DB=seed()})();
+{id:6,cid:'a1',type:'homework',title:'Map of Luzon',body:'Label all provinces.',due:day(3),pts:20,at:Date.now()-4e6},
+{id:7,cid:'m1',type:'resource',title:'Fractions Video Lesson',body:'Watch before Friday. Link shared in class.',at:Date.now()-3e6}],
+subs:{},com:{},read:{},grades:{},n:10});
+let DB;(function(){try{DB=JSON.parse(localStorage.getItem('learningWheel_db'))}catch(e){}if(!DB||!DB.items||!DB.subs)DB=seed();DB.com=DB.com||{}})();state.cm={};
 const save=()=>{try{localStorage.setItem('learningWheel_db',JSON.stringify(DB))}catch(e){}};
 function resetDB(){DB=seed();save();T('Demo data reset ✔')}
 const cls=id=>DB.classes.find(c=>c.id==id),mine=()=>DB.classes.filter(c=>c.mine),mySec='7-Rizal';
-const TYPE={task:['📝','Task'],homework:['🏠','Homework'],announcement:['📣','Announcement']};
+const TYPE={task:['📝','Task'],homework:['🏠','Homework'],announcement:['📣','Announcement'],resource:['📎','Resource']};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const days=d=>Math.round((new Date(d)-new Date(day(0)))/864e5);
+const isT=i=>i.type=='task'||i.type=='homework';
+const stu=['Santos, Maria','Reyes, Miguel','Garcia, Sofia','Lopez, Jose','Tan, Bea'],base=[[42,45,38],[30,35,25],[48,50,46],[20,28,22],[38,40,30]];
+const sub=(id,i)=>DB.subs[id+'_'+i]||(i>0&&(id*7+i)%4?{text:'Submitted via LMS',v:1}:null);
 const sItems=()=>DB.items.filter(i=>cls(i.cid).sec==mySec).sort((a,b)=>b.at-a.at);
 const unread=()=>sItems().filter(i=>!DB.read[i.id]).length;
-const isT=i=>i.type!='announcement';
-function stat(i){if(DB.done[i.id])return['grn','Done ✔'];if(!i.due)return['org','No due date'];const n=days(i.due);return[n<=2?'red':'org',n<0?'Overdue':n==0?'Due today':'Due in '+n+' day'+(n>1?'s':'')]}
-const chips=(i,subj)=>`<span class="chip">${TYPE[i.type][0]} ${TYPE[i.type][1]}</span>${subj?`<span class="chip" style="background:${cls(i.cid).col};color:#fff">${cls(i.cid).subj} ${cls(i.cid).mine?cls(i.cid).sec:''}</span>`:''}`;
-const empty=m=>`<div class="card muted">${m}</div>`;
-
-/* ===== ENHANCED STUDENT DASHBOARD ===== */
-function sItem(i,subj,noBtn){
-  const s=stat(i),un=!DB.read[i.id]||(state.fresh||[]).includes(i.id);
-  const dueClass=s[0]==='red'?'urgent':s[0]==='grn'?'done':'';
-  return `<div class="stream-card ${isT(i)?s[0]:'ann'}">
-    <div class="meta">
-      <div class="avatar">${cls(i.cid).ico}</div>
-      <div>
-        <div><b>${cls(i.cid).subj}</b> · ${cls(i.cid).sec}</div>
-        <div style="font-size:0.8rem">${new Date(i.at).toLocaleDateString()} ${new Date(i.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div>
-      </div>
-      ${un?'<span class="chip new" style="margin-left:auto">NEW</span>':''}
-    </div>
-    <h3>${esc(i.title)}</h3>
-    <p class="muted">${esc(i.body)}</p>
-    ${isT(i)?`<div style="margin:8px 0"><span class="due-badge ${dueClass}">${s[1]}${i.due?' · '+i.due:''}</span></div>`:''}
-    ${isT(i)&&!noBtn?`<div class="actions"><button class="btn ${DB.done[i.id]?'ghost':'ok'}" onclick="tog(${i.id})">${DB.done[i.id]?'↩ Undo':'✔ Mark Done'}</button></div>`:''}
-  </div>`;
-}
-function tog(id){DB.done[id]=!DB.done[id];save();tab(state.tab)}
-function openSubj(id){state.subj=id;state.st='all';state.fresh=sItems().filter(i=>i.cid==id&&!DB.read[i.id]).map(i=>i.id);DB.items.forEach(i=>{if(i.cid==id)DB.read[i.id]=1});save();tab('subj')}
-function rSubj(){
-  const el=$('#p-subj');
-  if(!state.subj){
-    state.fresh=[];
-    const totalPending=DB.items.filter(i=>cls(i.cid).sec==mySec&&isT(i)&&!DB.done[i.id]).length;
-    const totalNew=DB.items.filter(i=>cls(i.cid).sec==mySec&&!DB.read[i.id]).length;
-    el.innerHTML=`<h2>My Subjects</h2>
-    <div class="quick-stats">
-      <div class="stat"><div class="num">${totalPending}</div><div class="lbl">Pending Tasks</div></div>
-      <div class="stat"><div class="num">${totalNew}</div><div class="lbl">New Updates</div></div>
-      <div class="stat"><div class="num">${DB.classes.filter(c=>c.sec==mySec).length}</div><div class="lbl">Subjects</div></div>
-    </div>
-    <div class="grid">`+DB.classes.filter(c=>c.sec==mySec).map(c=>{
-      const it=DB.items.filter(i=>i.cid==c.id),p=it.filter(i=>isT(i)&&!DB.done[i.id]).length,u=it.filter(i=>!DB.read[i.id]).length;
-      return `<button class="card click" onclick="openSubj('${c.id}')" style="border-top:8px solid ${c.col}">
-        <div style="font-size:2.2rem">${c.ico}</div>
-        <h3>${c.subj}</h3>
-        <p class="muted">${c.t}</p>
-        <span class="pill y">${p} to do</span> ${u?`<span class="pill r">${u} new</span>`:''}
-      </button>`}).join('')+'</div>';
-    return;
-  }
-  const c=cls(state.subj),all=DB.items.filter(i=>i.cid==c.id).sort((a,b)=>b.at-a.at),f=state.st=='todo'?all.filter(isT):state.st=='ann'?all.filter(i=>!isT(i)):all;
-  el.innerHTML=`<button class="btn ghost" style="width:auto" onclick="state.subj=null;tab('subj')">← All Subjects</button>
-  <div class="card" style="margin:14px 0;border-left:8px solid ${c.col}"><h2>${c.ico} ${c.subj}</h2><div class="muted">Teacher: ${c.t} · Grade ${c.sec}</div></div>
-  <div class="tabs">${[['all','🔔 All Updates'],['todo','✅ To-Do'],['ann','📣 Announcements']].map(t=>`<button class="${state.st==t[0]?'on':''}" onclick="state.st='${t[0]}';tab('subj')">${t[1]}</button>`).join('')}</div>
-  ${f.map(i=>sItem(i)).join('')||empty('Nothing here yet.')}`;
-}
-function rTodo(){
-  const l=sItems().filter(isT).sort((a,b)=>(!!DB.done[a.id]-!!DB.done[b.id])||(a.due>b.due?1:-1));
-  $('#p-todo').innerHTML='<h2>My To-Do</h2><p class="muted">🔴 Urgent · 🟠 Later · 🟢 Done</p>'+(l.map(i=>sItem(i,1)).join('')||empty('No tasks yet.'))}
-function rAlerts(){
-  const u=sItems().filter(i=>!DB.read[i.id]);
-  $('#p-alerts').innerHTML='<h2>Alerts</h2>'+(u.length?`<p><button class="btn ghost" style="width:auto" onclick="DB.items.forEach(i=>DB.read[i.id]=1);save();tab('alerts')">Mark all as read</button></p>`+u.map(i=>`<div style="cursor:pointer" onclick="state.tab='subj';openSubj('${i.cid}')">${sItem(i,1,1)}</div>`).join(''):empty('You are all caught up 🎉'))}
-
-/* ===== ENHANCED TEACHER DASHBOARD ===== */
-const stu=['Dela Cruz, Ana','Reyes, Miguel','Garcia, Sofia','Lopez, Jose','Tan, Bea'],base=[[42,45,38],[30,35,25],[48,50,46],[20,28,22],[38,40,30]];
+const toGrade=()=>DB.items.filter(i=>isT(i)&&cls(i.cid).mine&&DB.subs[i.id+'_0']&&DB.subs[i.id+'_0'].score==null).length;
+const badge=k=>{const n=k=='alerts'?unread():k=='cls'&&state.role=='teacher'?toGrade():0;return n?' ('+n+')':''};
 const G=id=>DB.grades[id]||(DB.grades[id]=base.map((r,i)=>r.map(v=>Math.max(0,Math.min(50,v+((id.charCodeAt(1)+i)%5)-2)))));
 function tr(ig){return ig>=60?75+Math.floor((ig-60)/1.6):60+Math.floor(ig/4)}
+const fin=(id,i=0)=>{const r=G(id)[i];return tr(r[0]/50*40+r[1]/50*40+r[2]/50*20)};
+const gen=sec=>{const l=DB.classes.filter(c=>c.sec==sec);return Math.round(l.reduce((s,c)=>s+fin(c.id),0)/l.length)};
+const gtab=(rows,gn)=>`<div class="scroll"><table><tr><th>Subject</th><th>Grade</th><th>Remarks</th></tr>${rows.map(r=>`<tr><td>${r[0]}</td><td class="out ${r[1]>=75?'ok-t':'warn-t'}">${r[1]}</td><td>${r[1]>=75?'Passed':'Needs support'}</td></tr>`).join('')}<tr><th>General Average</th><th>${gn}</th><th></th></tr></table></div>`;
+const chips=(i,subj)=>{const c=cls(i.cid);return `<span class="chip">${TYPE[i.type][0]} ${TYPE[i.type][1]}</span>${subj?`<span class="chip" style="background:${c.col};color:#fff">${c.subj}${c.mine?' · '+c.sec:''}</span>`:''}`};
+const empty=m=>`<div class="card muted">${m}</div>`;
+function stat(i){const s=DB.subs[i.id+'_0'];if(s)return['grn',s.score!=null?`Graded: ${s.score}/${i.pts||20}`:'Submitted ✔ · awaiting grade'];if(!i.due)return['org','No due date'];const n=days(i.due);return[n<=2?'red':'org',n<0?'Overdue':n==0?'Due today':'Due in '+n+' day'+(n>1?'s':'')]}
+/* ----- Student ----- */
+function sItem(i,subj,noBtn){const s=stat(i),sb=DB.subs[i.id+'_0'],un=!DB.read[i.id]||(state.fresh||[]).includes(i.id);
+const btn=!isT(i)||noBtn?'':sb?(sb.score==null?`<button class="btn ghost" style="width:auto" onclick="unsend(${i.id})">Unsend</button>`:''):`<button class="btn" style="width:auto" onclick="state.sub=${i.id};tab(state.tab)">📤 Submit</button>`;
+const form=state.sub==i.id&&!noBtn?`<div class="card" style="margin:-4px 0 12px"><label for="sx">Your answer / notes</label><textarea id="sx"></textarea><label class="opt"><input type="checkbox" id="sf">📎 Attach a file (auto-compressed to save data)</label><button class="btn ok" onclick="sendSub(${i.id})">Send to teacher</button> <button class="btn ghost" onclick="state.sub=null;tab(state.tab)">Cancel</button></div>`:'';
+return `<div><div class="task ${isT(i)?s[0]:'ann'}"><div style="flex:1">${chips(i,subj)}${un?'<span class="chip new">NEW</span>':''}<div><b>${esc(i.title)}</b></div><div class="muted">${esc(i.body)}</div>${isT(i)?`<div class="muted"><b>${s[1]}</b> · ${i.pts||20} pts${i.due?' · Due '+i.due:''}</div>`:''}${sb&&sb.fb?`<div class="muted">💬 ${esc(sb.fb)}</div>`:''}</div>${btn}</div>${form}${noBtn?'':cmBlock(i)}</div>`}
+function sendSub(id){const t=$('#sx').value.trim(),f=$('#sf').checked;if(!t&&!f)return T('Write an answer or attach a file');const go=()=>{DB.subs[id+'_0']={text:t,file:f,at:Date.now()};state.sub=null;save();tab(state.tab);T('Submitted ✔'+(f?' · saved 97% data':''))};if(f){T('📦 Compressing 5.0 MB → 150 KB…');setTimeout(go,1200)}else go()}
+function unsend(id){delete DB.subs[id+'_0'];save();tab(state.tab)}
+function openSubj(id){state.subj=id;state.st='all';state.fresh=sItems().filter(i=>i.cid==id&&!DB.read[i.id]).map(i=>i.id);DB.items.forEach(i=>{if(i.cid==id)DB.read[i.id]=1});save();tab('subj')}
+function rSubj(){const el=$('#p-subj');
+if(!state.subj){state.fresh=[];el.innerHTML='<h2>My Subjects</h2><p class="muted">Tap a subject to see its tasks, homework and announcements.</p><div class="grid">'+DB.classes.filter(c=>c.sec==mySec).map(c=>{const it=DB.items.filter(i=>i.cid==c.id),p=it.filter(i=>isT(i)&&!DB.subs[i.id+'_0']).length,u=it.filter(i=>!DB.read[i.id]).length;return `<button class="card click" onclick="openSubj('${c.id}')" style="border-top:8px solid ${c.col}"><div style="font-size:2.2rem">${c.ico}</div><h3>${c.subj}</h3><p class="muted">${c.t=='You'?'Demo Teacher':c.t} · Grade ${fin(c.id)}</p><span class="pill y">${p} to do</span> ${u?`<span class="pill r">${u} new</span>`:''}</button>`}).join('')+'</div>';return}
+const c=cls(state.subj),all=DB.items.filter(i=>i.cid==c.id).sort((a,b)=>b.at-a.at),f=state.st=='todo'?all.filter(isT):state.st=='ann'?all.filter(i=>!isT(i)):all;
+el.innerHTML=`<button class="btn ghost" style="width:auto" onclick="state.subj=null;state.sub=null;tab('subj')">← All Subjects</button><div class="card" style="margin:14px 0;border-left:8px solid ${c.col}"><h2>${c.ico} ${c.subj}</h2><div class="muted">Teacher: ${c.t=='You'?'Demo Teacher':c.t} · Grade ${c.sec} · Current grade: <b>${fin(c.id)}</b></div></div><div class="tabs">${[['all','🔔 All Updates'],['todo','✅ To-Do'],['ann','📣 Posts & Materials']].map(t=>`<button class="${state.st==t[0]?'on':''}" onclick="state.st='${t[0]}';tab('subj')">${t[1]}</button>`).join('')}</div>${f.filter(hit).map(i=>sItem(i)).join('')||empty('Nothing here yet.')}`}
+function rTodo(){const l=sItems().filter(isT).sort((a,b)=>(!!DB.subs[a.id+'_0']-!!DB.subs[b.id+'_0'])||(a.due>b.due?1:-1));$('#p-todo').innerHTML='<h2>My To-Do</h2><p class="muted">🔴 Urgent · 🟠 Later · 🟢 Submitted</p>'+(l.filter(hit).map(i=>sItem(i,1)).join('')||empty('No tasks yet.'))}
+function rAlerts(){const u=sItems().filter(i=>!DB.read[i.id]);$('#p-alerts').innerHTML='<h2>Alerts</h2>'+(u.length?`<p><button class="btn ghost" style="width:auto" onclick="DB.items.forEach(i=>DB.read[i.id]=1);save();tab('alerts')">Mark all as read</button></p>`+u.map(i=>`<div style="cursor:pointer" onclick="openSubj('${i.cid}');tab('subj')">${sItem(i,1,1)}</div>`).join(''):empty('You are all caught up 🎉'))}
+function rGrades(){const l=DB.classes.filter(c=>c.sec==mySec);$('#p-grades').innerHTML='<h2>My Grades</h2><p class="muted">Live from your teachers’ gradebooks (DepEd transmuted).</p><div class="card">'+gtab(l.map(c=>[c.subj,fin(c.id)]),gen(mySec))+'</div>'}
+/* ----- Teacher ----- */
 function calc(i){const r=$$(`[data-r="${i}"]`).map(x=>Math.min(50,Math.max(0,+x.value||0)));G(state.cls)[i]=r;save();const ig=r[0]/50*40+r[1]/50*40+r[2]/50*20,g=tr(ig);$('#i'+i).textContent=ig.toFixed(2);const o=$('#t'+i);o.textContent=g;o.className='out '+(g>=85?'ok-t':g>=75?'':'warn-t')}
-function tItem(i,showCls){
-  const n=(i.id*3)%6;
-  return `<div class="stream-card">
-    <div class="meta">
-      <div class="avatar">${cls(i.cid).ico}</div>
-      <div>
-        <div><b>${cls(i.cid).subj}</b> · ${cls(i.cid).sec}</div>
-        <div style="font-size:0.8rem">${new Date(i.at).toLocaleDateString()} ${new Date(i.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div>
-      </div>
-    </div>
-    <h3>${esc(i.title)}</h3>
-    <p class="muted">${esc(i.body)}</p>
-    <div style="margin:8px 0"><span class="due-badge">${isT(i)?'Due '+(i.due||'—')+' · Submitted '+n+'/'+stu.length:'Visible to all learners'}</span></div>
-    <div class="actions">
-      <button class="btn ghost" onclick="del(${i.id})">🗑 Delete</button>
-    </div>
-  </div>`;
-}
+function tItem(i,showCls){let n=0;if(isT(i))for(let k=0;k<stu.length;k++)if(sub(i.id,k))n++;const c=cls(i.cid);return `<div><div class="task ${isT(i)?'org':'ann'}"><div style="flex:1">${chips(i)}${showCls?`<span class="chip" style="background:${c.col};color:#fff">${c.subj} · ${c.sec}</span>`:''}<div><b>${esc(i.title)}</b></div><div class="muted">${esc(i.body)}</div><div class="muted">${isT(i)?`${i.pts||20} pts · Due ${i.due||'—'} · Submitted ${n}/${stu.length}`:'Visible to all learners'}</div></div><div class="row2" style="margin:0">${isT(i)?`<button class="btn" style="width:auto" onclick="review(${i.id})">📝 Review</button>`:''}<button class="btn ghost" style="width:auto" onclick="edit(${i.id})">✏️ Edit</button><button class="btn ghost" style="width:auto" onclick="del(${i.id})">🗑 Delete</button></div></div>${cmBlock(i)}</div>`}
 function del(id){DB.items=DB.items.filter(i=>i.id!=id);save();tab(state.tab);T('Post deleted')}
-function openCls(id){state.cls=id;state.ct='stream';tab('cls')}
-function post(cid){const t=$('#ptl').value.trim();if(!t)return T('Please enter a title');const ids=[cid,...$$('.xc:checked').map(x=>x.value)],ty=$('#pt').value;
-ids.forEach(id=>DB.items.push({id:DB.n++,cid:id,type:ty,title:t,body:$('#pb').value.trim(),due:ty=='announcement'?'':$('#pd').value,at:Date.now()}));save();state.ct='stream';tab('cls');T(`Posted to ${ids.length} class${ids.length>1?'es':''} ✔`)}
-function rCls(){
-  const el=$('#p-cls');
-  if(!state.cls){
-    const totalPosts=DB.items.filter(i=>cls(i.cid).mine).length;
-    const totalClasses=mine().length;
-    el.innerHTML=`<h2>My Classes</h2>
-    <div class="quick-stats">
-      <div class="stat"><div class="num">${totalClasses}</div><div class="lbl">Classes</div></div>
-      <div class="stat"><div class="num">${totalPosts}</div><div class="lbl">Total Posts</div></div>
-      <div class="stat"><div class="num">${stu.length}</div><div class="lbl">Learners per Class</div></div>
-    </div>
-    <div class="grid">`+mine().map(c=>`<button class="card click" onclick="openCls('${c.id}')" style="border-top:8px solid ${c.col}">
-      <div style="font-size:2.2rem">${c.ico}</div>
-      <h3>${c.subj}</h3>
-      <p class="muted">Grade ${c.sec} · ${stu.length} learners</p>
-      <span class="pill g">${DB.items.filter(i=>i.cid==c.id).length} posts</span>
-    </button>`).join('')+'</div>';
-    return;
-  }
-  const c=cls(state.cls),ct=state.ct;let body='';
-  if(ct=='stream')body=DB.items.filter(i=>i.cid==c.id).sort((a,b)=>b.at-a.at).map(i=>tItem(i)).join('')||empty('No posts yet. Use “Post New”.');
-  else if(ct=='post')body=`<div class="card"><h3>Post to ${c.subj} · ${c.sec}</h3><label for="pt">Type</label><select id="pt"><option value="task">📝 Task</option><option value="homework">🏠 Homework</option><option value="announcement">📣 Announcement</option></select><label for="ptl">Title</label><input id="ptl" placeholder="e.g. Chapter 3 Reading"><label for="pb">Details</label><textarea id="pb" placeholder="Instructions for learners"></textarea><label for="pd">Due date (tasks &amp; homework)</label><input type="date" id="pd" value="${day(3)}"><label>Also post to my other classes</label>${mine().filter(x=>x.id!=c.id).map(x=>`<label class="opt"><input type="checkbox" class="xc" value="${x.id}">${x.subj} · ${x.sec}</label>`).join('')}<p><button class="btn ok" onclick="post('${c.id}')">📤 Post</button></p></div>`;
-  else body=`<div class="card"><h3>Gradebook (DepEd Order 8, s. 2015)</h3><p class="muted">WW 40% · PT 40% · Exam 20%. Type a raw score to recalculate.</p><div class="scroll"><table><thead><tr><th>Learner</th><th>WW /50</th><th>PT /50</th><th>Exam /50</th><th>Initial</th><th>Grade</th></tr></thead><tbody>${G(c.id).map((r,i)=>`<tr><td>${stu[i]}</td>${r.map(v=>`<td><input type="number" min="0" max="50" data-r="${i}" value="${v}" oninput="calc(${i})" aria-label="score"></td>`).join('')}<td id="i${i}"></td><td class="out" id="t${i}"></td></tr>`).join('')}</tbody></table></div><p><button class="btn" onclick="toast('SF9/SF10 report cards exported (simulated)')">📄 Export SF9/SF10</button></p></div>`;
-  el.innerHTML=`<button class="btn ghost" style="width:auto" onclick="state.cls=null;tab('cls')">← All Classes</button>
-  <div class="card" style="margin:14px 0;border-left:8px solid ${c.col}"><h2>${c.ico} ${c.subj} · ${c.sec}</h2><div class="muted">${stu.length} learners</div></div>
-  <div class="tabs">${[['stream','📋 Stream'],['post','➕ Post New'],['grade','📊 Gradebook']].map(t=>`<button class="${ct==t[0]?'on':''}" onclick="state.ct='${t[0]}';tab('cls')">${t[1]}</button>`).join('')}</div>${body}`;
-  if(ct=='grade')G(c.id).forEach((_,i)=>calc(i))}
-function rRecent(){const l=DB.items.filter(i=>cls(i.cid).mine).sort((a,b)=>b.at-a.at);$('#p-recent').innerHTML='<h2>Recent Posts</h2><p class="muted">Everything you posted across all classes.</p>'+(l.map(i=>tItem(i,1)).join('')||empty('No posts yet.'))}
-
-/* ===== Student extras ===== */
+function edit(id){const it=DB.items.find(i=>i.id==id);state.cls=it.cid;state.ed=id;state.rev=null;state.ct='post';tab('cls')}
+function review(id){state.cls=DB.items.find(i=>i.id==id).cid;state.rev=id;state.ed=null;tab('cls')}
+function openCls(id){state.cls=id;state.ct='stream';state.ed=state.rev=null;tab('cls')}
+function post(cid){const t=$('#ptl').value.trim();if(!t)return T('Please enter a title');const ty=$('#pt').value,f={type:ty,title:t,body:$('#pb').value.trim(),due:ty=='task'||ty=='homework'?$('#pd').value:'',pts:+$('#pp').value||20};
+if(state.ed){Object.assign(DB.items.find(i=>i.id==state.ed),f);delete DB.read[state.ed];state.ed=null;save();state.ct='stream';tab('cls');return T('Post updated ✔')}
+const ids=[cid,...$$('.xc:checked').map(x=>x.value)];ids.forEach(id=>DB.items.push({id:DB.n++,cid:id,at:Date.now(),...f}));save();state.ct='stream';tab('cls');T(`Posted to ${ids.length} class${ids.length>1?'es':''} ✔`)}
+function grade(id,i){const it=DB.items.find(x=>x.id==id),v=$('#sc'+i).value,p=it.pts||20;if(v===''||+v<0||+v>p)return T('Enter a score from 0 to '+p);const s=Object.assign({},sub(id,i),{score:+v,fb:$('#fb'+i).value.trim()});DB.subs[id+'_'+i]=s;if(i==0)DB.items.push({id:DB.n++,cid:it.cid,type:'announcement',sys:1,title:'Graded: '+it.title,body:`You scored ${v}/${p}.`+(s.fb?' Feedback: '+s.fb:''),at:Date.now()});save();tab('cls');T('Score saved ✔')}
+function rv(id){const it=DB.items.find(i=>i.id==id),p=it.pts||20;return `<button class="btn ghost" style="width:auto" onclick="state.rev=null;tab('cls')">← Back to stream</button><div class="card" style="margin:14px 0"><h3>${esc(it.title)}</h3><div class="muted">${p} pts · Due ${it.due||'—'}</div></div>`+stu.map((n,i)=>{const s=sub(id,i);return `<div class="card" style="margin-bottom:10px"><b>${n}</b> ${s?'<span class="pill g">Submitted</span>':'<span class="pill r">Missing</span>'}${s?`<p class="muted">${esc(s.text||'')}${s.file?' 📎 file attached':''}</p><div class="row2"><input type="number" id="sc${i}" min="0" max="${p}" placeholder="/${p}" value="${s.score??''}" style="width:110px"><input id="fb${i}" placeholder="Feedback" value="${esc(s.fb||'')}" style="flex:1;min-width:160px"><button class="btn ok" style="width:auto" onclick="grade(${id},${i})">Save</button></div>`:''}</div>`}).join('')}
+function rCls(){const el=$('#p-cls');
+if(!state.cls){el.innerHTML='<h2>My Classes</h2><p class="muted">Tap a class to post, review work and grade.</p><div class="grid">'+mine().map(c=>{const g=DB.items.filter(i=>i.cid==c.id&&isT(i)&&DB.subs[i.id+'_0']&&DB.subs[i.id+'_0'].score==null).length;return `<button class="card click" onclick="openCls('${c.id}')" style="border-top:8px solid ${c.col}"><div style="font-size:2.2rem">${c.ico}</div><h3>${c.subj}</h3><p class="muted">Grade ${c.sec} · ${stu.length} learners</p><span class="pill g">${DB.items.filter(i=>i.cid==c.id&&!i.sys).length} posts</span> ${g?`<span class="pill r">${g} to grade</span>`:''}</button>`}).join('')+'</div>';return}
+const c=cls(state.cls),ct=state.ct,E=state.ed&&DB.items.find(i=>i.id==state.ed);let body='';
+if(state.rev)body=rv(state.rev);
+else if(ct=='stream')body=DB.items.filter(i=>i.cid==c.id&&!i.sys).sort((a,b)=>b.at-a.at).filter(hit).map(i=>tItem(i)).join('')||empty('No posts yet. Use “Post New”.');
+else if(ct=='post')body=`<div class="card"><h3>${E?'Edit post':`Post to ${c.subj} · ${c.sec}`}</h3><label for="pt">Type</label><select id="pt">${['task','homework','announcement','resource'].map(t=>`<option value="${t}" ${E&&E.type==t?'selected':''}>${TYPE[t][0]} ${TYPE[t][1]}</option>`).join('')}</select><label for="ptl">Title</label><input id="ptl" value="${E?esc(E.title):''}" placeholder="e.g. Chapter 3 Reading"><label for="pb">Details</label><textarea id="pb" placeholder="Instructions for learners">${E?esc(E.body):''}</textarea><label for="pd">Due date (tasks &amp; homework)</label><input type="date" id="pd" value="${E&&E.due?E.due:day(3)}"><label for="pp">Points</label><input type="number" id="pp" min="1" value="${E?E.pts||20:20}">${E?'':`<label>Also post to my other classes</label>${mine().filter(x=>x.id!=c.id).map(x=>`<label class="opt"><input type="checkbox" class="xc" value="${x.id}">${x.subj} · ${x.sec}</label>`).join('')}`}<p><button class="btn ok" onclick="post('${c.id}')">${E?'💾 Save changes':'📤 Post'}</button></p></div>`;
+else body=`<div class="card"><h3>Gradebook (DepEd Order 8, s. 2015)</h3><p class="muted">WW 40% · PT 40% · Exam 20%. Type a raw score to recalculate. Students and parents see changes instantly.</p><div class="scroll"><table><thead><tr><th>Learner</th><th>WW /50</th><th>PT /50</th><th>Exam /50</th><th>Initial</th><th>Grade</th></tr></thead><tbody>${G(c.id).map((r,i)=>`<tr><td>${stu[i]}</td>${r.map(v=>`<td><input type="number" min="0" max="50" data-r="${i}" value="${v}" oninput="calc(${i})" aria-label="score"></td>`).join('')}<td id="i${i}"></td><td class="out" id="t${i}"></td></tr>`).join('')}</tbody></table></div><p><button class="btn" onclick="toast('SF9/SF10 report cards exported (simulated)')">📄 Export SF9/SF10</button></p></div>`;
+el.innerHTML=`<button class="btn ghost" style="width:auto" onclick="state.cls=null;state.ed=state.rev=null;tab('cls')">← All Classes</button><div class="card" style="margin:14px 0;border-left:8px solid ${c.col}"><h2>${c.ico} ${c.subj} · ${c.sec}</h2><div class="muted">${stu.length} learners</div></div><div class="tabs">${[['stream','📋 Stream'],['post','➕ Post New'],['grade','📊 Gradebook']].map(t=>`<button class="${ct==t[0]&&!state.rev?'on':''}" onclick="state.ed=state.rev=null;state.ct='${t[0]}';tab('cls')">${t[1]}</button>`).join('')}</div>${body}`;
+if(ct=='grade'&&!state.rev)G(c.id).forEach((_,i)=>calc(i))}
+function rRecent(){const l=DB.items.filter(i=>!i.sys&&cls(i.cid).mine).sort((a,b)=>b.at-a.at);$('#p-recent').innerHTML='<h2>Recent Posts</h2><p class="muted">Everything you posted across all classes.</p>'+(l.filter(hit).map(i=>tItem(i,1)).join('')||empty('No posts yet.'))}
+/* ----- Edmodo/Blackboard-style features: comments, search, home dashboards, calendar ----- */
+const hit=i=>!state.q||(i.title+' '+i.body).toLowerCase().includes(state.q);
+const cmBlock=i=>{const l=DB.com[i.id]||[],o=state.cm[i.id];return `<div class="cmw"><button class="lnk" onclick="state.cm[${i.id}]=!state.cm[${i.id}];tab(state.tab)">💬 ${l.length} comment${l.length==1?'':'s'}</button>${o?`<div class="cms">${l.map(c=>`<p><b>${esc(c.by)}</b> <span class="muted">${c.role}</span><br>${esc(c.text)}</p>`).join('')}<div class="row2"><input id="c${i.id}" placeholder="Write a comment…" style="flex:1;min-width:160px"><button class="btn" style="width:auto" onclick="addC(${i.id})">Send</button></div></div>`:''}</div>`};
+function addC(id){const v=$('#c'+id).value.trim();if(!v)return;(DB.com[id]=DB.com[id]||[]).push({by:({teacher:'Demo Teacher',student:'Maria Santos',parent:'Parent'})[state.role]||'User',role:state.role,text:v,at:Date.now()});save();tab(state.tab)}
+function rHome(){const el=$('#p-home'),tile=a=>`<div class="tiles">${a.map(t=>`<div class="tile"><b>${t[1]}</b>${t[0]}</div>`).join('')}</div>`;
+if(state.role=='teacher'){const g=DB.items.filter(i=>isT(i)&&cls(i.cid).mine&&DB.subs[i.id+'_0']&&DB.subs[i.id+'_0'].score==null);
+el.innerHTML=`<h1 class="h">Good day, Teacher 👋</h1>${tile([['To grade',g.length],['My classes',mine().length],['Posts',DB.items.filter(i=>!i.sys&&cls(i.cid).mine).length]])}<h3 class="sec">Needs grading</h3>${g.map(i=>`<div class="task org"><div style="flex:1"><b>${esc(i.title)}</b><div class="muted">${cls(i.cid).subj} · ${cls(i.cid).sec} · Santos, Maria submitted</div></div><button class="btn" style="width:auto" onclick="review(${i.id})">Grade now</button></div>`).join('')||empty('All caught up — nothing to grade 🎉')}<h3 class="sec">My classes</h3><div class="grid">${mine().map(c=>`<button class="card click" onclick="openCls('${c.id}')" style="border-top:8px solid ${c.col}"><div style="font-size:2rem">${c.ico}</div><h3>${c.subj}</h3><p class="muted">Grade ${c.sec}</p></button>`).join('')}</div>`;return}
+const t=sItems().filter(i=>isT(i)&&!DB.subs[i.id+'_0']).sort((a,b)=>a.due>b.due?1:-1);
+el.innerHTML=`<h1 class="h">Good day, Maria 👋</h1>${tile([['Due within 2 days',t.filter(i=>i.due&&days(i.due)<=2).length],['New alerts',unread()],['My average',gen(mySec)]])}<h3 class="sec">Up next</h3>${t.slice(0,4).map(i=>sItem(i,1)).join('')||empty('Nothing due — great job 🎉')}<h3 class="sec">Latest updates</h3>${sItems().slice(0,3).map(i=>sItem(i,1,1)).join('')}`}
+function rCal(){const t=sItems().filter(i=>isT(i)&&i.due&&hit(i)).sort((a,b)=>a.due>b.due?1:-1),g={};t.forEach(i=>(g[i.due]=g[i.due]||[]).push(i));
+$('#p-cal').innerHTML='<h1 class="h">Calendar</h1>'+(Object.keys(g).map(d=>{const n=days(d);return `<h3 class="sec">${n<0?'Overdue':n==0?'Today':n==1?'Tomorrow':new Date(d+'T00:00').toLocaleDateString('en-PH',{weekday:'long',month:'short',day:'numeric'})} <span class="muted">· ${d}</span></h3>`+g[d].map(i=>sItem(i,1)).join('')}).join('')||empty('No deadlines found.'))}
+/* ----- Principal (live) ----- */
+function tStats(){return[...new Set(DB.classes.map(c=>c.t))].map(n=>{const cl=DB.classes.filter(c=>c.t==n),its=DB.items.filter(i=>!i.sys&&cl.some(c=>c.id==i.cid)),sb=its.filter(i=>isT(i)&&DB.subs[i.id+'_0']),gr=sb.filter(i=>DB.subs[i.id+'_0'].score!=null);return{n:n=='You'?'Demo Teacher (You)':n,posts:its.length,sb:sb.length,gr:gr.length,pct:sb.length?Math.round(gr.length/sb.length*100):100}})}
+function rPrin(){const all=[];DB.classes.forEach(c=>G(c.id).forEach((_,i)=>all.push(fin(c.id,i))));const sb=DB.items.filter(i=>!i.sys&&isT(i)&&DB.subs[i.id+'_0']),gr=sb.filter(i=>DB.subs[i.id+'_0'].score!=null);
+$('#st').innerHTML=[['School average',Math.round(all.reduce((a,b)=>a+b)/all.length)],['Teacher posts',DB.items.filter(i=>!i.sys).length],['Work submitted',sb.length],['Awaiting grading',sb.length-gr.length]].map(x=>`<div class="card"><div class="muted">${x[0]}</div><div class="out" style="font-size:2.2rem">${x[1]}</div></div>`).join('');
+bars('#c2',DB.classes.map(c=>[c.ico+' '+c.sec.split('-')[1].slice(0,4),Math.round(stu.reduce((s,_,i)=>s+fin(c.id,i),0)/stu.length)]),100,'','#047857');
+$('#cl').innerHTML=tStats().map(r=>{const st=!r.posts?['r','Overdue']:r.pct>=80?['g','Compliant']:r.pct>=40?['y','Pending']:['r','Overdue'];return `<tr><td>${r.n}</td><td>${r.posts}</td><td>${r.gr}/${r.sb} (${r.pct}%)</td><td>${r.posts?'Logged':'Missing'}</td><td><span class="pill ${st[0]}">${st[1]}</span></td></tr>`}).join('')}
+/* ----- Student extras ----- */
 function compress(){const b=$('#cb');b.disabled=true;let p=0;const iv=setInterval(()=>{p+=4;$('#pb').style.width=p+'%';const mb=5000-(4850*p/100);$('#sz').textContent=mb>1000?(mb/1000).toFixed(1)+' MB':Math.round(mb)+' KB';$('#pm').textContent='Compressing… '+p+'%';if(p>=100){clearInterval(iv);$('#pm').textContent='✅ 5 MB → 150 KB. Submitted!';b.disabled=false;T('Submitted using 97% less data')}},90)}
 const Q=[['What gas do plants absorb?',['Oxygen','Carbon dioxide','Helium']],['Which planet is closest to the Sun?',['Mercury','Venus','Mars']],['Water boils at…',['50°C','100°C','150°C']]],ans=[1,0,1];
 let qa={};function load(){try{qa=JSON.parse(localStorage.getItem('learningWheel_quiz')||'{}')}catch(e){qa={}}}
@@ -165,16 +116,16 @@ function pick(q,o){qa[q]=o;try{localStorage.setItem('learningWheel_quiz',JSON.st
 function drawQuiz(){$('#qz').innerHTML=Q.map((q,i)=>`<h3>${i+1}. ${q[0]}</h3>${q[1].map((o,j)=>`<label class="opt"><input type="radio" name="q${i}" ${qa[i]===j?'checked':''} onclick="pick(${i},${j})">${o}</label>`).join('')}`).join('')}
 function brownout(){$('#qz').innerHTML='<p class="bad-t out">⚡ Power lost… restarting</p>';qa={};setTimeout(()=>{load();drawQuiz();$('#qm').textContent='✅ Recovered '+Object.keys(qa).length+' saved answer(s) from this device.'},1200)}
 function gradeQuiz(){$('#qm').textContent='Score: '+ans.filter((a,i)=>qa[i]===a).length+' / 3'}load();
-
 /* Parent */
-const kids=[{n:'Maria Santos',g:'Grade 5',gen:92,pend:1,att:98},{n:'Juan Santos',g:'Grade 2',gen:78,pend:3,att:92},{n:'Pedro Santos',g:'Grade 9',gen:72,pend:6,att:85}];
+const kids=[{n:'Maria Santos',g:'Grade 7-Rizal',live:1,att:98},{n:'Juan Santos',g:'Grade 2',gen:78,pend:3,att:92},{n:'Pedro Santos',g:'Grade 9',gen:72,pend:6,att:85}];
 $('#kid').innerHTML=kids.map((k,i)=>`<option value="${i}">${k.n} (${k.g})</option>`).join('');
 const col=(v,a,b)=>v>=a?'g':v>=b?'y':'r';
-function renderParent(){const k=kids[state.kid];$('#kn').textContent=k.n+' · '+k.g;
-const L=[['📚 General Average',k.gen,col(k.gen,85,75),k.gen>=85?'On track':k.gen>=75?'Watch closely':'Needs help'],['📝 Pending Tasks',k.pend,col(-k.pend,-2,-4),k.pend+' to finish'],['🗓 Attendance',k.att+'%',col(k.att,95,90),k.att>=95?'Excellent':k.att>=90?'Some absences':'Too many absences']];
-$('#tl').innerHTML=L.map(l=>`<div class="card light"><div class="dot ${l[2]}"></div><div><h3>${l[0]}</h3><div class="out">${l[1]}</div><div class="muted">${l[3]}</div></div></div>`).join('');
-const s=['Filipino','English','Math','Science','Araling Panlipunan'];
-$('#sf').innerHTML=`<p><b>${k.n}</b> · ${k.g} · S.Y. 2026–2027</p><div class="scroll"><table><tr><th>Subject</th><th>Q1</th><th>Q2</th><th>Final</th></tr>${s.map((x,i)=>{const a=Math.min(100,k.gen+[2,-3,4,-1,0][i]);return`<tr><td>${x}</td><td>${a-1}</td><td>${a+1>100?100:a+1}</td><td class="out">${a}</td></tr>`}).join('')}<tr><th>General Average</th><th></th><th></th><th>${k.gen}</th></tr></table></div>`;$('#ap').textContent=''}
+function renderParent(){const k=kids[state.kid];let gn=k.gen,pe=k.pend,rows;
+if(k.live){gn=gen(mySec);pe=sItems().filter(i=>isT(i)&&!DB.subs[i.id+'_0']).length;rows=DB.classes.filter(c=>c.sec==mySec).map(c=>[c.subj,fin(c.id)])}else rows=['Filipino','English','Math','Science','Araling Panlipunan'].map((x,i)=>[x,Math.min(100,k.gen+[2,-3,4,-1,0][i])]);
+$('#kn').textContent=k.n+' · '+k.g;
+const L=[['📚 General Average',gn,col(gn,85,75),gn>=85?'On track':gn>=75?'Watch closely':'Needs help'],['📝 Pending Tasks',pe,col(-pe,-2,-4),pe+' to finish'],['🗓 Attendance',k.att+'%',col(k.att,95,90),k.att>=95?'Excellent':k.att>=90?'Some absences':'Too many absences']];
+$('#tl').innerHTML=L.map(l=>`<div class="card light"><div class="dot ${l[2]}"></div><div><h3>${l[0]}</h3><div class="out">${l[1]}</div><div class="muted">${l[3]}</div></div></div>`).join('')+(k.live?`<div class="card" style="grid-column:1/-1"><h3>📣 Latest from teachers</h3>${sItems().slice(0,5).map(i=>`<p>${chips(i,1)}<b>${esc(i.title)}</b><br><span class="muted">${esc(i.body)}${i.due?' · Due '+i.due:''}</span></p>`).join('')}</div>`:'<div class="card muted" style="grid-column:1/-1">Sample child: only Maria is connected to live class data in this demo.</div>');
+$('#sf').innerHTML=`<p><b>${k.n}</b> · ${k.g} · S.Y. 2026–2027</p>`+gtab(rows,gn);$('#ap').textContent=''}
 /* Signature pad */
 let drawing=false;function initSig(){const c=$('#sig');c.width=c.clientWidth;c.height=150;const x=c.getContext('2d');x.lineWidth=3;x.lineCap='round';x.strokeStyle='#1E3A8A';
 const pos=e=>{const r=c.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
