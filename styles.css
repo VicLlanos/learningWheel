@@ -15,7 +15,6 @@ body {
 }
 
 /* ===== LOGO FIXES ===== */
-/* Remove dark backgrounds that cut off logos */
 .logo-on-dark {
   display: inline-flex;
   align-items: center;
@@ -57,6 +56,69 @@ body {
   padding: 1.35rem 1.15rem;
   display: flex;
   align-items: center;
+}
+
+/* ===== LOGIN REDESIGN ===== */
+.login-view {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #041E42 0%, #0A2E5A 100%);
+  position: relative;
+  overflow: hidden;
+  padding: 1.5rem;
+}
+
+/* Animated glow background */
+.login-bg-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0,174,239,0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: pulseGlow 8s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+}
+
+.login-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.1);
+}
+
+.login-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.logo-login-card {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
+.brand-text-login {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #0F172A;
+  letter-spacing: -0.02em;
 }
 
 /* ===== COLOR ENHANCEMENTS ===== */
@@ -107,49 +169,6 @@ body {
 /* Light background for feature section */
 .bg-light-lw {
   background: #F1F5F9;
-}
-
-/* ===== LOGIN SPLIT ===== */
-.login-art {
-  background: linear-gradient(135deg, #041E42 0%, #0A2E5A 100%);
-  color: #fff;
-  min-height: 100vh;
-  position: relative;
-  overflow: hidden;
-}
-.login-art::after {
-  content: "";
-  position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 80%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(0,174,239,0.08) 0%, transparent 70%);
-  pointer-events: none;
-}
-.login-art .text-muted-light { color: rgba(255,255,255,0.7) !important; }
-.login-art ul { list-style: none; padding: 0; margin-top: 1.5rem; }
-.login-art ul li {
-  color: rgba(255,255,255,0.75);
-  font-size: 0.9rem;
-  padding: 0.35rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.login-art ul li::before {
-  content: "✓";
-  color: var(--lw-accent);
-  font-weight: 700;
-  font-size: 0.8rem;
-}
-.login-form-wrap {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  padding: 2rem 1.5rem;
 }
 
 /* ===== ROLE PILLS ===== */
