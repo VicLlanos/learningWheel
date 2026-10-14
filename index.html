@@ -26,7 +26,8 @@
 <label for="em">Email / LRN</label><input id="em" value="demo@school.edu.ph">
 <label for="pw">Password</label><input id="pw" type="password" placeholder="Any password works">
 <p><button class="btn" style="width:100%" onclick="doLogin()">Sign In</button></p>
-<p><button class="btn ghost" style="width:100%" onclick="view('landing')">← Back to website</button></p></div></div></div></div>
+<p><button class="btn ghost" style="width:100%" onclick="view('landing')">← Back to website</button></p>
+<p><button class="btn ghost" style="width:100%" onclick="resetDB()">↺ Reset demo data</button></p></div></div></div></div>
 
 <!-- DASHBOARD -->
 <div class="view" id="dash" hidden>
@@ -36,18 +37,12 @@
 <div class="wrap"><div class="tabs" id="tabs"></div>
 
 <!-- Teacher -->
-<div class="panel" id="p-sec" hidden><h2>My Sections</h2><div class="grid" id="secs"></div></div>
-<div class="panel" id="p-disp" hidden><div class="card"><h2>Bulk Content Dispatcher</h2>
-<label for="at">Assignment title</label><input id="at" value="Quiz 3: Fractions">
-<label>Deploy to sections</label><div id="dsec"></div>
-<p><button class="btn ok" onclick="deploy()">🚀 Deploy Assignment</button></p></div></div>
-<div class="panel" id="p-grade" hidden><div class="card"><h2>Gradebook · Math 7 (DepEd Order 8, s. 2015)</h2>
-<p class="muted">Weights: Written Work 40% · Performance Tasks 40% · Quarterly Exam 20%. Type a raw score — grades update instantly.</p>
-<div class="scroll"><table><thead><tr><th>Learner</th><th>WW /50</th><th>PT /50</th><th>Exam /50</th><th>Initial</th><th>Transmuted</th></tr></thead><tbody id="gb"></tbody></table></div>
-<p><button class="btn" onclick="toast('SF9/SF10 report cards exported (simulated PDF bundle)')">📄 Export SF9/SF10 Report Cards</button></p></div></div>
-
+<div class="panel" id="p-cls" hidden></div>
+<div class="panel" id="p-recent" hidden></div>
 <!-- Student -->
-<div class="panel" id="p-todo" hidden><h2>My To-Do</h2><p class="muted">🔴 Urgent · 🟠 Later · 🟢 Done — tap to complete</p><div id="tasks"></div></div>
+<div class="panel" id="p-subj" hidden></div>
+<div class="panel" id="p-todo" hidden></div>
+<div class="panel" id="p-alerts" hidden></div>
 <div class="panel" id="p-up" hidden><div class="card"><h2>Smart Submission</h2>
 <p>Poor signal? We shrink your file before sending.</p><p><b>📎 science-project.pdf</b> — <span id="sz">5.0 MB</span></p>
 <div class="bar"><i id="pb"></i></div><p id="pm" class="muted">Ready to compress.</p>

@@ -78,3 +78,14 @@ img,canvas{max-width:100%}
 @media(max-width:380px){body{font-size:17px}h1{font-size:1.8rem}.roles{grid-template-columns:1fr 1fr}}
 @media(hover:none){.btn:hover{transform:none;box-shadow:none}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+
+/* ===== Classes, subjects & posts ===== */
+.click{cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%;display:block;transition:.15s}
+.click:hover{border-color:var(--navy);transform:translateY(-2px);box-shadow:0 6px 16px #0002}
+.chip{display:inline-block;padding:1px 10px;border-radius:99px;background:var(--soft);color:var(--navy);font-weight:700;font-size:.9rem;margin:0 4px 4px 0}
+.chip.new{background:#B91C1C;color:#fff}
+.task{cursor:default}.task.ann{border-left-color:#1E3A8A}
+textarea{font:inherit;padding:10px 12px;border:2px solid var(--bd);border-radius:10px;background:var(--card);color:var(--tx);width:100%;min-height:90px}
+textarea:hover{border-color:var(--navy)}
+@media(max-width:800px){.task{flex-direction:column;align-items:stretch}.task .btn{width:100%!important;margin:8px 0 0}}
