@@ -13,56 +13,55 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Brand logo — sized to be clearly visible */
-.logo-full {
-  height: 48px;
+/* Brand logo — readable on dark panels */
+.logo-login-wrap { margin-bottom: 1.5rem; }
+.logo-login {
+  height: 72px;
   width: auto;
-  max-width: 240px;
+  max-width: min(320px, 100%);
   object-fit: contain;
   display: block;
 }
-.navbar-brand .logo-full,
-.logo-on-dark img {
-  height: 40px;
-  max-width: 200px;
+.logo-sidebar {
+  height: 52px;
+  width: auto;
+  max-width: 220px;
+  object-fit: contain;
+  display: block;
 }
-.sidebar-brand .logo-full {
+.logo-nav {
   height: 44px;
+  width: auto;
   max-width: 200px;
-}
-.login-art .logo-full {
-  height: 56px;
-  max-width: 280px;
+  object-fit: contain;
+  display: block;
 }
 .logo-on-dark {
   display: inline-flex;
   align-items: center;
   background: #041E42;
   border-radius: 0.5rem;
-  padding: 0.5rem 0.85rem;
+  padding: 0.55rem 1rem;
 }
-.logo-on-dark img {
-  height: 40px;
+.logo-full {
+  height: 56px;
   width: auto;
-  max-width: 200px;
+  max-width: 280px;
   object-fit: contain;
   display: block;
 }
-.brand-text {
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--lw-primary);
-  font-size: 1.05rem;
+.login-art .logo-full { height: 72px; max-width: 320px; }
+.sidebar-brand {
+  padding: 1.35rem 1.15rem;
 }
-.brand-text .brand-accent {
-  color: var(--lw-accent);
-  font-weight: 700;
-}
+.sidebar-brand .logo-full { height: 52px; max-width: 220px; }
 
 
 
 
-.navbar-brand .brand-text { color: var(--lw-primary); }
+
+
+.navbar-brand 
 
 /* Primary buttons use navy */
 .btn-primary {
