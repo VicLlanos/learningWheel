@@ -25,37 +25,40 @@ function toggleSide(force) {
   o.classList.toggle('open', open);
 }
 
-function toggleTheme() {
-  const root = document.documentElement;
-  const cur = root.getAttribute('data-theme');
-  if (cur === 'dark') root.setAttribute('data-theme', 'light');
-  else if (cur === 'light') root.removeAttribute('data-theme');
-  else root.setAttribute('data-theme', 'dark');
-}
-
 /* ========== Landing ========== */
 const plans = [
   ['Starter', 'Starter Academy', '₱24,900', 'Up to 300 learners', ['Gradebook & SF9', 'Student hub', 'Discussions', 'Email support']],
   ['Academy', 'School Academy', '₱79,900', 'Up to 1,000 learners', ['Everything in Starter', 'Parent portal', 'Principal console', 'Messages & calendar', 'Offline-safe quizzes']],
   ['Enterprise', 'Division Enterprise', 'Custom', 'Unlimited schools', ['Division dashboards', 'SSO & data export', 'Dedicated manager', 'Custom training']]
 ];
-$('#plans').innerHTML = plans.map(p =>
-  `<div class="card price ${p[0] === 'Academy' ? 'feat' : ''}">
-    <h3>${p[1]}</h3>
-    ${p[0] === 'Academy' ? '<span class="pill g" style="width:fit-content">Most popular</span>' : ''}
-    <div class="amt">${p[2]}</div>
-    <div class="muted">${p[3]} / year</div>
-    <ul>${p[4].map(x => `<li>${x}</li>`).join('')}</ul>
-    <button class="btn" onclick="openBuy('${p[0]}')">Buy Plan</button>
-  </div>`
-).join('');
+
+$('#plans').innerHTML = plans.map(p => `
+  <div class="col-md-4">
+    <div class="card h-100 ${p[0] === 'Academy' ? 'border-dark' : ''}">
+      <div class="card-body d-flex flex-column">
+        <div class="d-flex justify-content-between align-items-start mb-1">
+          <h3 class="h6 mb-0">${p[1]}</h3>
+          ${p[0] === 'Academy' ? '<span class="badge text-bg-dark">Popular</span>' : ''}
+        </div>
+        <div class="fs-3 fw-bold mb-1">${p[2]}</div>
+        <p class="text-secondary small">${p[3]} / year</p>
+        <ul class="small text-secondary mb-3 flex-grow-1 ps-3">
+          ${p[4].map(x => `<li class="mb-1">${x}</li>`).join('')}
+        </ul>
+        <button class="btn ${p[0] === 'Academy' ? 'btn-primary' : 'btn-outline-secondary'} btn-sm w-100" onclick="openBuy('${p[0]}')">Choose plan</button>
+      </div>
+    </div>
+  </div>`).join('');
+
 $('#bp').innerHTML = plans.map(p => `<option value="${p[0]}">${p[1]} – ${p[2]}</option>`).join('');
 
+let buyModal;
 function openBuy(p) {
   $('#bp').value = p;
   $('#bf').hidden = false;
   $('#bd').hidden = true;
-  $('#buy').hidden = false;
+  if (!buyModal) buyModal = new bootstrap.Modal($('#buyModal'));
+  buyModal.show();
 }
 function submitBuy() {
   if (!$('#bs').value || !$('#bn').value) return T('Please fill in school name and email');
@@ -73,7 +76,9 @@ const R = [
 ];
 function drawRoles() {
   $('#roles').innerHTML = R.map(r =>
-    `<button class="${state.role === r[0] ? 'on' : ''}" onclick="state.role='${r[0]}';drawRoles()">${r[1]}</button>`
+    `<div class="col-6 col-sm-3">
+      <button type="button" class="role-btn w-100 ${state.role === r[0] ? 'active' : ''}" onclick="state.role='${r[0]}';drawRoles()">${r[1]}</button>
+    </div>`
   ).join('');
 }
 drawRoles();
@@ -146,7 +151,9 @@ function doLogin() {
 function buildSideNav() {
   const items = NAV[state.role] || [];
   $('#sideNav').innerHTML = items.map(n =>
-    `<button data-tab="${n.k}" class="${state.tab === n.k ? 'on' : ''}" onclick="tab('${n.k}')"><span class="nav-ico">${n.ico}</span> ${n.label}</button>`
+    `<a href="#" class="nav-link ${state.tab === n.k ? 'active' : ''}" onclick="tab('${n.k}');return false">
+      <span class="nav-ico">${n.ico}</span> ${n.label}
+    </a>`
   ).join('');
 }
 
@@ -159,24 +166,11 @@ function tab(k) {
   if (panel) panel.hidden = false;
 
   const renderers = {
-    home: rHome,
-    cls: rCls,
-    recent: rRecent,
-    subj: rSubj,
-    todo: rTodo,
-    alerts: rAlerts,
-    disc: rDisc,
-    cal: rCal,
-    msg: rMsg,
-    res: rRes,
-    grades: rGrades,
-    rad: () => renderParent(),
+    home: rHome, cls: rCls, recent: rRecent, subj: rSubj, todo: rTodo,
+    alerts: rAlerts, disc: rDisc, cal: rCal, msg: rMsg, res: rRes,
+    grades: rGrades, rad: () => renderParent(),
     sf9: () => { renderParent(); initSig(); },
-    quiz: drawQuiz,
-    ops: () => {},
-    comp: () => {},
-    lic: () => {},
-    up: () => {}
+    quiz: drawQuiz, ops: () => {}, comp: () => {}, lic: () => {}, up: () => {}
   };
   (renderers[k] || (() => {}))();
   updateNotifBadge();
@@ -184,7 +178,7 @@ function tab(k) {
 
 function onSearch(q) {
   if (!q.trim()) return;
-  T('Search: “' + q.trim() + '” (demo — results would appear here)');
+  T('Search: "' + q.trim() + '" (demo)');
 }
 
 /* ========== Shared data ========== */
@@ -217,7 +211,7 @@ const seed = () => ({
     { id: 4, cid: 'e1', type: 'task', title: 'Essay: My Hero', body: 'Write 300 words about someone you admire. Use proper MLA format.', due: day(5), at: Date.now() - 6e6 },
     { id: 5, cid: 'f1', type: 'announcement', title: 'Buwan ng Wika Practice', body: 'Rehearsal at the gym after class. Wear school uniform.', at: Date.now() - 5e6 },
     { id: 6, cid: 'a1', type: 'homework', title: 'Map of Luzon', body: 'Label all provinces. Use colored pencils.', due: day(3), at: Date.now() - 4e6 },
-    { id: 7, cid: 's1', type: 'homework', title: 'Lab Report: Density', body: 'Complete the lab worksheet from yesterday’s experiment.', due: day(2), at: Date.now() - 3e6 }
+    { id: 7, cid: 's1', type: 'homework', title: 'Lab Report: Density', body: 'Complete the lab worksheet from yesterday\'s experiment.', due: day(2), at: Date.now() - 3e6 }
   ],
   discussions: [
     {
@@ -232,7 +226,7 @@ const seed = () => ({
       id: 2, cid: 'm1', title: 'Help with fractions word problems', author: 'Sofia Garcia', at: Date.now() - 3e7,
       body: 'Anyone have a tip for converting mixed numbers faster?',
       replies: [
-        { author: 'Mrs. Santos', body: 'Try the “keep-change-flip” method for division, and always simplify before multiplying.', at: Date.now() - 2.5e7 }
+        { author: 'Mrs. Santos', body: 'Try the "keep-change-flip" method for division, and always simplify before multiplying.', at: Date.now() - 2.5e7 }
       ]
     },
     {
@@ -243,7 +237,7 @@ const seed = () => ({
   ],
   messages: [
     { id: 1, from: 'Mrs. Villanueva', to: 'me', subj: 'Essay deadline extension', body: 'Hi Ana, you may submit the essay until Monday. Let me know if you need help with the outline.', at: Date.now() - 5e6, read: false },
-    { id: 2, from: 'me', to: 'Mrs. Santos', subj: 'Question about Worksheet 5', body: 'Ma’am, for item 12, should we reduce to lowest terms?', at: Date.now() - 8e6, read: true },
+    { id: 2, from: 'me', to: 'Mrs. Santos', subj: 'Question about Worksheet 5', body: 'Ma\'am, for item 12, should we reduce to lowest terms?', at: Date.now() - 8e6, read: true },
     { id: 3, from: 'School Admin', to: 'me', subj: 'Parent-Teacher Conference', body: 'PTC is scheduled for Oct 25. Please confirm attendance via the parent portal.', at: Date.now() - 1e7, read: false }
   ],
   resources: [
@@ -273,10 +267,10 @@ const seed = () => ({
 
 let DB;
 (function () {
-  try { DB = JSON.parse(localStorage.getItem('learningWheel_db_v3')); } catch (e) {}
+  try { DB = JSON.parse(localStorage.getItem('learningWheel_db_v4')); } catch (e) {}
   if (!DB || !DB.items) DB = seed();
 })();
-const save = () => { try { localStorage.setItem('learningWheel_db_v3', JSON.stringify(DB)); } catch (e) {} };
+const save = () => { try { localStorage.setItem('learningWheel_db_v4', JSON.stringify(DB)); } catch (e) {} };
 function resetDB() {
   DB = seed();
   save();
@@ -287,7 +281,7 @@ function resetDB() {
 const cls = id => DB.classes.find(c => c.id == id);
 const mine = () => DB.classes.filter(c => c.mine);
 const mySec = '7-Rizal';
-const TYPE = { task: ['Task', 'Task'], homework: ['HW', 'Homework'], announcement: ['Ann', 'Announcement'] };
+const TYPE = { task: 'Task', homework: 'Homework', announcement: 'Announcement' };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const days = d => Math.round((new Date(d) - new Date(day(0))) / 864e5);
 const sItems = () => DB.items.filter(i => cls(i.cid) && cls(i.cid).sec == mySec).sort((a, b) => b.at - a.at);
@@ -297,26 +291,23 @@ const isT = i => i.type !== 'announcement';
 function updateNotifBadge() {
   const n = unread();
   const b = $('#notifBadge');
-  if (b) {
-    b.textContent = n;
-    b.hidden = n === 0;
-  }
+  if (b) { b.textContent = n; b.hidden = n === 0; }
 }
 
 function stat(i) {
-  if (DB.done[i.id]) return ['grn', 'Done'];
-  if (!i.due) return ['org', 'No due date'];
+  if (DB.done[i.id]) return ['border-success', 'Done'];
+  if (!i.due) return ['border-warning', 'No due date'];
   const n = days(i.due);
-  return [n <= 2 ? 'red' : 'org', n < 0 ? 'Overdue' : n === 0 ? 'Due today' : 'Due in ' + n + ' day' + (n > 1 ? 's' : '')];
+  return [n <= 2 ? 'border-danger' : 'border-warning', n < 0 ? 'Overdue' : n === 0 ? 'Due today' : 'Due in ' + n + ' day' + (n > 1 ? 's' : '')];
 }
 
 const chips = (i, subj) =>
-  `<span class="chip">${TYPE[i.type][1]}</span>` +
+  `<span class="chip">${TYPE[i.type]}</span>` +
   (subj ? `<span class="chip" style="background:${cls(i.cid).col};color:#fff">${cls(i.cid).subj}${cls(i.cid).mine ? ' ' + cls(i.cid).sec : ''}</span>` : '');
 
-const empty = m => `<div class="card muted" style="text-align:center;padding:32px">${m}</div>`;
+const empty = m => `<div class="card"><div class="card-body text-center text-secondary py-4">${m}</div></div>`;
 
-/* ========== Home dashboards ========== */
+/* ========== Home ========== */
 function rHome() {
   const el = $('#p-home');
   if (state.role === 'student') {
@@ -324,141 +315,165 @@ function rHome() {
     const urgent = todo.filter(i => i.due && days(i.due) <= 2).length;
     const msgs = DB.messages.filter(m => m.to === 'me' && !m.read).length;
     el.innerHTML = `
-      <h2>Welcome back, Ana</h2>
-      <p class="muted">Here’s what’s happening in your classes today.</p>
-      <div class="stat-grid">
-        <div class="stat-card"><div class="label">To-Do</div><div class="value">${todo.length}</div><div class="sub">${urgent} urgent</div></div>
-        <div class="stat-card"><div class="label">Unread</div><div class="value">${unread()}</div><div class="sub">alerts & messages</div></div>
-        <div class="stat-card"><div class="label">Courses</div><div class="value">${DB.classes.filter(c => c.sec == mySec).length}</div><div class="sub">active this term</div></div>
-        <div class="stat-card"><div class="label">Messages</div><div class="value">${msgs}</div><div class="sub">unread</div></div>
+      <h1 class="h4 mb-1">Welcome back, Ana</h1>
+      <p class="text-secondary small mb-4">Here is what is happening in your classes today.</p>
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3">
+          <div class="stat-label">To-Do</div><div class="stat-value">${todo.length}</div>
+          <div class="text-secondary small">${urgent} urgent</div>
+        </div></div></div>
+        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3">
+          <div class="stat-label">Unread</div><div class="stat-value">${unread()}</div>
+          <div class="text-secondary small">alerts & messages</div>
+        </div></div></div>
+        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3">
+          <div class="stat-label">Courses</div><div class="stat-value">${DB.classes.filter(c => c.sec == mySec).length}</div>
+          <div class="text-secondary small">active this term</div>
+        </div></div></div>
+        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3">
+          <div class="stat-label">Messages</div><div class="stat-value">${msgs}</div>
+          <div class="text-secondary small">unread</div>
+        </div></div></div>
       </div>
-      <div class="grid-2">
-        <div class="card">
-          <h3>Upcoming due dates</h3>
-          ${todo.slice(0, 4).map(i => sItem(i, 1, 1)).join('') || empty('Nothing due soon.')}
-          <button class="btn ghost sm" onclick="tab('todo')">View all to-do →</button>
+      <div class="row g-3">
+        <div class="col-lg-6">
+          <div class="card"><div class="card-body">
+            <h2 class="h6 mb-3">Upcoming due dates</h2>
+            ${todo.slice(0, 4).map(i => sItem(i, 1, 1)).join('') || empty('Nothing due soon.')}
+            <button class="btn btn-link btn-sm px-0" onclick="tab('todo')">View all to-do</button>
+          </div></div>
         </div>
-        <div class="card">
-          <h3>Recent activity</h3>
-          ${sItems().slice(0, 4).map(i => `
-            <div class="feed-item">
-              <div class="feed-avatar" style="background:${cls(i.cid).col};color:#fff">${cls(i.cid).ico}</div>
-              <div class="feed-body">
-                <b>${esc(i.title)}</b>
-                <div class="feed-meta">${cls(i.cid).subj} · ${TYPE[i.type][1]} · ${dayLabel(new Date(i.at).toISOString().slice(0,10))}</div>
-              </div>
-            </div>`).join('') || empty('No activity yet.')}
+        <div class="col-lg-6">
+          <div class="card"><div class="card-body">
+            <h2 class="h6 mb-3">Recent activity</h2>
+            ${sItems().slice(0, 4).map(i => `
+              <div class="d-flex gap-2 py-2 border-bottom">
+                <div class="course-badge" style="background:${cls(i.cid).col}">${cls(i.cid).ico}</div>
+                <div class="min-w-0">
+                  <div class="fw-semibold small">${esc(i.title)}</div>
+                  <div class="text-secondary" style="font-size:0.75rem">${cls(i.cid).subj} · ${TYPE[i.type]} · ${dayLabel(new Date(i.at).toISOString().slice(0,10))}</div>
+                </div>
+              </div>`).join('') || empty('No activity yet.')}
+          </div></div>
         </div>
       </div>`;
   } else if (state.role === 'teacher') {
     const posts = DB.items.filter(i => cls(i.cid).mine);
     el.innerHTML = `
-      <h2>Teacher Dashboard</h2>
-      <p class="muted">Manage classes, post work, and track compliance.</p>
-      <div class="stat-grid">
-        <div class="stat-card"><div class="label">My Classes</div><div class="value">${mine().length}</div></div>
-        <div class="stat-card"><div class="label">Posts</div><div class="value">${posts.length}</div></div>
-        <div class="stat-card"><div class="label">Discussions</div><div class="value">${DB.discussions.length}</div></div>
-        <div class="stat-card"><div class="label">Learners</div><div class="value">${stu.length * mine().length}</div><div class="sub">across sections</div></div>
+      <h1 class="h4 mb-1">Teacher dashboard</h1>
+      <p class="text-secondary small mb-4">Manage classes, post work, and track compliance.</p>
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3"><div class="stat-label">Classes</div><div class="stat-value">${mine().length}</div></div></div></div>
+        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3"><div class="stat-label">Posts</div><div class="stat-value">${posts.length}</div></div></div></div>
+        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3"><div class="stat-label">Discussions</div><div class="stat-value">${DB.discussions.length}</div></div></div></div>
+        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3"><div class="stat-label">Learners</div><div class="stat-value">${stu.length * mine().length}</div></div></div></div>
       </div>
-      <div class="grid-2">
-        <div class="card">
-          <h3>Quick actions</h3>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <button class="btn" onclick="tab('cls')">Open a class</button>
-            <button class="btn ghost" onclick="tab('disc')">View discussions</button>
-            <button class="btn ghost" onclick="tab('grades')">Grade Center</button>
-          </div>
+      <div class="row g-3">
+        <div class="col-lg-5">
+          <div class="card"><div class="card-body">
+            <h2 class="h6 mb-3">Quick actions</h2>
+            <div class="d-grid gap-2">
+              <button class="btn btn-primary btn-sm" onclick="tab('cls')">Open a class</button>
+              <button class="btn btn-outline-secondary btn-sm" onclick="tab('disc')">View discussions</button>
+              <button class="btn btn-outline-secondary btn-sm" onclick="tab('grades')">Grade Center</button>
+            </div>
+          </div></div>
         </div>
-        <div class="card">
-          <h3>Recent posts</h3>
-          ${posts.slice(0, 3).map(i => tItem(i, 1)).join('') || empty('No posts yet.')}
+        <div class="col-lg-7">
+          <div class="card"><div class="card-body">
+            <h2 class="h6 mb-3">Recent posts</h2>
+            ${posts.slice(0, 3).map(i => tItem(i, 1)).join('') || empty('No posts yet.')}
+          </div></div>
         </div>
       </div>`;
   } else if (state.role === 'parent') {
-    renderParent();
     const k = kids[state.kid];
     el.innerHTML = `
-      <h2>Parent Home</h2>
-      <p class="muted">Overview for ${k.n} · ${k.g}</p>
-      <div class="stat-grid">
-        <div class="stat-card"><div class="label">General Average</div><div class="value">${k.gen}</div><div class="sub">${k.gen >= 85 ? 'On track' : k.gen >= 75 ? 'Watch closely' : 'Needs help'}</div></div>
-        <div class="stat-card"><div class="label">Pending Tasks</div><div class="value">${k.pend}</div></div>
-        <div class="stat-card"><div class="label">Attendance</div><div class="value">${k.att}%</div></div>
+      <h1 class="h4 mb-1">Parent home</h1>
+      <p class="text-secondary small mb-4">Overview for ${k.n} · ${k.g}</p>
+      <div class="row g-3 mb-4">
+        <div class="col-md-4"><div class="card stat-card"><div class="card-body py-3">
+          <div class="stat-label">General average</div><div class="stat-value">${k.gen}</div>
+          <div class="text-secondary small">${k.gen >= 85 ? 'On track' : k.gen >= 75 ? 'Watch closely' : 'Needs help'}</div>
+        </div></div></div>
+        <div class="col-md-4"><div class="card stat-card"><div class="card-body py-3">
+          <div class="stat-label">Pending tasks</div><div class="stat-value">${k.pend}</div>
+        </div></div></div>
+        <div class="col-md-4"><div class="card stat-card"><div class="card-body py-3">
+          <div class="stat-label">Attendance</div><div class="stat-value">${k.att}%</div>
+        </div></div></div>
       </div>
-      <div class="card">
-        <h3>Quick links</h3>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn" onclick="tab('rad')">Full progress</button>
-          <button class="btn ghost" onclick="tab('sf9')">Report card</button>
-          <button class="btn ghost" onclick="tab('msg')">Messages</button>
+      <div class="card"><div class="card-body">
+        <h2 class="h6 mb-3">Quick links</h2>
+        <div class="d-flex flex-wrap gap-2">
+          <button class="btn btn-primary btn-sm" onclick="tab('rad')">Full progress</button>
+          <button class="btn btn-outline-secondary btn-sm" onclick="tab('sf9')">Report card</button>
+          <button class="btn btn-outline-secondary btn-sm" onclick="tab('msg')">Messages</button>
         </div>
-      </div>`;
+      </div></div>`;
   } else {
     el.innerHTML = `
-      <h2>Principal Dashboard</h2>
-      <p class="muted">School-wide operations at a glance.</p>
-      <div class="stat-grid">
-        <div class="stat-card"><div class="label">Enrollment</div><div class="value">1,120</div></div>
-        <div class="stat-card"><div class="label">Avg GPA</div><div class="value">82.3</div></div>
-        <div class="stat-card"><div class="label">Attendance</div><div class="value">93.5%</div></div>
-        <div class="stat-card"><div class="label">License</div><div class="value">75%</div><div class="sub">750 / 1000</div></div>
+      <h1 class="h4 mb-1">Principal dashboard</h1>
+      <p class="text-secondary small mb-4">School-wide operations at a glance.</p>
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3"><div class="stat-label">Enrollment</div><div class="stat-value">1,120</div></div></div></div>
+        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3"><div class="stat-label">Avg GPA</div><div class="stat-value">82.3</div></div></div></div>
+        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3"><div class="stat-label">Attendance</div><div class="stat-value">93.5%</div></div></div></div>
+        <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body py-3"><div class="stat-label">License</div><div class="stat-value">75%</div><div class="text-secondary small">750 / 1000</div></div></div></div>
       </div>
-      <div class="card">
-        <h3>Quick links</h3>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn" onclick="tab('ops')">Operations</button>
-          <button class="btn ghost" onclick="tab('comp')">Compliance</button>
-          <button class="btn ghost" onclick="tab('lic')">Licenses</button>
+      <div class="card"><div class="card-body">
+        <h2 class="h6 mb-3">Quick links</h2>
+        <div class="d-flex flex-wrap gap-2">
+          <button class="btn btn-primary btn-sm" onclick="tab('ops')">Operations</button>
+          <button class="btn btn-outline-secondary btn-sm" onclick="tab('comp')">Compliance</button>
+          <button class="btn btn-outline-secondary btn-sm" onclick="tab('lic')">Licenses</button>
         </div>
-      </div>`;
+      </div></div>`;
   }
 }
 
-/* ========== Student ========== */
+/* ========== Student items ========== */
 function sItem(i, subj, noBtn) {
   const s = stat(i);
   const un = !DB.read[i.id] || (state.fresh || []).includes(i.id);
-  return `<div class="task ${isT(i) ? s[0] : 'ann'}">
-    <div style="flex:1">
-      ${chips(i, subj)}${un ? '<span class="chip new">NEW</span>' : ''}
-      <div><b>${esc(i.title)}</b></div>
-      <div class="muted">${esc(i.body)}</div>
-      ${isT(i) ? `<div class="muted"><b>${s[1]}</b>${i.due ? ' · ' + i.due : ''}</div>` : ''}
+  return `<div class="task-item ${isT(i) ? s[0] : 'border-info'}">
+    <div class="flex-grow-1 min-w-0">
+      ${chips(i, subj)}${un ? '<span class="chip chip-new">New</span>' : ''}
+      <div class="fw-semibold small">${esc(i.title)}</div>
+      <div class="text-secondary small">${esc(i.body)}</div>
+      ${isT(i) ? `<div class="text-secondary small mt-1"><strong>${s[1]}</strong>${i.due ? ' · ' + i.due : ''}</div>` : ''}
     </div>
-    ${isT(i) && !noBtn ? `<button class="btn ${DB.done[i.id] ? 'ghost' : 'ok'} sm" style="width:auto;flex-shrink:0" onclick="tog(${i.id})">${DB.done[i.id] ? 'Undo' : 'Mark done'}</button>` : ''}
+    ${isT(i) && !noBtn ? `<button class="btn ${DB.done[i.id] ? 'btn-outline-secondary' : 'btn-success'} btn-sm flex-shrink-0" onclick="tog(${i.id})">${DB.done[i.id] ? 'Undo' : 'Mark done'}</button>` : ''}
   </div>`;
 }
-function tog(id) {
-  DB.done[id] = !DB.done[id];
-  save();
-  tab(state.tab);
-}
+function tog(id) { DB.done[id] = !DB.done[id]; save(); tab(state.tab); }
 function openSubj(id) {
-  state.subj = id;
-  state.st = 'all';
+  state.subj = id; state.st = 'all';
   state.fresh = sItems().filter(i => i.cid == id && !DB.read[i.id]).map(i => i.id);
   DB.items.forEach(i => { if (i.cid == id) DB.read[i.id] = 1; });
-  save();
-  updateNotifBadge();
-  tab('subj');
+  save(); updateNotifBadge(); tab('subj');
 }
 function rSubj() {
   const el = $('#p-subj');
   if (!state.subj) {
     state.fresh = [];
-    el.innerHTML = `<h2>My Courses</h2>
-      <p class="muted">Tap a subject to see tasks, homework, announcements, and resources.</p>
-      <div class="grid">${DB.classes.filter(c => c.sec == mySec).map(c => {
+    el.innerHTML = `<h1 class="h4 mb-1">My courses</h1>
+      <p class="text-secondary small mb-4">Select a subject to see tasks, homework, and announcements.</p>
+      <div class="row g-3">${DB.classes.filter(c => c.sec == mySec).map(c => {
         const it = DB.items.filter(i => i.cid == c.id);
         const p = it.filter(i => isT(i) && !DB.done[i.id]).length;
         const u = it.filter(i => !DB.read[i.id]).length;
-        return `<button class="click" onclick="openSubj('${c.id}')" style="border-top:6px solid ${c.col}">
-          <div class="feed-avatar" style="margin-bottom:10px;background:${c.col};color:#fff">${c.ico}</div>
-          <h3>${c.subj}</h3>
-          <p class="muted">${c.t}</p>
-          <span class="pill y">${p} to do</span> ${u ? `<span class="pill r">${u} new</span>` : ''}
-        </button>`;
+        return `<div class="col-md-6 col-lg-4">
+          <button class="card h-100 w-100 text-start border-0 shadow-sm" style="border-top:3px solid ${c.col}!important" onclick="openSubj('${c.id}')">
+            <div class="card-body">
+              <div class="course-badge mb-2" style="background:${c.col}">${c.ico}</div>
+              <h3 class="h6 mb-1">${c.subj}</h3>
+              <p class="text-secondary small mb-2">${c.t}</p>
+              <span class="badge text-bg-warning">${p} to do</span>
+              ${u ? ` <span class="badge text-bg-danger">${u} new</span>` : ''}
+            </div>
+          </button>
+        </div>`;
       }).join('')}</div>`;
     return;
   }
@@ -466,39 +481,43 @@ function rSubj() {
   const all = DB.items.filter(i => i.cid == c.id).sort((a, b) => b.at - a.at);
   const f = state.st === 'todo' ? all.filter(isT) : state.st === 'ann' ? all.filter(i => !isT(i)) : all;
   el.innerHTML = `
-    <button class="btn ghost sm" style="width:auto" onclick="state.subj=null;tab('subj')">← All Courses</button>
-    <div class="card" style="margin:14px 0;border-left:6px solid ${c.col}">
-      <h2>${c.subj}</h2>
-      <div class="muted">Teacher: ${c.t} · Grade ${c.sec}</div>
+    <button class="btn btn-link btn-sm px-0 mb-2" onclick="state.subj=null;tab('subj')">← All courses</button>
+    <div class="card mb-3" style="border-left:3px solid ${c.col}">
+      <div class="card-body py-3">
+        <h1 class="h5 mb-0">${c.subj}</h1>
+        <div class="text-secondary small">Teacher: ${c.t} · Grade ${c.sec}</div>
+      </div>
     </div>
-    <div class="tabs">
+    <ul class="nav nav-pills mb-3 gap-1">
       ${[['all', 'All'], ['todo', 'To-Do'], ['ann', 'Announcements']].map(t =>
-        `<button class="${state.st === t[0] ? 'on' : ''}" onclick="state.st='${t[0]}';tab('subj')">${t[1]}</button>`
+        `<li class="nav-item"><button class="nav-link ${state.st === t[0] ? 'active' : ''}" style="${state.st === t[0] ? 'background:var(--lw-primary)' : ''}" onclick="state.st='${t[0]}';tab('subj')">${t[1]}</button></li>`
       ).join('')}
-    </div>
+    </ul>
     ${f.map(i => sItem(i)).join('') || empty('Nothing here yet.')}`;
 }
 function rTodo() {
   const l = sItems().filter(isT).sort((a, b) => (!!DB.done[a.id] - !!DB.done[b.id]) || (a.due > b.due ? 1 : -1));
-  $('#p-todo').innerHTML = `<h2>My To-Do</h2>
-    <p class="muted">Color bar: urgent · later · done</p>
-    ${l.map(i => sItem(i, 1)).join('') || empty("No tasks yet. You are all caught up.")}`;
+  $('#p-todo').innerHTML = `<h1 class="h4 mb-1">My to-do</h1>
+    <p class="text-secondary small mb-4">Left border: urgent · later · done</p>
+    ${l.map(i => sItem(i, 1)).join('') || empty('No tasks yet. You are all caught up.')}`;
 }
 function rAlerts() {
   const u = sItems().filter(i => !DB.read[i.id]);
   const um = DB.messages.filter(m => m.to === 'me' && !m.read);
-  $('#p-alerts').innerHTML = `<h2>Notifications</h2>
+  $('#p-alerts').innerHTML = `<h1 class="h4 mb-3">Notifications</h1>
     ${u.length || um.length
-      ? `<p><button class="btn ghost sm" style="width:auto" onclick="markAllRead()">Mark all as read</button></p>
-         ${um.map(m => `<div class="task ann" style="cursor:pointer" onclick="tab('msg')"><div style="flex:1"><span class="chip new">MSG</span><div><b>${esc(m.subj)}</b></div><div class="muted">From ${esc(m.from)}</div></div></div>`).join('')}
+      ? `<button class="btn btn-outline-secondary btn-sm mb-3" onclick="markAllRead()">Mark all as read</button>
+         ${um.map(m => `<div class="task-item border-info" style="cursor:pointer" onclick="tab('msg')">
+           <div class="flex-grow-1"><span class="chip chip-new">Msg</span>
+           <div class="fw-semibold small">${esc(m.subj)}</div>
+           <div class="text-secondary small">From ${esc(m.from)}</div></div></div>`).join('')}
          ${u.map(i => `<div style="cursor:pointer" onclick="state.tab='subj';openSubj('${i.cid}')">${sItem(i, 1, 1)}</div>`).join('')}`
       : empty('You are all caught up.')}`;
 }
 function markAllRead() {
   DB.items.forEach(i => DB.read[i.id] = 1);
   DB.messages.forEach(m => { if (m.to === 'me') m.read = true; });
-  save();
-  tab('alerts');
+  save(); tab('alerts');
 }
 
 /* ========== Teacher ========== */
@@ -508,38 +527,26 @@ const G = id => DB.grades[id] || (DB.grades[id] = base.map((r, i) => r.map(v => 
 function tr(ig) { return ig >= 60 ? 75 + Math.floor((ig - 60) / 1.6) : 60 + Math.floor(ig / 4); }
 function calc(i) {
   const r = $$(`[data-r="${i}"]`).map(x => Math.min(50, Math.max(0, +x.value || 0)));
-  G(state.cls)[i] = r;
-  save();
+  G(state.cls)[i] = r; save();
   const ig = r[0] / 50 * 40 + r[1] / 50 * 40 + r[2] / 50 * 20;
   const g = tr(ig);
-  const ii = $('#i' + i);
-  if (ii) ii.textContent = ig.toFixed(2);
-  const o = $('#t' + i);
-  if (o) { o.textContent = g; o.className = 'out ' + (g >= 85 ? 'ok-t' : g >= 75 ? '' : 'warn-t'); }
+  const ii = $('#i' + i); if (ii) ii.textContent = ig.toFixed(2);
+  const o = $('#t' + i); if (o) { o.textContent = g; o.className = 'fw-bold ' + (g >= 85 ? 'text-success' : g >= 75 ? '' : 'text-warning'); }
 }
 function tItem(i, showCls) {
   const n = (i.id * 3) % 6;
-  return `<div class="task ${isT(i) ? 'org' : 'ann'}">
-    <div style="flex:1">
+  return `<div class="task-item ${isT(i) ? 'border-warning' : 'border-info'}">
+    <div class="flex-grow-1 min-w-0">
       ${chips(i)}${showCls ? `<span class="chip" style="background:${cls(i.cid).col};color:#fff">${cls(i.cid).subj} · ${cls(i.cid).sec}</span>` : ''}
-      <div><b>${esc(i.title)}</b></div>
-      <div class="muted">${esc(i.body)}</div>
-      <div class="muted">${isT(i) ? `Due ${i.due || '—'} · Submitted ${n}/${stu.length}` : 'Visible to all learners'}</div>
+      <div class="fw-semibold small">${esc(i.title)}</div>
+      <div class="text-secondary small">${esc(i.body)}</div>
+      <div class="text-secondary small mt-1">${isT(i) ? `Due ${i.due || '—'} · Submitted ${n}/${stu.length}` : 'Visible to all learners'}</div>
     </div>
-    <button class="btn ghost sm" style="width:auto;flex-shrink:0" onclick="del(${i.id})">Delete</button>
+    <button class="btn btn-outline-secondary btn-sm flex-shrink-0" onclick="del(${i.id})">Delete</button>
   </div>`;
 }
-function del(id) {
-  DB.items = DB.items.filter(i => i.id != id);
-  save();
-  tab(state.tab);
-  T('Post deleted');
-}
-function openCls(id) {
-  state.cls = id;
-  state.ct = 'stream';
-  tab('cls');
-}
+function del(id) { DB.items = DB.items.filter(i => i.id != id); save(); tab(state.tab); T('Post deleted'); }
+function openCls(id) { state.cls = id; state.ct = 'stream'; tab('cls'); }
 function post(cid) {
   const t = $('#ptl').value.trim();
   if (!t) return T('Please enter a title');
@@ -549,23 +556,25 @@ function post(cid) {
     id: DB.n++, cid: id, type: ty, title: t,
     body: $('#pb').value.trim(), due: ty === 'announcement' ? '' : $('#pd').value, at: Date.now()
   }));
-  save();
-  state.ct = 'stream';
-  tab('cls');
+  save(); state.ct = 'stream'; tab('cls');
   T(`Posted to ${ids.length} class${ids.length > 1 ? 'es' : ''}`);
 }
 function rCls() {
   const el = $('#p-cls');
   if (!state.cls) {
-    el.innerHTML = `<h2>My Classes</h2>
-      <p class="muted">Tap a class to post tasks, homework, and announcements.</p>
-      <div class="grid">${mine().map(c =>
-        `<button class="click" onclick="openCls('${c.id}')" style="border-top:6px solid ${c.col}">
-          <div class="feed-avatar" style="margin-bottom:10px;background:${c.col};color:#fff">${c.ico}</div>
-          <h3>${c.subj}</h3>
-          <p class="muted">Grade ${c.sec} · ${stu.length} learners</p>
-          <span class="pill n">${DB.items.filter(i => i.cid == c.id).length} posts</span>
-        </button>`
+    el.innerHTML = `<h1 class="h4 mb-1">My classes</h1>
+      <p class="text-secondary small mb-4">Select a class to post tasks, homework, and announcements.</p>
+      <div class="row g-3">${mine().map(c =>
+        `<div class="col-md-6 col-lg-4">
+          <button class="card h-100 w-100 text-start border-0 shadow-sm" style="border-top:3px solid ${c.col}!important" onclick="openCls('${c.id}')">
+            <div class="card-body">
+              <div class="course-badge mb-2" style="background:${c.col}">${c.ico}</div>
+              <h3 class="h6 mb-1">${c.subj}</h3>
+              <p class="text-secondary small mb-2">Grade ${c.sec} · ${stu.length} learners</p>
+              <span class="badge text-bg-secondary">${DB.items.filter(i => i.cid == c.id).length} posts</span>
+            </div>
+          </button>
+        </div>`
       ).join('')}</div>`;
     return;
   }
@@ -573,69 +582,75 @@ function rCls() {
   const ct = state.ct;
   let body = '';
   if (ct === 'stream') {
-    body = DB.items.filter(i => i.cid == c.id).sort((a, b) => b.at - a.at).map(i => tItem(i)).join('') || empty('No posts yet. Use “Post New”.');
+    body = DB.items.filter(i => i.cid == c.id).sort((a, b) => b.at - a.at).map(i => tItem(i)).join('') || empty('No posts yet. Use Post new.');
   } else if (ct === 'post') {
-    body = `<div class="card">
-      <h3>Post to ${c.subj} · ${c.sec}</h3>
-      <label for="pt">Type</label>
-      <select id="pt"><option value="task">Task</option><option value="homework">Homework</option><option value="announcement">Announcement</option></select>
-      <label for="ptl">Title</label>
-      <input id="ptl" placeholder="e.g. Chapter 3 Reading">
-      <label for="pb">Details</label>
-      <textarea id="pb" placeholder="Instructions for learners"></textarea>
-      <label for="pd">Due date (tasks & homework)</label>
-      <input type="date" id="pd" value="${day(3)}">
-      <label>Also post to my other classes</label>
+    body = `<div class="card"><div class="card-body">
+      <h2 class="h6 mb-3">Post to ${c.subj} · ${c.sec}</h2>
+      <div class="mb-3"><label class="form-label small fw-semibold" for="pt">Type</label>
+        <select class="form-select form-select-sm" id="pt"><option value="task">Task</option><option value="homework">Homework</option><option value="announcement">Announcement</option></select></div>
+      <div class="mb-3"><label class="form-label small fw-semibold" for="ptl">Title</label>
+        <input class="form-control form-control-sm" id="ptl" placeholder="e.g. Chapter 3 Reading"></div>
+      <div class="mb-3"><label class="form-label small fw-semibold" for="pb">Details</label>
+        <textarea class="form-control form-control-sm" id="pb" rows="3" placeholder="Instructions for learners"></textarea></div>
+      <div class="mb-3"><label class="form-label small fw-semibold" for="pd">Due date (tasks & homework)</label>
+        <input type="date" class="form-control form-control-sm" id="pd" value="${day(3)}"></div>
+      <label class="form-label small fw-semibold">Also post to my other classes</label>
       ${mine().filter(x => x.id != c.id).map(x =>
-        `<label class="opt"><input type="checkbox" class="xc" value="${x.id}">${x.subj} · ${x.sec}</label>`
+        `<div class="form-check"><input class="form-check-input xc" type="checkbox" value="${x.id}" id="xc${x.id}">
+         <label class="form-check-label small" for="xc${x.id}">${x.subj} · ${x.sec}</label></div>`
       ).join('')}
-      <p style="margin-top:12px"><button class="btn ok" onclick="post('${c.id}')">Post</button></p>
-    </div>`;
+      <button class="btn btn-primary btn-sm mt-3" onclick="post('${c.id}')">Post</button>
+    </div></div>`;
   } else {
-    body = `<div class="card">
-      <h3>Gradebook (DepEd Order 8, s. 2015)</h3>
-      <p class="muted">WW 40% · PT 40% · Exam 20%. Type a raw score to recalculate.</p>
-      <div class="scroll"><table>
+    body = `<div class="card"><div class="card-body">
+      <h2 class="h6">Gradebook (DepEd Order 8, s. 2015)</h2>
+      <p class="text-secondary small">WW 40% · PT 40% · Exam 20%. Type a raw score to recalculate.</p>
+      <div class="table-responsive"><table class="table table-sm align-middle">
         <thead><tr><th>Learner</th><th>WW /50</th><th>PT /50</th><th>Exam /50</th><th>Initial</th><th>Grade</th></tr></thead>
         <tbody>${G(c.id).map((r, i) =>
           `<tr><td>${stu[i]}</td>${r.map(v =>
-            `<td><input type="number" min="0" max="50" data-r="${i}" value="${v}" oninput="calc(${i})" aria-label="score"></td>`
-          ).join('')}<td id="i${i}"></td><td class="out" id="t${i}"></td></tr>`
+            `<td><input type="number" class="form-control form-control-sm" min="0" max="50" data-r="${i}" value="${v}" oninput="calc(${i})" aria-label="score"></td>`
+          ).join('')}<td id="i${i}"></td><td id="t${i}"></td></tr>`
         ).join('')}</tbody>
       </table></div>
-      <p style="margin-top:12px"><button class="btn" onclick="toast('SF9/SF10 report cards exported (simulated)')">Export SF9/SF10</button></p>
-    </div>`;
+      <button class="btn btn-outline-secondary btn-sm mt-2" onclick="toast('SF9/SF10 report cards exported (simulated)')">Export SF9/SF10</button>
+    </div></div>`;
   }
   el.innerHTML = `
-    <button class="btn ghost sm" style="width:auto" onclick="state.cls=null;tab('cls')">← All Classes</button>
-    <div class="card" style="margin:14px 0;border-left:6px solid ${c.col}">
-      <h2>${c.subj} · ${c.sec}</h2>
-      <div class="muted">${stu.length} learners</div>
+    <button class="btn btn-link btn-sm px-0 mb-2" onclick="state.cls=null;tab('cls')">← All classes</button>
+    <div class="card mb-3" style="border-left:3px solid ${c.col}">
+      <div class="card-body py-3">
+        <h1 class="h5 mb-0">${c.subj} · ${c.sec}</h1>
+        <div class="text-secondary small">${stu.length} learners</div>
+      </div>
     </div>
-    <div class="tabs">
+    <ul class="nav nav-pills mb-3 gap-1">
       ${[['stream', 'Stream'], ['post', 'Post new'], ['grade', 'Gradebook']].map(t =>
-        `<button class="${ct === t[0] ? 'on' : ''}" onclick="state.ct='${t[0]}';tab('cls')">${t[1]}</button>`
+        `<li class="nav-item"><button class="nav-link ${ct === t[0] ? 'active' : ''}" style="${ct === t[0] ? 'background:var(--lw-primary)' : ''}" onclick="state.ct='${t[0]}';tab('cls')">${t[1]}</button></li>`
       ).join('')}
-    </div>
+    </ul>
     ${body}`;
   if (ct === 'grade') G(c.id).forEach((_, i) => calc(i));
 }
 function rRecent() {
   const l = DB.items.filter(i => cls(i.cid).mine).sort((a, b) => b.at - a.at);
-  $('#p-recent').innerHTML = `<h2>Recent Posts</h2>
-    <p class="muted">Everything you posted across all classes.</p>
+  $('#p-recent').innerHTML = `<h1 class="h4 mb-1">Recent posts</h1>
+    <p class="text-secondary small mb-4">Everything you posted across all classes.</p>
     ${l.map(i => tItem(i, 1)).join('') || empty('No posts yet.')}`;
 }
 function rGrades() {
-  const el = $('#p-grades');
-  el.innerHTML = `<h2>Grade Center</h2>
-    <p class="muted">Select a class to open its gradebook (DepEd Order 8, s. 2015).</p>
-    <div class="grid">${mine().map(c =>
-      `<button class="click" onclick="state.cls='${c.id}';state.ct='grade';tab('cls')" style="border-top:6px solid ${c.col}">
-        <div class="feed-avatar" style="margin-bottom:10px;background:${c.col};color:#fff">${c.ico}</div>
-        <h3>${c.subj}</h3>
-        <p class="muted">${c.sec} · ${stu.length} learners</p>
-      </button>`
+  $('#p-grades').innerHTML = `<h1 class="h4 mb-1">Grade Center</h1>
+    <p class="text-secondary small mb-4">Select a class to open its gradebook.</p>
+    <div class="row g-3">${mine().map(c =>
+      `<div class="col-md-6 col-lg-4">
+        <button class="card h-100 w-100 text-start border-0 shadow-sm" style="border-top:3px solid ${c.col}!important" onclick="state.cls='${c.id}';state.ct='grade';tab('cls')">
+          <div class="card-body">
+            <div class="course-badge mb-2" style="background:${c.col}">${c.ico}</div>
+            <h3 class="h6 mb-1">${c.subj}</h3>
+            <p class="text-secondary small mb-0">${c.sec} · ${stu.length} learners</p>
+          </div>
+        </button>
+      </div>`
     ).join('')}</div>`;
 }
 
@@ -647,50 +662,52 @@ function rDisc() {
     if (!d) { state.discId = null; return rDisc(); }
     const c = cls(d.cid);
     el.innerHTML = `
-      <button class="btn ghost sm" style="width:auto" onclick="state.discId=null;tab('disc')">← All Discussions</button>
-      <div class="card" style="margin-top:14px">
+      <button class="btn btn-link btn-sm px-0 mb-2" onclick="state.discId=null;tab('disc')">← All discussions</button>
+      <div class="card"><div class="card-body">
         <span class="chip" style="background:${c.col};color:#fff">${c.subj}</span>
-        <h2 style="margin-top:8px">${esc(d.title)}</h2>
-        <div class="muted">${esc(d.author)} · ${new Date(d.at).toLocaleDateString()}</div>
-        <p style="margin-top:12px">${esc(d.body)}</p>
-        <h3 style="margin-top:20px">Replies (${d.replies.length})</h3>
+        <h1 class="h5 mt-2">${esc(d.title)}</h1>
+        <div class="text-secondary small mb-3">${esc(d.author)} · ${new Date(d.at).toLocaleDateString()}</div>
+        <p>${esc(d.body)}</p>
+        <h2 class="h6 mt-4">Replies (${d.replies.length})</h2>
         ${d.replies.map(r => `
           <div class="disc-reply">
-            <b>${esc(r.author)}</b>
-            <div class="muted" style="font-size:.85rem">${new Date(r.at).toLocaleDateString()}</div>
-            <p style="margin:6px 0 0">${esc(r.body)}</p>
-          </div>`).join('') || '<p class="muted">No replies yet. Be the first!</p>'}
-        <div style="margin-top:16px">
-          <label for="replyBody">Your reply</label>
-          <textarea id="replyBody" placeholder="Write a reply…"></textarea>
-          <button class="btn ok sm" style="margin-top:8px;width:auto" onclick="postReply(${d.id})">Post Reply</button>
+            <div class="fw-semibold small">${esc(r.author)}</div>
+            <div class="text-secondary" style="font-size:0.75rem">${new Date(r.at).toLocaleDateString()}</div>
+            <p class="mb-0 mt-1 small">${esc(r.body)}</p>
+          </div>`).join('') || '<p class="text-secondary small">No replies yet.</p>'}
+        <div class="mt-3">
+          <label class="form-label small fw-semibold" for="replyBody">Your reply</label>
+          <textarea class="form-control form-control-sm" id="replyBody" rows="2" placeholder="Write a reply…"></textarea>
+          <button class="btn btn-primary btn-sm mt-2" onclick="postReply(${d.id})">Post reply</button>
         </div>
-      </div>`;
+      </div></div>`;
     return;
   }
-  el.innerHTML = `<h2>Discussions</h2>
-    <p class="muted">Class forums — ask questions, share ideas, help classmates.</p>
+  el.innerHTML = `<h1 class="h4 mb-1">Discussions</h1>
+    <p class="text-secondary small mb-4">Class forums — ask questions, share ideas, help classmates.</p>
     ${state.role === 'teacher' || state.role === 'student' ? `
-      <div class="card" style="margin-bottom:16px">
-        <h3>Start a new discussion</h3>
-        <label for="dt">Title</label>
-        <input id="dt" placeholder="e.g. Help with Chapter 4">
-        <label for="db">Message</label>
-        <textarea id="db" placeholder="What would you like to discuss?"></textarea>
-        <label for="dc">Course</label>
-        <select id="dc">${(state.role === 'teacher' ? mine() : DB.classes.filter(c => c.sec == mySec)).map(c =>
-          `<option value="${c.id}">${c.subj} · ${c.sec}</option>`
-        ).join('')}</select>
-        <button class="btn ok sm" style="margin-top:10px;width:auto" onclick="newDisc()">Post Discussion</button>
-      </div>` : ''}
+      <div class="card mb-4"><div class="card-body">
+        <h2 class="h6 mb-3">Start a new discussion</h2>
+        <div class="mb-2"><label class="form-label small fw-semibold" for="dt">Title</label>
+          <input class="form-control form-control-sm" id="dt" placeholder="e.g. Help with Chapter 4"></div>
+        <div class="mb-2"><label class="form-label small fw-semibold" for="db">Message</label>
+          <textarea class="form-control form-control-sm" id="db" rows="2" placeholder="What would you like to discuss?"></textarea></div>
+        <div class="mb-2"><label class="form-label small fw-semibold" for="dc">Course</label>
+          <select class="form-select form-select-sm" id="dc">${(state.role === 'teacher' ? mine() : DB.classes.filter(c => c.sec == mySec)).map(c =>
+            `<option value="${c.id}">${c.subj} · ${c.sec}</option>`
+          ).join('')}</select></div>
+        <button class="btn btn-primary btn-sm" onclick="newDisc()">Post discussion</button>
+      </div></div>` : ''}
     ${DB.discussions.sort((a, b) => b.at - a.at).map(d => {
       const c = cls(d.cid);
-      return `<div class="disc-item" style="cursor:pointer" onclick="state.discId=${d.id};tab('disc')">
-        <div class="feed-avatar">${c ? c.ico : 'Di'}</div>
-        <div class="feed-body">
-          <b>${esc(d.title)}</b>
-          <div class="muted">${c ? c.subj : ''} · ${esc(d.author)} · ${d.replies.length} ${d.replies.length === 1 ? 'reply' : 'replies'}</div>
-          <div class="muted" style="margin-top:4px">${esc(d.body).slice(0, 100)}${d.body.length > 100 ? '…' : ''}</div>
+      return `<div class="card mb-2" style="cursor:pointer" onclick="state.discId=${d.id};tab('disc')">
+        <div class="card-body py-3 d-flex gap-2">
+          <div class="course-badge" style="background:${c ? c.col : '#6C757D'}">${c ? c.ico : 'Di'}</div>
+          <div class="min-w-0">
+            <div class="fw-semibold small">${esc(d.title)}</div>
+            <div class="text-secondary" style="font-size:0.75rem">${c ? c.subj : ''} · ${esc(d.author)} · ${d.replies.length} ${d.replies.length === 1 ? 'reply' : 'replies'}</div>
+            <div class="text-secondary small mt-1 text-truncate">${esc(d.body)}</div>
+          </div>
         </div>
       </div>`;
     }).join('') || empty('No discussions yet.')}`;
@@ -703,18 +720,14 @@ function newDisc() {
     id: DB.discN++, cid: $('#dc').value, title: t, body: b,
     author: USER_NAMES[state.role], at: Date.now(), replies: []
   });
-  save();
-  tab('disc');
-  T('Discussion posted');
+  save(); tab('disc'); T('Discussion posted');
 }
 function postReply(id) {
   const b = $('#replyBody').value.trim();
   if (!b) return T('Please write a reply');
   const d = DB.discussions.find(x => x.id == id);
   d.replies.push({ author: USER_NAMES[state.role], body: b, at: Date.now() });
-  save();
-  tab('disc');
-  T('Reply posted');
+  save(); tab('disc'); T('Reply posted');
 }
 
 /* ========== Calendar ========== */
@@ -729,10 +742,7 @@ function rCal() {
   const todayStr = day(0);
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const evMap = {};
-  DB.events.forEach(e => {
-    if (!evMap[e.date]) evMap[e.date] = [];
-    evMap[e.date].push(e);
-  });
+  DB.events.forEach(e => { if (!evMap[e.date]) evMap[e.date] = []; evMap[e.date].push(e); });
   let cells = '';
   for (let i = 0; i < startDay; i++) cells += '<div class="cal-day"></div>';
   for (let d = 1; d <= daysInMonth; d++) {
@@ -742,26 +752,30 @@ function rCal() {
     cells += `<div class="cal-day${isToday ? ' today' : ''}${has ? ' has-ev' : ''}" title="${has ? evMap[ds].map(e => e.title).join(', ') : ''}">${d}</div>`;
   }
   const upcoming = DB.events.filter(e => e.date >= todayStr).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 8);
-  el.innerHTML = `<h2>Calendar</h2>
-    <p class="muted">Due dates, quizzes, and school events.</p>
-    <div class="grid-2">
-      <div class="card">
-        <h3>${monthNames[m]} ${y}</h3>
-        <div class="cal-grid" style="margin-top:8px">
-          ${['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => `<div class="cal-hd">${d}</div>`).join('')}
-          ${cells}
-        </div>
+  el.innerHTML = `<h1 class="h4 mb-1">Calendar</h1>
+    <p class="text-secondary small mb-4">Due dates, quizzes, and school events.</p>
+    <div class="row g-3">
+      <div class="col-lg-6">
+        <div class="card"><div class="card-body">
+          <h2 class="h6 mb-3">${monthNames[m]} ${y}</h2>
+          <div class="cal-grid">
+            ${['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => `<div class="cal-hd">${d}</div>`).join('')}
+            ${cells}
+          </div>
+        </div></div>
       </div>
-      <div class="card">
-        <h3>Upcoming</h3>
-        ${upcoming.map(e => `
-          <div class="feed-item">
-            <div class="feed-avatar">${e.type === 'due' ? 'Due' : e.type === 'quiz' ? 'Quiz' : 'Evt'}</div>
-            <div class="feed-body">
-              <b>${esc(e.title)}</b>
-              <div class="feed-meta">${dayLabel(e.date)} · ${e.date}</div>
-            </div>
-          </div>`).join('') || empty('No upcoming events.')}
+      <div class="col-lg-6">
+        <div class="card"><div class="card-body">
+          <h2 class="h6 mb-3">Upcoming</h2>
+          ${upcoming.map(e => `
+            <div class="d-flex gap-2 py-2 border-bottom">
+              <div class="feed-avatar">${e.type === 'due' ? 'Due' : e.type === 'quiz' ? 'Quiz' : 'Evt'}</div>
+              <div>
+                <div class="fw-semibold small">${esc(e.title)}</div>
+                <div class="text-secondary" style="font-size:0.75rem">${dayLabel(e.date)} · ${e.date}</div>
+              </div>
+            </div>`).join('') || empty('No upcoming events.')}
+        </div></div>
       </div>
     </div>`;
 }
@@ -772,46 +786,45 @@ function rMsg() {
   if (state.msgThread != null) {
     const m = DB.messages.find(x => x.id == state.msgThread);
     if (!m) { state.msgThread = null; return rMsg(); }
-    m.read = true;
-    save();
-    updateNotifBadge();
+    m.read = true; save(); updateNotifBadge();
     el.innerHTML = `
-      <button class="btn ghost sm" style="width:auto" onclick="state.msgThread=null;tab('msg')">← Inbox</button>
-      <div class="card" style="margin-top:14px">
-        <h2>${esc(m.subj)}</h2>
-        <div class="muted">From: ${esc(m.from)} · To: ${esc(m.to)} · ${new Date(m.at).toLocaleString()}</div>
-        <p style="margin-top:16px;white-space:pre-wrap">${esc(m.body)}</p>
-        <div style="margin-top:20px;border-top:1px solid var(--bd);padding-top:16px">
-          <label for="replyMsg">Reply</label>
-          <textarea id="replyMsg" placeholder="Type your reply…"></textarea>
-          <button class="btn ok sm" style="margin-top:8px;width:auto" onclick="sendReply(${m.id})">Send Reply</button>
-        </div>
-      </div>`;
+      <button class="btn btn-link btn-sm px-0 mb-2" onclick="state.msgThread=null;tab('msg')">← Inbox</button>
+      <div class="card"><div class="card-body">
+        <h1 class="h5">${esc(m.subj)}</h1>
+        <div class="text-secondary small mb-3">From: ${esc(m.from)} · To: ${esc(m.to)} · ${new Date(m.at).toLocaleString()}</div>
+        <p style="white-space:pre-wrap">${esc(m.body)}</p>
+        <hr>
+        <label class="form-label small fw-semibold" for="replyMsg">Reply</label>
+        <textarea class="form-control form-control-sm" id="replyMsg" rows="2" placeholder="Type your reply…"></textarea>
+        <button class="btn btn-primary btn-sm mt-2" onclick="sendReply(${m.id})">Send reply</button>
+      </div></div>`;
     return;
   }
   const list = [...DB.messages].sort((a, b) => b.at - a.at);
-  el.innerHTML = `<h2>Messages</h2>
-    <p class="muted">Private messages with teachers, students, and school staff.</p>
-    <div class="card" style="margin-bottom:16px">
-      <h3>Compose</h3>
-      <label for="msgTo">To</label>
-      <select id="msgTo">
-        <option>Mrs. Santos</option><option>Mrs. Villanueva</option><option>Mr. Aquino</option>
-        <option>School Admin</option><option>Ana Dela Cruz</option>
-      </select>
-      <label for="msgSubj">Subject</label>
-      <input id="msgSubj" placeholder="Subject">
-      <label for="msgBody">Message</label>
-      <textarea id="msgBody" placeholder="Write your message…"></textarea>
-      <button class="btn ok sm" style="margin-top:8px;width:auto" onclick="sendMsg()">Send</button>
-    </div>
-    <h3>Inbox</h3>
+  el.innerHTML = `<h1 class="h4 mb-1">Messages</h1>
+    <p class="text-secondary small mb-4">Private messages with teachers, students, and school staff.</p>
+    <div class="card mb-4"><div class="card-body">
+      <h2 class="h6 mb-3">Compose</h2>
+      <div class="mb-2"><label class="form-label small fw-semibold" for="msgTo">To</label>
+        <select class="form-select form-select-sm" id="msgTo">
+          <option>Mrs. Santos</option><option>Mrs. Villanueva</option><option>Mr. Aquino</option>
+          <option>School Admin</option><option>Ana Dela Cruz</option>
+        </select></div>
+      <div class="mb-2"><label class="form-label small fw-semibold" for="msgSubj">Subject</label>
+        <input class="form-control form-control-sm" id="msgSubj" placeholder="Subject"></div>
+      <div class="mb-2"><label class="form-label small fw-semibold" for="msgBody">Message</label>
+        <textarea class="form-control form-control-sm" id="msgBody" rows="2" placeholder="Write your message…"></textarea></div>
+      <button class="btn btn-primary btn-sm" onclick="sendMsg()">Send</button>
+    </div></div>
+    <h2 class="h6 mb-2">Inbox</h2>
     ${list.map(m => `
-      <div class="msg-item" style="cursor:pointer" onclick="state.msgThread=${m.id};tab('msg')">
-        <div class="feed-avatar">${m.read ? 'Rd' : 'New'}</div>
-        <div class="feed-body">
-          <b>${esc(m.subj)}</b> ${!m.read && m.to === 'me' ? '<span class="chip new">NEW</span>' : ''}
-          <div class="muted">${esc(m.from)} → ${esc(m.to)} · ${new Date(m.at).toLocaleDateString()}</div>
+      <div class="card mb-2" style="cursor:pointer" onclick="state.msgThread=${m.id};tab('msg')">
+        <div class="card-body py-3 d-flex gap-2">
+          <div class="feed-avatar">${m.read ? 'Rd' : 'New'}</div>
+          <div class="min-w-0">
+            <div class="fw-semibold small">${esc(m.subj)} ${!m.read && m.to === 'me' ? '<span class="chip chip-new">New</span>' : ''}</div>
+            <div class="text-secondary" style="font-size:0.75rem">${esc(m.from)} → ${esc(m.to)} · ${new Date(m.at).toLocaleDateString()}</div>
+          </div>
         </div>
       </div>`).join('') || empty('No messages.')}`;
 }
@@ -823,9 +836,7 @@ function sendMsg() {
     id: DB.msgN++, from: USER_NAMES[state.role], to: $('#msgTo').value,
     subj, body, at: Date.now(), read: true
   });
-  save();
-  tab('msg');
-  T('Message sent');
+  save(); tab('msg'); T('Message sent');
 }
 function sendReply(id) {
   const body = $('#replyMsg').value.trim();
@@ -835,10 +846,7 @@ function sendReply(id) {
     id: DB.msgN++, from: USER_NAMES[state.role], to: m.from,
     subj: 'Re: ' + m.subj, body, at: Date.now(), read: true
   });
-  save();
-  state.msgThread = null;
-  tab('msg');
-  T('Reply sent');
+  save(); state.msgThread = null; tab('msg'); T('Reply sent');
 }
 
 /* ========== Resources ========== */
@@ -847,29 +855,31 @@ function rRes() {
   const list = state.role === 'teacher'
     ? DB.resources
     : DB.resources.filter(r => cls(r.cid) && cls(r.cid).sec == mySec);
-  el.innerHTML = `<h2>Resources</h2>
-    <p class="muted">Course files, handouts, and media shared by teachers.</p>
+  el.innerHTML = `<h1 class="h4 mb-1">Resources</h1>
+    <p class="text-secondary small mb-4">Course files, handouts, and media shared by teachers.</p>
     ${state.role === 'teacher' ? `
-      <div class="card" style="margin-bottom:16px">
-        <h3>Upload resource (demo)</h3>
-        <label for="rt">Title</label>
-        <input id="rt" placeholder="e.g. Chapter 5 Notes">
-        <label for="rc">Course</label>
-        <select id="rc">${mine().map(c => `<option value="${c.id}">${c.subj} · ${c.sec}</option>`).join('')}</select>
-        <label for="rtype">Type</label>
-        <select id="rtype"><option>PDF</option><option>DOCX</option><option>PPTX</option><option>MP4</option><option>PNG</option></select>
-        <button class="btn ok sm" style="margin-top:8px;width:auto" onclick="addRes()">Add Resource</button>
-      </div>` : ''}
-    <div class="grid">${list.map(r => {
+      <div class="card mb-4"><div class="card-body">
+        <h2 class="h6 mb-3">Upload resource (demo)</h2>
+        <div class="mb-2"><label class="form-label small fw-semibold" for="rt">Title</label>
+          <input class="form-control form-control-sm" id="rt" placeholder="e.g. Chapter 5 Notes"></div>
+        <div class="mb-2"><label class="form-label small fw-semibold" for="rc">Course</label>
+          <select class="form-select form-select-sm" id="rc">${mine().map(c => `<option value="${c.id}">${c.subj} · ${c.sec}</option>`).join('')}</select></div>
+        <div class="mb-2"><label class="form-label small fw-semibold" for="rtype">Type</label>
+          <select class="form-select form-select-sm" id="rtype"><option>PDF</option><option>DOCX</option><option>PPTX</option><option>MP4</option><option>PNG</option></select></div>
+        <button class="btn btn-primary btn-sm" onclick="addRes()">Add resource</button>
+      </div></div>` : ''}
+    <div class="row g-3">${list.map(r => {
       const c = cls(r.cid);
-      return `<div class="card">
-        <div class="feed-avatar" style="margin-bottom:10px">${r.type === 'PDF' ? 'PDF' : r.type === 'MP4' ? 'VID' : r.type === 'PNG' ? 'IMG' : 'FILE'}</div>
-        <h3 style="font-size:1rem">${esc(r.title)}</h3>
-        <div class="muted">${c ? c.subj : ''} · ${r.type} · ${r.size}</div>
-        <div class="muted" style="font-size:.85rem;margin-top:4px">Added ${r.at}</div>
-        <button class="btn ghost sm" style="margin-top:10px;width:auto" onclick="toast('Download started (demo)')">Download</button>
+      return `<div class="col-md-6 col-lg-4">
+        <div class="card h-100"><div class="card-body">
+          <div class="feed-avatar mb-2">${r.type === 'PDF' ? 'PDF' : r.type === 'MP4' ? 'VID' : r.type === 'PNG' ? 'IMG' : 'FILE'}</div>
+          <h3 class="h6 mb-1">${esc(r.title)}</h3>
+          <div class="text-secondary small">${c ? c.subj : ''} · ${r.type} · ${r.size}</div>
+          <div class="text-secondary" style="font-size:0.75rem">Added ${r.at}</div>
+          <button class="btn btn-outline-secondary btn-sm mt-2" onclick="toast('Download started (demo)')">Download</button>
+        </div></div>
       </div>`;
-    }).join('') || empty('No resources yet.')}</div>`;
+    }).join('') || `<div class="col-12">${empty('No resources yet.')}</div>`}</div>`;
 }
 function addRes() {
   const t = $('#rt').value.trim();
@@ -878,9 +888,7 @@ function addRes() {
     id: Date.now(), cid: $('#rc').value, title: t,
     type: $('#rtype').value, size: Math.floor(50 + Math.random() * 500) + ' KB', at: day(0)
   });
-  save();
-  tab('res');
-  T('Resource added');
+  save(); tab('res'); T('Resource added');
 }
 
 /* ========== Student extras ========== */
@@ -917,17 +925,18 @@ function pick(q, o) {
 }
 function drawQuiz() {
   $('#qz').innerHTML = Q.map((q, i) =>
-    `<h3>${i + 1}. ${q[0]}</h3>${q[1].map((o, j) =>
-      `<label class="opt"><input type="radio" name="q${i}" ${qa[i] === j ? 'checked' : ''} onclick="pick(${i},${j})">${o}</label>`
-    ).join('')}`
+    `<div class="mb-3"><div class="fw-semibold small mb-2">${i + 1}. ${q[0]}</div>
+      ${q[1].map((o, j) =>
+        `<div class="form-check"><input class="form-check-input" type="radio" name="q${i}" id="q${i}_${j}" ${qa[i] === j ? 'checked' : ''} onclick="pick(${i},${j})">
+         <label class="form-check-label small" for="q${i}_${j}">${o}</label></div>`
+      ).join('')}</div>`
   ).join('');
 }
 function brownout() {
-  $('#qz').innerHTML = '<p class="bad-t out">Power lost… restarting</p>';
+  $('#qz').innerHTML = '<p class="text-danger fw-semibold">Power lost… restarting</p>';
   qa = {};
   setTimeout(() => {
-    load();
-    drawQuiz();
+    load(); drawQuiz();
     $('#qm').textContent = 'Recovered ' + Object.keys(qa).length + ' saved answer(s) from this device.';
   }, 1200);
 }
@@ -943,7 +952,7 @@ const kids = [
   { n: 'Pedro Santos', g: 'Grade 9', gen: 72, pend: 6, att: 85 }
 ];
 $('#kid').innerHTML = kids.map((k, i) => `<option value="${i}">${k.n} (${k.g})</option>`).join('');
-const col = (v, a, b) => v >= a ? 'g' : v >= b ? 'y' : 'r';
+const col = (v, a, b) => v >= a ? 'success' : v >= b ? 'warning' : 'danger';
 function renderParent() {
   const k = kids[state.kid];
   if ($('#kn')) $('#kn').textContent = k.n + ' · ' + k.g;
@@ -954,21 +963,24 @@ function renderParent() {
   ];
   if ($('#tl')) {
     $('#tl').innerHTML = L.map(l =>
-      `<div class="card light"><div class="dot ${l[2]}" style="background:var(--${l[2] === 'g' ? 'ok' : l[2] === 'y' ? 'warn' : 'bad'})"></div>
-        <div><h3>${l[0]}</h3><div class="out">${l[1]}</div><div class="muted">${l[3]}</div></div></div>`
+      `<div class="col-md-4"><div class="card"><div class="card-body d-flex align-items-center gap-3">
+        <span class="rounded-circle bg-${l[2]}" style="width:10px;height:10px;flex-shrink:0"></span>
+        <div><div class="small text-secondary">${l[0]}</div><div class="fs-5 fw-bold">${l[1]}</div>
+        <div class="text-secondary small">${l[3]}</div></div>
+      </div></div></div>`
     ).join('');
   }
   const s = ['Filipino', 'English', 'Math', 'Science', 'Araling Panlipunan'];
   if ($('#sf')) {
-    $('#sf').innerHTML = `<p><b>${k.n}</b> · ${k.g} · S.Y. 2026–2027</p>
-      <div class="scroll"><table>
-        <tr><th>Subject</th><th>Q1</th><th>Q2</th><th>Final</th></tr>
-        ${s.map((x, i) => {
+    $('#sf').innerHTML = `<p class="small"><strong>${k.n}</strong> · ${k.g} · S.Y. 2026–2027</p>
+      <div class="table-responsive"><table class="table table-sm">
+        <thead><tr><th>Subject</th><th>Q1</th><th>Q2</th><th>Final</th></tr></thead>
+        <tbody>${s.map((x, i) => {
           const a = Math.min(100, k.gen + [2, -3, 4, -1, 0][i]);
-          return `<tr><td>${x}</td><td>${a - 1}</td><td>${a + 1 > 100 ? 100 : a + 1}</td><td class="out">${a}</td></tr>`;
+          return `<tr><td>${x}</td><td>${a - 1}</td><td>${a + 1 > 100 ? 100 : a + 1}</td><td class="fw-bold">${a}</td></tr>`;
         }).join('')}
-        <tr><th>General Average</th><th></th><th></th><th>${k.gen}</th></tr>
-      </table></div>`;
+        <tr><th>General average</th><th></th><th></th><th>${k.gen}</th></tr>
+      </tbody></table></div>`;
   }
   if ($('#ap')) $('#ap').textContent = '';
 }
@@ -979,15 +991,10 @@ function initSig() {
   const c = $('#sig');
   if (!c) return;
   c.width = c.clientWidth;
-  c.height = 140;
+  c.height = 130;
   const x = c.getContext('2d');
-  x.lineWidth = 3;
-  x.lineCap = 'round';
-  x.strokeStyle = '#1E3A8A';
-  const pos = e => {
-    const r = c.getBoundingClientRect();
-    return [e.clientX - r.left, e.clientY - r.top];
-  };
+  x.lineWidth = 3; x.lineCap = 'round'; x.strokeStyle = '#1B2A4A';
+  const pos = e => { const r = c.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
   c.onpointerdown = e => { drawing = true; x.beginPath(); x.moveTo(...pos(e)); };
   c.onpointermove = e => { if (drawing) { x.lineTo(...pos(e)); x.stroke(); } };
   c.onpointerup = () => drawing = false;
@@ -997,29 +1004,31 @@ function clearSig() {
   if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height);
 }
 function approve(m) {
-  $('#ap').textContent = `${kids[state.kid].n}'s report card approved via ${m} · ${new Date().toLocaleDateString()}`;
+  $('#ap').textContent = kids[state.kid].n + "'s report card approved via " + m + ' · ' + new Date().toLocaleDateString();
   T('Report card approved');
 }
 
-/* Principal */
-function bars(id, d, max, u, c) {
+/* Principal bars */
+function bars(id, d, max, u, color) {
   const el = $(id);
   if (!el) return;
   el.innerHTML = d.map(x =>
-    `<div class="row"><span class="lb">${x[0]}</span><div class="bar"><i style="width:${x[1] / max * 100}%;background:${c}"></i></div><b>${x[1]}${u}</b></div>`
+    `<div class="bar-row"><span class="lb">${x[0]}</span>
+      <div class="progress"><div class="progress-bar" style="width:${x[1] / max * 100}%;background:${color}"></div></div>
+      <b class="small">${x[1]}${u}</b></div>`
   ).join('');
 }
-bars('#c1', [['Gr 7', 310], ['Gr 8', 285], ['Gr 9', 270], ['Gr 10', 255]], 320, '', '#1E3A8A');
-bars('#c2', [['Gr 7', 84], ['Gr 8', 82], ['Gr 9', 80], ['Gr 10', 83]], 100, '', '#047857');
-bars('#c3', [['Gr 7', 96], ['Gr 8', 94], ['Gr 9', 91], ['Gr 10', 93]], 100, '%', '#B45309');
+bars('#c1', [['Gr 7', 310], ['Gr 8', 285], ['Gr 9', 270], ['Gr 10', 255]], 320, '', '#1B2A4A');
+bars('#c2', [['Gr 7', 84], ['Gr 8', 82], ['Gr 9', 80], ['Gr 10', 83]], 100, '', '#059669');
+bars('#c3', [['Gr 7', 96], ['Gr 8', 94], ['Gr 9', 91], ['Gr 10', 93]], 100, '%', '#D97706');
 const clEl = $('#cl');
 if (clEl) {
   clEl.innerHTML = [
-    ['Mrs. Villanueva', '12 of 12 reviewed', 'Up to date', 'g', 'Compliant'],
-    ['Mr. Aquino', '8 of 11 reviewed', '2 weeks late', 'y', 'Pending'],
-    ['Ms. Castillo', '3 of 10 reviewed', 'Missing', 'r', 'Overdue'],
-    ['Mr. Ramos', '10 of 10 reviewed', 'Up to date', 'g', 'Compliant']
-  ].map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="pill ${r[3]}">${r[4]}</span></td></tr>`).join('');
+    ['Mrs. Villanueva', '12 of 12 reviewed', 'Up to date', 'success', 'Compliant'],
+    ['Mr. Aquino', '8 of 11 reviewed', '2 weeks late', 'warning', 'Pending'],
+    ['Ms. Castillo', '3 of 10 reviewed', 'Missing', 'danger', 'Overdue'],
+    ['Mr. Ramos', '10 of 10 reviewed', 'Up to date', 'success', 'Compliant']
+  ].map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td><span class="badge text-bg-${r[3]}">${r[4]}</span></td></tr>`).join('');
 }
 
 window.addEventListener('resize', () => { if ($('#p-sf9') && !$('#p-sf9').hidden) initSig(); });
