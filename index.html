@@ -1,78 +1,304 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8">
+<html lang="en">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>learningWheel LMS – Philippine Schools</title>
-<meta name="description" content="learningWheel: DepEd-compliant Learning Management System for Philippine schools.">
+<meta name="description" content="learningWheel: DepEd-compliant Learning Management System for Philippine schools. Gradebooks, SF9/SF10, discussions, calendar, and more.">
 <meta name="theme-color" content="#1E3A8A">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%93%98%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="styles.css"></head><body>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📘%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
-<!-- LANDING -->
+<!-- ========== LANDING ========== -->
 <div class="view" id="landing">
-<nav class="top"><div class="brand">📘 learning<span>Wheel</span> LMS</div><div><button class="btn" onclick="view('login')">Portal Login</button></div></nav>
-<section class="hero"><div class="wrap"><h1>One system for every classroom in your school.</h1>
-<p>DepEd-compliant gradebooks, SF9/SF10 report cards and lesson logs — cutting teachers' clerical workload by up to 60%. Works on slow data and during brownouts.</p>
-<button class="btn" onclick="openBuy('Academy')">Request a Subscription</button></div></section>
-<div class="wrap"><h2>Plans &amp; Subscription</h2>
-<div class="grid" id="plans"></div></div></div>
+  <nav class="top">
+    <div class="brand">📘 learning<span>Wheel</span></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn ghost" onclick="view('login')">Portal Login</button>
+      <button class="btn" onclick="openBuy('Academy')">Get Started</button>
+    </div>
+  </nav>
 
-<!-- LOGIN -->
-<div class="view" id="login" hidden><div class="split">
-<div class="art"><div class="brand" style="font-size:2rem">📘 learning<span>Wheel</span></div><h1>Welcome back.</h1><p style="font-size:1.2rem;color:#E0E7FF">One gateway for students, teachers, parents and principals.</p></div>
-<div class="form"><div><h2>Sign in</h2><label>I am a…</label>
-<div class="roles" id="roles"></div>
-<label for="em">Email / LRN</label><input id="em" value="demo@school.edu.ph">
-<label for="pw">Password</label><input id="pw" type="password" placeholder="Any password works">
-<p><button class="btn" style="width:100%" onclick="doLogin()">Sign In</button></p>
-<p><button class="btn ghost" style="width:100%" onclick="view('landing')">← Back to website</button></p>
-<p><button class="btn ghost" style="width:100%" onclick="resetDB()">↺ Reset demo data</button></p></div></div></div></div>
+  <section class="hero">
+    <div class="wrap">
+      <h1>One platform for every classroom in your school.</h1>
+      <p>DepEd-compliant gradebooks, SF9/SF10 report cards, discussions, calendar, and messaging — built for Philippine schools. Works on slow data and during brownouts.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+        <button class="btn" onclick="openBuy('Academy')">Request a Subscription</button>
+        <button class="btn ghost" style="color:#fff;border-color:rgba(255,255,255,.5)" onclick="view('login')">Try Demo Portal →</button>
+      </div>
+      <div class="hero-badges">
+        <span class="hero-badge">✓ DepEd Order 8, s. 2015</span>
+        <span class="hero-badge">✓ SF9 / SF10 ready</span>
+        <span class="hero-badge">✓ Offline-safe quizzes</span>
+        <span class="hero-badge">✓ Parent portal</span>
+      </div>
+    </div>
+  </section>
 
-<!-- DASHBOARD -->
-<div class="view" id="dash" hidden><div class="shell">
-<aside class="side"><div class="brand">📘 learning<span>Wheel</span></div><div id="tabs"></div><div class="who"><span class="av" id="av"></span><div><b id="rl"></b><div class="muted2">Signed in</div></div></div></aside>
-<main><header class="bar"><input id="q" type="search" placeholder="Search posts, tasks, materials…" aria-label="Search" oninput="state.q=this.value.toLowerCase();tab(state.tab)"><select id="kid" hidden aria-label="Switch child" onchange="state.kid=+this.value;renderParent()"></select><button class="btn ghost" id="bell" hidden onclick="tab('alerts')" aria-label="Alerts">🔔 <span id="bc"></span></button><button class="btn ghost" onclick="view('login')">⎋ Log out</button></header>
-<div class="wrap">
+  <div class="wrap features">
+    <h2 style="text-align:center;margin-bottom:8px">Everything teachers and schools need</h2>
+    <p class="muted" style="text-align:center;max-width:560px;margin:0 auto 28px">Inspired by Blackboard Learn and Edmodo — adapted for DepEd workflows and Philippine connectivity.</p>
+    <div class="grid">
+      <div class="card feat-card">
+        <div class="ico">📊</div>
+        <h3>Gradebook & SF9</h3>
+        <p class="muted">WW 40% · PT 40% · Exam 20%. Export SF9/SF10 with one click.</p>
+      </div>
+      <div class="card feat-card">
+        <div class="ico">💬</div>
+        <h3>Discussions</h3>
+        <p class="muted">Class forums and threaded replies — keep learning social.</p>
+      </div>
+      <div class="card feat-card">
+        <div class="ico">📅</div>
+        <h3>Calendar</h3>
+        <p class="muted">Due dates, quizzes, and school events in one view.</p>
+      </div>
+      <div class="card feat-card">
+        <div class="ico">✉️</div>
+        <h3>Messages</h3>
+        <p class="muted">Private messaging between teachers, students, and parents.</p>
+      </div>
+      <div class="card feat-card">
+        <div class="ico">📚</div>
+        <h3>Content Modules</h3>
+        <p class="muted">Organize lessons, files, and resources by unit.</p>
+      </div>
+      <div class="card feat-card">
+        <div class="ico">⚡</div>
+        <h3>Low-bandwidth ready</h3>
+        <p class="muted">Smart file compression and offline answer recovery.</p>
+      </div>
+    </div>
+  </div>
 
-<div class="panel" id="p-home" hidden></div>
-<div class="panel" id="p-cal" hidden></div>
-<!-- Teacher -->
-<div class="panel" id="p-cls" hidden></div>
-<div class="panel" id="p-recent" hidden></div>
-<!-- Student -->
-<div class="panel" id="p-subj" hidden></div>
-<div class="panel" id="p-todo" hidden></div>
-<div class="panel" id="p-alerts" hidden></div>
-<div class="panel" id="p-grades" hidden></div>
-<div class="panel" id="p-up" hidden><div class="card"><h2>Smart Submission</h2>
-<p>Poor signal? We shrink your file before sending.</p><p><b>📎 science-project.pdf</b> — <span id="sz">5.0 MB</span></p>
-<div class="bar"><i id="pb"></i></div><p id="pm" class="muted">Ready to compress.</p>
-<button class="btn" id="cb" onclick="compress()">Compress &amp; Submit</button></div></div>
-<div class="panel" id="p-quiz" hidden><div class="card"><h2>Science Quiz</h2><p class="muted">Every tap is saved on this device. Lost power? Your answers come back.</p>
-<div id="qz"></div><button class="btn ok" onclick="gradeQuiz()">Submit Quiz</button> <button class="btn ghost" onclick="brownout()">⚡ Simulate Brownout</button><p id="qm" class="out"></p></div></div>
+  <div class="wrap" style="padding-top:0">
+    <h2 style="text-align:center;margin-bottom:24px">Plans &amp; Subscription</h2>
+    <div class="grid" id="plans"></div>
+  </div>
 
-<!-- Parent -->
-<div class="panel" id="p-rad" hidden><h2 id="kn"></h2><div class="grid" id="tl"></div></div>
-<div class="panel" id="p-sf9" hidden><div class="card"><h2>Report Card (SF9) – Read Only</h2><div id="sf"></div>
-<h3 style="margin-top:20px">Parent Approval</h3><canvas id="sig"></canvas>
-<p><button class="btn ghost" onclick="clearSig()">Clear</button> <button class="btn ok" onclick="approve('Signature')">✍ Sign &amp; Approve</button> <button class="btn" onclick="approve('Biometric')">🖐 Biometric Approve</button></p><p id="ap" class="out ok-t"></p></div></div>
+  <footer class="footer">
+    <div class="wrap">
+      <div>
+        <h4>📘 learningWheel</h4>
+        <p>DepEd-aligned LMS for Philippine K–12 schools.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#" onclick="view('login');return false">Demo Portal</a></li>
+          <li><a href="#" onclick="openBuy('Academy');return false">Pricing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Support</h4>
+        <ul>
+          <li>support@learningwheel.ph</li>
+          <li>+63 2 8123 4567</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Compliance</h4>
+        <ul>
+          <li>DepEd Order 8, s. 2015</li>
+          <li>Data Privacy Act 2012</li>
+        </ul>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:28px;opacity:.7;font-size:.85rem">© 2026 learningWheel LMS · Demo build for demonstration only</p>
+  </footer>
+</div>
 
-<!-- Principal -->
-<div class="panel" id="p-ops" hidden><div class="grid" id="st" style="margin-bottom:18px"></div><div class="grid"><div class="card bars"><h3>Enrollment by Grade</h3><div id="c1"></div></div><div class="card bars"><h3>Class Averages (live)</h3><div id="c2"></div></div><div class="card bars"><h3>Attendance %</h3><div id="c3"></div></div></div></div>
-<div class="panel" id="p-comp" hidden><div class="card scroll"><h2>Teacher Compliance Ledger</h2><table><thead><tr><th>Teacher</th><th>Posts</th><th>Work Reviewed</th><th>Lesson Log</th><th>Status</th></tr></thead><tbody id="cl"></tbody></table></div></div>
-<div class="panel" id="p-lic" hidden><div class="grid"><div class="card"><h2>License Slots</h2><p class="out" style="font-size:2rem">750 / 1000 filled</p><div class="bar"><i style="width:75%"></i></div><p class="muted">250 slots remaining</p></div>
-<div class="card"><h2>Billing</h2><p><span class="pill g">ACTIVE</span> Academy Plan</p><p>Renews: Jun 30, 2027<br>Amount: ₱79,900 / year</p><button class="btn ghost" onclick="toast('Invoice sent to finance@school.edu.ph')">Download Invoice</button></div></div></div>
-</div></main></div></div>
+<!-- ========== LOGIN ========== -->
+<div class="view" id="login" hidden>
+  <div class="split">
+    <div class="art">
+      <div class="brand" style="font-size:1.8rem">📘 learning<span>Wheel</span></div>
+      <h1>Welcome back.</h1>
+      <p style="font-size:1.15rem;color:#BFDBFE;max-width:360px">One gateway for students, teachers, parents, and principals.</p>
+      <ul style="margin-top:24px;color:#93C5FD;line-height:1.9;padding-left:1.2em">
+        <li>Gradebook &amp; SF9/SF10</li>
+        <li>Discussions &amp; messaging</li>
+        <li>Calendar &amp; content modules</li>
+        <li>Parent progress portal</li>
+      </ul>
+    </div>
+    <div class="form">
+      <div>
+        <h2>Sign in</h2>
+        <label>I am a…</label>
+        <div class="roles" id="roles"></div>
+        <label for="em">Email / LRN</label>
+        <input id="em" value="demo@school.edu.ph" autocomplete="username">
+        <label for="pw">Password</label>
+        <input id="pw" type="password" placeholder="Any password works" autocomplete="current-password">
+        <p style="margin-top:16px"><button class="btn" style="width:100%" onclick="doLogin()">Sign In</button></p>
+        <p><button class="btn ghost" style="width:100%" onclick="view('landing')">← Back to website</button></p>
+        <p><button class="btn ghost" style="width:100%" onclick="resetDB()">↺ Reset demo data</button></p>
+        <p class="muted" style="font-size:.85rem;margin-top:12px;text-align:center">Demo mode — no real accounts required</p>
+      </div>
+    </div>
+  </div>
+</div>
 
-<!-- MODAL -->
-<div class="modal" id="buy" hidden><div class="card"><div id="bf"><h2>Request a Subscription</h2>
-<label for="bs">School name</label><input id="bs" placeholder="e.g. Rizal Integrated School">
-<label for="bn">Administrator email</label><input id="bn" type="email" placeholder="principal@school.edu.ph">
-<label for="bp">Plan</label><select id="bp"></select>
-<p><button class="btn ok" onclick="submitBuy()">Submit Request</button> <button class="btn ghost" onclick="$('#buy').hidden=true">Cancel</button></p></div>
-<div id="bd" hidden style="text-align:center"><div style="font-size:3rem">✅</div><h2>Request Received!</h2><p>Reference: <b id="ref"></b></p>
-<p class="muted">Next: 1) Onboarding call within 2 days 2) Data import 3) Teacher training 4) Go-live.</p><button class="btn" onclick="$('#buy').hidden=true">Done</button></div></div></div>
+<!-- ========== DASHBOARD (app shell) ========== -->
+<div class="view" id="dash" hidden>
+  <div class="app-shell">
+    <div class="sidebar-overlay" id="sideOverlay" onclick="toggleSide(false)"></div>
+    <aside class="sidebar" id="sidebar">
+      <div class="side-brand">📘 learning<span>Wheel</span></div>
+      <nav class="side-nav" id="sideNav"></nav>
+      <div class="side-footer">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div class="avatar" id="av">U</div>
+          <div style="min-width:0">
+            <div style="color:#fff;font-weight:600;font-size:.9rem" id="userName">Demo User</div>
+            <div style="font-size:.8rem" id="userRole">Student</div>
+          </div>
+        </div>
+        <button class="btn ghost sm" style="width:100%;border-color:rgba(255,255,255,.2);color:#fff" onclick="view('login')">Log Out</button>
+      </div>
+    </aside>
+
+    <div class="main-area">
+      <header class="topbar">
+        <div style="display:flex;align-items:center;gap:10px">
+          <button class="btn icon ghost menu-btn" onclick="toggleSide()" aria-label="Menu">☰</button>
+          <div class="search-box">
+            <span aria-hidden="true">🔍</span>
+            <input type="search" placeholder="Search courses, posts, people…" id="search" oninput="onSearch(this.value)">
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <select id="kid" hidden style="width:auto;min-height:40px" aria-label="Switch child" onchange="state.kid=+this.value;renderParent()"></select>
+          <button class="btn icon ghost rel" onclick="tab('alerts')" title="Notifications" id="notifBtn">
+            🔔<span class="badge-count" id="notifBadge" hidden>0</span>
+          </button>
+          <button class="btn icon ghost" onclick="toggleTheme()" title="Toggle theme">🌓</button>
+        </div>
+      </header>
+
+      <main class="content" id="mainContent">
+        <!-- Panels rendered by JS -->
+        <div class="panel" id="p-home" hidden></div>
+        <div class="panel" id="p-cls" hidden></div>
+        <div class="panel" id="p-recent" hidden></div>
+        <div class="panel" id="p-subj" hidden></div>
+        <div class="panel" id="p-todo" hidden></div>
+        <div class="panel" id="p-alerts" hidden></div>
+        <div class="panel" id="p-up" hidden>
+          <div class="card">
+            <h2>Smart Submission</h2>
+            <p class="muted">Poor signal? We shrink your file before sending — so you can submit even on slow data.</p>
+            <p><b>📎 science-project.pdf</b> — <span id="sz">5.0 MB</span></p>
+            <div class="bar" style="height:14px;margin:12px 0"><i id="pb"></i></div>
+            <p id="pm" class="muted">Ready to compress.</p>
+            <button class="btn" id="cb" onclick="compress()">Compress &amp; Submit</button>
+          </div>
+        </div>
+        <div class="panel" id="p-quiz" hidden>
+          <div class="card">
+            <h2>Science Quiz</h2>
+            <p class="muted">Every answer is saved on this device. Lost power? Your answers come back.</p>
+            <div id="qz"></div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+              <button class="btn ok" onclick="gradeQuiz()">Submit Quiz</button>
+              <button class="btn ghost" onclick="brownout()">⚡ Simulate Brownout</button>
+            </div>
+            <p id="qm" class="out" style="margin-top:12px"></p>
+          </div>
+        </div>
+        <div class="panel" id="p-rad" hidden><h2 id="kn"></h2><div class="grid" id="tl"></div></div>
+        <div class="panel" id="p-sf9" hidden>
+          <div class="card">
+            <h2>Report Card (SF9) – Read Only</h2>
+            <div id="sf"></div>
+            <h3 style="margin-top:20px">Parent Approval</h3>
+            <canvas id="sig"></canvas>
+            <p style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn ghost" onclick="clearSig()">Clear</button>
+              <button class="btn ok" onclick="approve('Signature')">✍ Sign &amp; Approve</button>
+              <button class="btn" onclick="approve('Biometric')">🖐 Biometric Approve</button>
+            </p>
+            <p id="ap" class="out ok-t"></p>
+          </div>
+        </div>
+        <div class="panel" id="p-ops" hidden>
+          <div class="grid">
+            <div class="card bars"><h3>Enrollment by Grade</h3><div id="c1"></div></div>
+            <div class="card bars"><h3>Average GPA</h3><div id="c2"></div></div>
+            <div class="card bars"><h3>Attendance %</h3><div id="c3"></div></div>
+          </div>
+        </div>
+        <div class="panel" id="p-comp" hidden>
+          <div class="card scroll">
+            <h2>Teacher Compliance Ledger</h2>
+            <table>
+              <thead><tr><th>Teacher</th><th>Assignments Reviewed</th><th>Lesson Logs</th><th>Status</th></tr></thead>
+              <tbody id="cl"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel" id="p-lic" hidden>
+          <div class="grid">
+            <div class="card">
+              <h2>License Slots</h2>
+              <p class="out" style="font-size:2rem">750 / 1000 filled</p>
+              <div class="bar" style="height:14px;margin:12px 0"><i style="width:75%"></i></div>
+              <p class="muted">250 slots remaining</p>
+            </div>
+            <div class="card">
+              <h2>Billing</h2>
+              <p><span class="pill g">ACTIVE</span> Academy Plan</p>
+              <p>Renews: Jun 30, 2027<br>Amount: ₱79,900 / year</p>
+              <button class="btn ghost" onclick="toast('Invoice sent to finance@school.edu.ph')">Download Invoice</button>
+            </div>
+          </div>
+        </div>
+        <!-- New feature panels -->
+        <div class="panel" id="p-disc" hidden></div>
+        <div class="panel" id="p-cal" hidden></div>
+        <div class="panel" id="p-msg" hidden></div>
+        <div class="panel" id="p-res" hidden></div>
+        <div class="panel" id="p-grades" hidden></div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="buy" hidden>
+  <div class="card">
+    <div id="bf">
+      <h2>Request a Subscription</h2>
+      <label for="bs">School name</label>
+      <input id="bs" placeholder="e.g. Rizal Integrated School">
+      <label for="bn">Administrator email</label>
+      <input id="bn" type="email" placeholder="principal@school.edu.ph">
+      <label for="bp">Plan</label>
+      <select id="bp"></select>
+      <p style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn ok" onclick="submitBuy()">Submit Request</button>
+        <button class="btn ghost" onclick="$('#buy').hidden=true">Cancel</button>
+      </p>
+    </div>
+    <div id="bd" hidden style="text-align:center">
+      <div style="font-size:3rem">✅</div>
+      <h2>Request Received!</h2>
+      <p>Reference: <b id="ref"></b></p>
+      <p class="muted">Next: 1) Onboarding call within 2 days 2) Data import 3) Teacher training 4) Go-live.</p>
+      <button class="btn" onclick="$('#buy').hidden=true">Done</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast" hidden></div>
 
-<script src="app.js"></script></body></html>
+<script src="app.js"></script>
+</body>
+</html>
