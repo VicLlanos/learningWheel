@@ -13,30 +13,41 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-
-/* Brand logo */
-.logo-mark {
-  display: inline-flex;
-  width: 1.75rem;
-  height: 1.75rem;
-  flex-shrink: 0;
-}
-.logo-mark img {
-  width: 100%;
-  height: 100%;
+/* Brand logo — sized to be clearly visible */
+.logo-full {
+  height: 48px;
+  width: auto;
+  max-width: 240px;
   object-fit: contain;
   display: block;
 }
-.logo-full {
-  height: 36px;
+.navbar-brand .logo-full,
+.logo-on-dark img {
+  height: 40px;
+  max-width: 200px;
+}
+.sidebar-brand .logo-full {
+  height: 44px;
+  max-width: 200px;
+}
+.login-art .logo-full {
+  height: 56px;
+  max-width: 280px;
+}
+.logo-on-dark {
+  display: inline-flex;
+  align-items: center;
+  background: #041E42;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.85rem;
+}
+.logo-on-dark img {
+  height: 40px;
   width: auto;
   max-width: 200px;
   object-fit: contain;
   display: block;
 }
-.sidebar-brand .logo-full { height: 28px; max-width: 170px; }
-.navbar-brand .logo-full { height: 32px; }
-.login-art .logo-full { height: 42px; max-width: 240px; }
 .brand-text {
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -47,6 +58,10 @@ body {
   color: var(--lw-accent);
   font-weight: 700;
 }
+
+
+
+
 .navbar-brand .brand-text { color: var(--lw-primary); }
 
 /* Primary buttons use navy */
@@ -124,7 +139,7 @@ body {
   letter-spacing: -0.02em;
 }
 .sidebar-brand {
-  padding: 1.1rem 1rem;
+  padding: 1.25rem 1.1rem;
   border-bottom: 1px solid rgba(255,255,255,0.06);
   color: #fff;
   font-weight: 700;
@@ -393,17 +408,3 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
-.logo-on-dark {
-  display: inline-flex;
-  align-items: center;
-  background: #041E42;
-  border-radius: 0.5rem;
-  padding: 0.35rem 0.65rem;
-}
-.logo-on-dark img {
-  height: 28px;
-  width: auto;
-  max-width: 160px;
-  object-fit: contain;
-  display: block;
-}
