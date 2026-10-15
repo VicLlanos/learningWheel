@@ -1,0 +1,58 @@
+{
+  "name": "learningWheel – LMS for Philippine Schools",
+  "short_name": "learningWheel",
+  "description": "DepEd-compliant Learning Management System for Philippine schools. Gradebooks, SF9/SF10, discussions, messaging — works offline.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F8F9FA",
+  "theme_color": "#041E42",
+  "lang": "en-PH",
+  "dir": "ltr",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "logolearningwheel.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logolearningwheel.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logolearningwheel.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "My Courses",
+      "short_name": "Courses",
+      "description": "Jump straight to your courses",
+      "url": "./index.html?tab=subj",
+      "icons": [{ "src": "logolearningwheel.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "To-Do",
+      "short_name": "To-Do",
+      "description": "See what's due soon",
+      "url": "./index.html?tab=todo",
+      "icons": [{ "src": "logolearningwheel.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Messages",
+      "short_name": "Messages",
+      "description": "Open your inbox",
+      "url": "./index.html?tab=msg",
+      "icons": [{ "src": "logolearningwheel.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false
+}
