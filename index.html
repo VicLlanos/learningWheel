@@ -18,7 +18,7 @@
   <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
     <div class="container">
       <a class="navbar-brand d-flex align-items-center gap-2 mb-0 py-2" href="#" onclick="return false">
-        <img src="logolearningwheel.png" alt="learningWheel" class="logo-nav">
+        <span class="logo-on-dark"><img src="logolearningwheel.png" alt="learningWheel" class="logo-nav"></span>
       </a>
       <div class="d-flex gap-2">
         <button class="btn btn-outline-secondary btn-sm" onclick="view('login')">Portal login</button>
@@ -31,13 +31,13 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8">
-          <h1 class="display-5 mb-3 animate-fade-up">One system for every classroom.</h1>
-          <p class="lead text-secondary mb-4 animate-fade-up" style="max-width:34em; animation-delay: 0.1s;">DepEd-compliant gradebooks, SF9/SF10 report cards, discussions, and messaging — built for Philippine schools. Works on slow connections and during brownouts.</p>
-          <div class="d-flex flex-wrap gap-2 mb-5 animate-fade-up" style="animation-delay: 0.2s;">
+          <h1 class="display-5 mb-3">One system for every classroom.</h1>
+          <p class="lead text-secondary mb-4" style="max-width:34em">DepEd-compliant gradebooks, SF9/SF10 report cards, discussions, and messaging — built for Philippine schools. Works on slow connections and during brownouts.</p>
+          <div class="d-flex flex-wrap gap-2 mb-5">
             <button class="btn btn-primary" onclick="openBuy('Academy')">Request a subscription</button>
             <button class="btn btn-outline-secondary" onclick="view('login')">Try the demo</button>
           </div>
-          <div class="row g-4 pt-3 border-top animate-fade-up" style="animation-delay: 0.3s;">
+          <div class="row g-4 pt-3 border-top">
             <div class="col-6 col-md-3 hero-meta-item">
               <strong>DepEd-aligned</strong>
               <span class="text-secondary small">Order 8, s. 2015 grading</span>
@@ -60,15 +60,15 @@
     </div>
   </section>
 
-  <section class="py-5 bg-light-lw">
+  <section class="py-5">
     <div class="container">
-      <div class="text-center mb-5 animate-fade-up" style="max-width:28rem;margin-inline:auto">
+      <div class="text-center mb-5" style="max-width:28rem;margin-inline:auto">
         <h2 class="h3 mb-2">Built for real school workflows</h2>
         <p class="text-secondary mb-0">Gradebooks, discussions, calendar, and messaging — without the clutter.</p>
       </div>
       <div class="row g-3">
-        <div class="col-md-6 col-lg-4 animate-fade-up" style="animation-delay: 0.05s;">
-          <div class="card h-100 card-hover-lift">
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100">
             <div class="card-body">
               <div class="course-badge mb-3" style="background:#1B2A4A">GB</div>
               <h3 class="h6">Gradebook &amp; SF9</h3>
@@ -76,8 +76,8 @@
             </div>
           </div>
         </div>
-        <div class="col-md-6 col-lg-4 animate-fade-up" style="animation-delay: 0.1s;">
-          <div class="card h-100 card-hover-lift">
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100">
             <div class="card-body">
               <div class="course-badge mb-3" style="background:#2563EB">DI</div>
               <h3 class="h6">Discussions</h3>
@@ -85,8 +85,8 @@
             </div>
           </div>
         </div>
-        <div class="col-md-6 col-lg-4 animate-fade-up" style="animation-delay: 0.15s;">
-          <div class="card h-100 card-hover-lift">
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100">
             <div class="card-body">
               <div class="course-badge mb-3" style="background:#059669">CA</div>
               <h3 class="h6">Calendar</h3>
@@ -94,8 +94,8 @@
             </div>
           </div>
         </div>
-        <div class="col-md-6 col-lg-4 animate-fade-up" style="animation-delay: 0.2s;">
-          <div class="card h-100 card-hover-lift">
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100">
             <div class="card-body">
               <div class="course-badge mb-3" style="background:#7C3AED">MS</div>
               <h3 class="h6">Messages</h3>
@@ -103,8 +103,8 @@
             </div>
           </div>
         </div>
-        <div class="col-md-6 col-lg-4 animate-fade-up" style="animation-delay: 0.25s;">
-          <div class="card h-100 card-hover-lift">
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100">
             <div class="card-body">
               <div class="course-badge mb-3" style="background:#D97706">RS</div>
               <h3 class="h6">Resources</h3>
@@ -112,8 +112,8 @@
             </div>
           </div>
         </div>
-        <div class="col-md-6 col-lg-4 animate-fade-up" style="animation-delay: 0.3s;">
-          <div class="card h-100 card-hover-lift">
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100">
             <div class="card-body">
               <div class="course-badge mb-3" style="background:#64748B">LB</div>
               <h3 class="h6">Low-bandwidth</h3>
@@ -127,7 +127,7 @@
 
   <section class="py-5 bg-white border-top">
     <div class="container">
-      <h2 class="h3 text-center mb-4 animate-fade-up">Plans</h2>
+      <h2 class="h3 text-center mb-4">Plans</h2>
       <div class="row g-3 justify-content-center" id="plans"></div>
     </div>
   </section>
@@ -137,8 +137,8 @@
       <div class="row g-4">
         <div class="col-md-4">
           <div class="d-flex align-items-center gap-2 mb-2">
-            <img src="logolearningwheel.png" alt="learningWheel" class="logo-footer">
-            <span class="brand-text">learning<span class="brand-accent">Wheel</span></span>
+            <span class="logo-on-dark"><img src="logolearningwheel.png" alt="learningWheel" class="logo-nav"></span>
+        <span class="brand-text">learning<span class="brand-accent">Wheel</span></span>
           </div>
           <p class="text-secondary small mb-0">DepEd-aligned LMS for Philippine K–12 schools.</p>
         </div>
@@ -169,33 +169,49 @@
   </footer>
 </div>
 
-<!-- ========== LOGIN (REDESIGNED + ANIMATED) ========== -->
-<div class="view login-view" id="login" hidden>
-  <div class="login-bg-glow"></div>
-  <div class="login-card animate-card-in">
-    <div class="login-logo-wrap">
-      <img src="logolearningwheel.png" alt="learningWheel" class="logo-login-card">
-      <span class="brand-text-login">learning<span class="brand-accent">Wheel</span></span>
+<!-- ========== LOGIN ========== -->
+<div class="view" id="login" hidden>
+  <div class="row g-0">
+    <div class="col-lg-6 d-none d-lg-flex login-art align-items-center">
+      <div class="px-5 py-5" style="max-width:28rem">
+        <div class="mb-4 logo-login-wrap">
+          <img src="logolearningwheel.png" alt="learningWheel" class="logo-login">
+        </div>
+        <h1 class="h2 text-white mb-3">Welcome back.</h1>
+        <p class="text-muted-light mb-0">One gateway for students, teachers, parents, and principals.</p>
+        <ul>
+          <li>Gradebook &amp; SF9 / SF10</li>
+          <li>Discussions &amp; messaging</li>
+          <li>Calendar &amp; resources</li>
+          <li>Parent progress portal</li>
+        </ul>
+      </div>
     </div>
-    
-    <h2 class="h4 mb-1 text-center">Welcome back</h2>
-    <p class="text-secondary small text-center mb-4">Sign in to your portal</p>
-
-    <label class="form-label small fw-semibold">I am a…</label>
-    <div class="row g-2 mb-3" id="roles"></div>
-    
-    <div class="mb-3">
-      <label class="form-label small fw-semibold" for="em">Email / LRN</label>
-      <input type="text" class="form-control" id="em" value="demo@school.edu.ph" autocomplete="username">
+    <div class="col-lg-6">
+      <div class="login-form-wrap">
+        <div style="width:100%;max-width:22rem">
+          <div class="d-lg-none d-flex align-items-center gap-2 mb-4">
+            <span class="logo-on-dark"><img src="logolearningwheel.png" alt="learningWheel" class="logo-nav"></span>
+        <span class="brand-text">learning<span class="brand-accent">Wheel</span></span>
+          </div>
+          <h2 class="h4 mb-3">Sign in</h2>
+          <label class="form-label small fw-semibold">I am a…</label>
+          <div class="row g-2 mb-3" id="roles"></div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold" for="em">Email / LRN</label>
+            <input type="text" class="form-control" id="em" value="demo@school.edu.ph" autocomplete="username">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold" for="pw">Password</label>
+            <input type="password" class="form-control" id="pw" placeholder="Any password works" autocomplete="current-password">
+          </div>
+          <button class="btn btn-primary w-100 mb-2" onclick="doLogin()">Sign in</button>
+          <button class="btn btn-outline-secondary w-100 mb-2" onclick="view('landing')">Back to website</button>
+          <button class="btn btn-outline-secondary w-100 mb-3" onclick="resetDB()">Reset demo data</button>
+          <p class="text-secondary small text-center mb-0">Demo mode — no real accounts required</p>
+        </div>
+      </div>
     </div>
-    <div class="mb-3">
-      <label class="form-label small fw-semibold" for="pw">Password</label>
-      <input type="password" class="form-control" id="pw" placeholder="Any password works" autocomplete="current-password">
-    </div>
-    <button class="btn btn-primary w-100 mb-2 btn-hover-lift" onclick="doLogin()">Sign in</button>
-    <button class="btn btn-outline-secondary w-100 mb-2 btn-hover-lift" onclick="view('landing')">Back to website</button>
-    <button class="btn btn-outline-secondary w-100 mb-3 btn-hover-lift" onclick="resetDB()">Reset demo data</button>
-    <p class="text-secondary small text-center mb-0">Demo mode — no real accounts required</p>
   </div>
 </div>
 
@@ -236,7 +252,7 @@
             <option value="Q3" selected>Q3</option>
             <option value="Q4">Q4</option>
           </select>
-          <select id="kid" class="form-select form-select-sm" hidden style="width:auto" aria-label="Switch child" onchange="state.kid=+this.value;renderParent()"></select>
+          <select id="kid" class="form-select form-select-sm" hidden style="width:auto" aria-label="Switch child"></select>
           <button class="btn btn-outline-secondary btn-sm position-relative" onclick="tab('alerts')" title="Notifications" id="notifBtn">
             <i class="bi bi-bell"></i><span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifBadge" hidden style="font-size:0.65rem">0</span>
           </button>
@@ -251,7 +267,7 @@
         <div class="panel" id="p-todo" hidden></div>
         <div class="panel" id="p-alerts" hidden></div>
         <div class="panel" id="p-up" hidden>
-          <div class="card animate-fade-up">
+          <div class="card">
             <div class="card-body">
               <h2 class="h5">Smart submission</h2>
               <p class="text-secondary small">Poor signal? Files are compressed before upload so you can submit on slow data.</p>
@@ -263,7 +279,7 @@
           </div>
         </div>
         <div class="panel" id="p-quiz" hidden>
-          <div class="card animate-fade-up">
+          <div class="card">
             <div class="card-body">
               <h2 class="h5">Science quiz</h2>
               <p class="text-secondary small">Answers are saved on this device. If power drops, they come back.</p>
@@ -278,7 +294,7 @@
         </div>
         <div class="panel" id="p-rad" hidden><h2 class="h5" id="kn"></h2><div class="row g-3" id="tl"></div></div>
         <div class="panel" id="p-sf9" hidden>
-          <div class="card animate-fade-up">
+          <div class="card">
             <div class="card-body">
               <h2 class="h5">Report card (SF9)</h2>
               <div id="sf"></div>
@@ -293,46 +309,9 @@
             </div>
           </div>
         </div>
-        <div class="panel" id="p-ops" hidden>
-          <div class="row g-3">
-            <div class="col-md-4 animate-fade-up" style="animation-delay: 0.05s;"><div class="card"><div class="card-body"><h3 class="h6">Enrollment by grade</h3><div id="c1"></div></div></div></div>
-            <div class="col-md-4 animate-fade-up" style="animation-delay: 0.1s;"><div class="card"><div class="card-body"><h3 class="h6">Average GPA</h3><div id="c2"></div></div></div></div>
-            <div class="col-md-4 animate-fade-up" style="animation-delay: 0.15s;"><div class="card"><div class="card-body"><h3 class="h6">Attendance %</h3><div id="c3"></div></div></div></div>
-          </div>
-        </div>
-        <div class="panel" id="p-comp" hidden>
-          <div class="card animate-fade-up">
-            <div class="card-body">
-              <h2 class="h5">Teacher compliance ledger</h2>
-              <div class="table-responsive">
-                <table class="table table-sm align-middle mb-0">
-                  <thead><tr><th>Teacher</th><th>Assignments reviewed</th><th>Lesson logs</th><th>Status</th></tr></thead>
-                  <tbody id="cl"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="panel" id="p-lic" hidden>
-          <div class="row g-3">
-            <div class="col-md-6 animate-fade-up" style="animation-delay: 0.05s;">
-              <div class="card"><div class="card-body">
-                <h2 class="h5">License slots</h2>
-                <p class="fs-3 fw-bold mb-2">750 / 1000 filled</p>
-                <div class="progress mb-2" style="height:6px"><div class="progress-bar" style="width:75%;background:var(--lw-primary)"></div></div>
-                <p class="text-secondary small mb-0">250 slots remaining</p>
-              </div></div>
-            </div>
-            <div class="col-md-6 animate-fade-up" style="animation-delay: 0.1s;">
-              <div class="card"><div class="card-body">
-                <h2 class="h5">Billing</h2>
-                <p><span class="badge text-bg-success">Active</span> Academy plan</p>
-                <p class="text-secondary small">Renews Jun 30, 2027 · ₱79,900 / year</p>
-                <button class="btn btn-outline-secondary btn-sm" onclick="toast('Invoice sent to finance@school.edu.ph')">Download invoice</button>
-              </div></div>
-            </div>
-          </div>
-        </div>
+        <div class="panel" id="p-ops" hidden></div>
+        <div class="panel" id="p-comp" hidden></div>
+        <div class="panel" id="p-lic" hidden></div>
         <div class="panel" id="p-disc" hidden></div>
         <div class="panel" id="p-cal" hidden></div>
         <div class="panel" id="p-msg" hidden></div>
