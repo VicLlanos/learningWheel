@@ -2,16 +2,33 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>learningWheel – LMS for Philippine Schools</title>
 <meta name="description" content="DepEd-compliant Learning Management System for Philippine schools.">
+
+<!-- ===== PWA ===== -->
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#041E42">
+<meta name="color-scheme" content="light">
 <link rel="icon" type="image/png" href="logolearningwheel.png">
+<link rel="apple-touch-icon" href="logolearningwheel.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="learningWheel">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="learningWheel">
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+<!-- ===== Update banner (shown when new SW is waiting) ===== -->
+<div id="updateBanner" class="update-banner" hidden>
+  <span><i class="bi bi-arrow-clockwise me-1"></i>A new version of learningWheel is ready.</span>
+  <button class="btn btn-sm btn-light ms-2" onclick="applyUpdate()">Refresh</button>
+</div>
 
 <!-- ========== LANDING ========== -->
 <div class="view" id="landing">
@@ -20,7 +37,7 @@
       <a class="navbar-brand d-flex align-items-center gap-2 mb-0 py-2" href="#" onclick="return false">
         <span class="logo-on-dark"><img src="logolearningwheel.png" alt="learningWheel" class="logo-nav"></span>
       </a>
-      <div class="d-flex gap-2">
+      <div class="d-flex gap-2 flex-wrap">
         <button class="btn btn-outline-secondary btn-sm" onclick="view('login')">Portal login</button>
         <button class="btn btn-primary btn-sm" onclick="openBuy('Academy')">Get started</button>
       </div>
@@ -30,12 +47,15 @@
   <section class="hero-lw">
     <div class="container">
       <div class="row">
-        <div class="col-lg-8">
+        <div class="col-lg-9 col-xl-8">
           <h1 class="display-5 mb-3">One system for every classroom.</h1>
           <p class="lead text-secondary mb-4" style="max-width:34em">DepEd-compliant gradebooks, SF9/SF10 report cards, discussions, and messaging — built for Philippine schools. Works on slow connections and during brownouts.</p>
           <div class="d-flex flex-wrap gap-2 mb-5">
             <button class="btn btn-primary" onclick="openBuy('Academy')">Request a subscription</button>
             <button class="btn btn-outline-secondary" onclick="view('login')">Try the demo</button>
+            <button class="btn btn-outline-primary" onclick="promptInstall()">
+              <i class="bi bi-phone me-1"></i>Install app
+            </button>
           </div>
           <div class="row g-4 pt-3 border-top">
             <div class="col-6 col-md-3 hero-meta-item">
@@ -51,8 +71,8 @@
               <span class="text-secondary small">Quizzes recover after power loss</span>
             </div>
             <div class="col-6 col-md-3 hero-meta-item">
-              <strong>Parent portal</strong>
-              <span class="text-secondary small">Progress &amp; approval</span>
+              <strong>Installable</strong>
+              <span class="text-secondary small">Add to home screen</span>
             </div>
           </div>
         </div>
@@ -115,9 +135,9 @@
         <div class="col-md-6 col-lg-4">
           <div class="card h-100">
             <div class="card-body">
-              <div class="course-badge mb-3" style="background:#64748B">LB</div>
-              <h3 class="h6">Low-bandwidth</h3>
-              <p class="text-secondary small mb-0">Smart compression and offline answer recovery for unstable networks.</p>
+              <div class="course-badge mb-3" style="background:#64748B">PWA</div>
+              <h3 class="h6">Installable &amp; Offline</h3>
+              <p class="text-secondary small mb-0">Add to home screen. Keep reading even when the signal drops.</p>
             </div>
           </div>
         </div>
@@ -138,7 +158,7 @@
         <div class="col-md-4">
           <div class="d-flex align-items-center gap-2 mb-2">
             <span class="logo-on-dark"><img src="logolearningwheel.png" alt="learningWheel" class="logo-nav"></span>
-        <span class="brand-text">learning<span class="brand-accent">Wheel</span></span>
+            <span class="brand-text">learning<span class="brand-accent">Wheel</span></span>
           </div>
           <p class="text-secondary small mb-0">DepEd-aligned LMS for Philippine K–12 schools.</p>
         </div>
@@ -171,9 +191,10 @@
 
 <!-- ========== LOGIN ========== -->
 <div class="view" id="login" hidden>
-  <div class="row g-0">
+  <div class="row g-0 login-row">
+    <!-- Left panel: only shows on lg+ -->
     <div class="col-lg-6 d-none d-lg-flex login-art align-items-center">
-      <div class="px-5 py-5" style="max-width:28rem">
+      <div class="px-5 py-5" style="max-width:32rem;width:100%">
         <div class="mb-4 logo-login-wrap">
           <img src="logolearningwheel.png" alt="learningWheel" class="logo-login">
         </div>
@@ -187,12 +208,15 @@
         </ul>
       </div>
     </div>
-    <div class="col-lg-6">
+
+    <!-- Right panel: form -->
+    <div class="col-lg-6 login-form-col">
       <div class="login-form-wrap">
-        <div style="width:100%;max-width:22rem">
+        <div class="login-form-inner">
+          <!-- Brand shown on mobile only -->
           <div class="d-lg-none d-flex align-items-center gap-2 mb-4">
             <span class="logo-on-dark"><img src="logolearningwheel.png" alt="learningWheel" class="logo-nav"></span>
-        <span class="brand-text">learning<span class="brand-accent">Wheel</span></span>
+            <span class="brand-text">learning<span class="brand-accent">Wheel</span></span>
           </div>
           <h2 class="h4 mb-3">Sign in</h2>
           <label class="form-label small fw-semibold">I am a…</label>
@@ -222,6 +246,9 @@
     <aside class="sidebar d-flex flex-column" id="sidebar">
       <div class="sidebar-brand">
         <img src="logolearningwheel.png" alt="learningWheel" class="logo-sidebar">
+        <button class="sidebar-close d-lg-none" onclick="toggleSide(false)" aria-label="Close menu">
+          <i class="bi bi-x-lg"></i>
+        </button>
       </div>
       <nav class="nav flex-column py-2 flex-grow-1" id="sideNav"></nav>
       <div class="sidebar-footer">
@@ -232,27 +259,35 @@
             <div class="small" style="font-size:0.75rem" id="userRole">Student</div>
           </div>
         </div>
+        <button class="btn btn-outline-secondary btn-sm w-100 mb-2" style="border-color:rgba(255,255,255,0.15);color:#D1D5DB" onclick="promptInstall()" id="installBtnSide" hidden>
+          <i class="bi bi-download me-1"></i>Install app
+        </button>
         <button class="btn btn-outline-secondary btn-sm w-100" style="border-color:rgba(255,255,255,0.15);color:#D1D5DB" onclick="view('login')">Log out</button>
       </div>
     </aside>
 
     <div class="main-area">
-      <header class="topbar d-flex align-items-center justify-content-between gap-2 flex-wrap">
-        <div class="d-flex align-items-center gap-2 flex-grow-1">
-          <button class="btn btn-outline-secondary btn-sm d-lg-none" onclick="toggleSide()" aria-label="Menu"><i class="bi bi-list"></i></button>
-          <div class="input-group input-group-sm" style="max-width:18rem">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="btn btn-outline-secondary btn-sm d-lg-none" onclick="toggleSide()" aria-label="Menu">
+            <i class="bi bi-list"></i>
+          </button>
+          <div class="input-group input-group-sm topbar-search">
             <span class="input-group-text bg-white text-secondary border-end-0"><i class="bi bi-search"></i></span>
-            <input type="search" class="form-control border-start-0" placeholder="Search courses, posts…" id="search" oninput="onSearch(this.value)">
+            <input type="search" class="form-control border-start-0" placeholder="Search…" id="search" oninput="onSearch(this.value)">
           </div>
         </div>
-        <div class="d-flex align-items-center gap-2">
-          <select id="quarter" class="form-select form-select-sm" style="width:auto;min-width:7rem" aria-label="Quarter" onchange="setQuarter(this.value)" title="Academic quarter">
+        <div class="topbar-right">
+          <select id="quarter" class="form-select form-select-sm quarter-select" aria-label="Quarter" onchange="setQuarter(this.value)" title="Academic quarter">
             <option value="Q1">Q1</option>
             <option value="Q2">Q2</option>
             <option value="Q3" selected>Q3</option>
             <option value="Q4">Q4</option>
           </select>
-          <select id="kid" class="form-select form-select-sm" hidden style="width:auto" aria-label="Switch child"></select>
+          <select id="kid" class="form-select form-select-sm kid-select" hidden aria-label="Switch child"></select>
+          <button class="btn btn-outline-primary btn-sm install-top-btn" id="installBtn" onclick="promptInstall()" hidden title="Install app">
+            <i class="bi bi-download"></i><span class="d-none d-sm-inline ms-1">Install</span>
+          </button>
           <button class="btn btn-outline-secondary btn-sm position-relative" onclick="tab('alerts')" title="Notifications" id="notifBtn">
             <i class="bi bi-bell"></i><span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifBadge" hidden style="font-size:0.65rem">0</span>
           </button>
@@ -326,7 +361,7 @@
 
 <!-- Buy modal -->
 <div class="modal fade" id="buyModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div id="bf">
         <div class="modal-header">
