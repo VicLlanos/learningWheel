@@ -34,8 +34,8 @@
           <h1 class="display-5 mb-3 animate-fade-up">One system for every classroom.</h1>
           <p class="lead text-secondary mb-4 animate-fade-up" style="max-width:34em; animation-delay: 0.1s;">DepEd-compliant gradebooks, SF9/SF10 report cards, discussions, and messaging — built for Philippine schools. Works on slow connections and during brownouts.</p>
           <div class="d-flex flex-wrap gap-2 mb-5 animate-fade-up" style="animation-delay: 0.2s;">
-            <button class="btn btn-primary btn-ripple" onclick="openBuy('Academy')">Request a subscription</button>
-            <button class="btn btn-outline-secondary btn-ripple" onclick="view('login')">Try the demo</button>
+            <button class="btn btn-primary" onclick="openBuy('Academy')">Request a subscription</button>
+            <button class="btn btn-outline-secondary" onclick="view('login')">Try the demo</button>
           </div>
           <div class="row g-4 pt-3 border-top animate-fade-up" style="animation-delay: 0.3s;">
             <div class="col-6 col-md-3 hero-meta-item">
@@ -145,8 +145,8 @@
         <div class="col-6 col-md-2">
           <h6 class="small fw-semibold">Product</h6>
           <ul class="list-unstyled small text-secondary">
-            <li class="mb-1"><a href="#" class="text-secondary text-decoration-none link-hover" onclick="view('login');return false">Demo portal</a></li>
-            <li><a href="#" class="text-secondary text-decoration-none link-hover" onclick="openBuy('Academy');return false">Pricing</a></li>
+            <li class="mb-1"><a href="#" class="text-secondary text-decoration-none" onclick="view('login');return false">Demo portal</a></li>
+            <li><a href="#" class="text-secondary text-decoration-none" onclick="openBuy('Academy');return false">Pricing</a></li>
           </ul>
         </div>
         <div class="col-6 col-md-3">
@@ -192,9 +192,9 @@
       <label class="form-label small fw-semibold" for="pw">Password</label>
       <input type="password" class="form-control" id="pw" placeholder="Any password works" autocomplete="current-password">
     </div>
-    <button class="btn btn-primary w-100 mb-2 btn-hover-lift btn-ripple" onclick="doLogin()">Sign in</button>
-    <button class="btn btn-outline-secondary w-100 mb-2 btn-hover-lift btn-ripple" onclick="view('landing')">Back to website</button>
-    <button class="btn btn-outline-secondary w-100 mb-3 btn-hover-lift btn-ripple" onclick="resetDB()">Reset demo data</button>
+    <button class="btn btn-primary w-100 mb-2 btn-hover-lift" onclick="doLogin()">Sign in</button>
+    <button class="btn btn-outline-secondary w-100 mb-2 btn-hover-lift" onclick="view('landing')">Back to website</button>
+    <button class="btn btn-outline-secondary w-100 mb-3 btn-hover-lift" onclick="resetDB()">Reset demo data</button>
     <p class="text-secondary small text-center mb-0">Demo mode — no real accounts required</p>
   </div>
 </div>
@@ -216,14 +216,14 @@
             <div class="small" style="font-size:0.75rem" id="userRole">Student</div>
           </div>
         </div>
-        <button class="btn btn-outline-secondary btn-sm w-100 btn-ripple" style="border-color:rgba(255,255,255,0.15);color:#D1D5DB" onclick="view('login')">Log out</button>
+        <button class="btn btn-outline-secondary btn-sm w-100" style="border-color:rgba(255,255,255,0.15);color:#D1D5DB" onclick="view('login')">Log out</button>
       </div>
     </aside>
 
     <div class="main-area">
       <header class="topbar d-flex align-items-center justify-content-between gap-2 flex-wrap">
         <div class="d-flex align-items-center gap-2 flex-grow-1">
-          <button class="btn btn-outline-secondary btn-sm d-lg-none btn-tooltip" data-tooltip="Menu" onclick="toggleSide()" aria-label="Menu"><i class="bi bi-list"></i></button>
+          <button class="btn btn-outline-secondary btn-sm d-lg-none" onclick="toggleSide()" aria-label="Menu"><i class="bi bi-list"></i></button>
           <div class="input-group input-group-sm" style="max-width:18rem">
             <span class="input-group-text bg-white text-secondary border-end-0"><i class="bi bi-search"></i></span>
             <input type="search" class="form-control border-start-0" placeholder="Search courses, posts…" id="search" oninput="onSearch(this.value)">
@@ -237,7 +237,7 @@
             <option value="Q4">Q4</option>
           </select>
           <select id="kid" class="form-select form-select-sm" hidden style="width:auto" aria-label="Switch child" onchange="state.kid=+this.value;renderParent()"></select>
-          <button class="btn btn-outline-secondary btn-sm position-relative btn-tooltip" data-tooltip="Notifications" onclick="tab('alerts')" id="notifBtn">
+          <button class="btn btn-outline-secondary btn-sm position-relative" onclick="tab('alerts')" title="Notifications" id="notifBtn">
             <i class="bi bi-bell"></i><span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifBadge" hidden style="font-size:0.65rem">0</span>
           </button>
         </div>
@@ -256,9 +256,9 @@
               <h2 class="h5">Smart submission</h2>
               <p class="text-secondary small">Poor signal? Files are compressed before upload so you can submit on slow data.</p>
               <p class="mb-2"><strong>science-project.pdf</strong> — <span id="sz">5.0 MB</span></p>
-              <div class="progress mb-2" style="height:6px"><div class="progress-bar bg-success progress-bar-striped progress-bar-animated" id="pb" style="width:0%"></div></div>
+              <div class="progress mb-2" style="height:6px"><div class="progress-bar bg-success" id="pb" style="width:0%"></div></div>
               <p id="pm" class="text-secondary small">Ready to compress.</p>
-              <button class="btn btn-primary btn-sm btn-ripple" id="cb" onclick="compress()">Compress &amp; submit</button>
+              <button class="btn btn-primary btn-sm" id="cb" onclick="compress()">Compress &amp; submit</button>
             </div>
           </div>
         </div>
@@ -269,8 +269,8 @@
               <p class="text-secondary small">Answers are saved on this device. If power drops, they come back.</p>
               <div id="qz"></div>
               <div class="d-flex flex-wrap gap-2 mt-3">
-                <button class="btn btn-success btn-sm btn-ripple" onclick="gradeQuiz()">Submit quiz</button>
-                <button class="btn btn-outline-secondary btn-sm btn-ripple" onclick="brownout()">Simulate brownout</button>
+                <button class="btn btn-success btn-sm" onclick="gradeQuiz()">Submit quiz</button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="brownout()">Simulate brownout</button>
               </div>
               <p id="qm" class="fw-semibold mt-3 mb-0"></p>
             </div>
@@ -285,9 +285,9 @@
               <h3 class="h6 mt-4">Parent approval</h3>
               <canvas id="sig"></canvas>
               <div class="d-flex flex-wrap gap-2 mt-3">
-                <button class="btn btn-outline-secondary btn-sm btn-ripple" onclick="clearSig()">Clear</button>
-                <button class="btn btn-success btn-sm btn-ripple" onclick="approve('Signature')">Sign &amp; approve</button>
-                <button class="btn btn-primary btn-sm btn-ripple" onclick="approve('Biometric')">Biometric approve</button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="clearSig()">Clear</button>
+                <button class="btn btn-success btn-sm" onclick="approve('Signature')">Sign &amp; approve</button>
+                <button class="btn btn-primary btn-sm" onclick="approve('Biometric')">Biometric approve</button>
               </div>
               <p id="ap" class="text-success fw-semibold mt-2 mb-0"></p>
             </div>
@@ -305,7 +305,7 @@
             <div class="card-body">
               <h2 class="h5">Teacher compliance ledger</h2>
               <div class="table-responsive">
-                <table class="table table-sm align-middle mb-0 table-hover">
+                <table class="table table-sm align-middle mb-0">
                   <thead><tr><th>Teacher</th><th>Assignments reviewed</th><th>Lesson logs</th><th>Status</th></tr></thead>
                   <tbody id="cl"></tbody>
                 </table>
@@ -319,7 +319,7 @@
               <div class="card"><div class="card-body">
                 <h2 class="h5">License slots</h2>
                 <p class="fs-3 fw-bold mb-2">750 / 1000 filled</p>
-                <div class="progress mb-2" style="height:6px"><div class="progress-bar progress-bar-striped progress-bar-animated" style="width:75%;background:var(--lw-primary)"></div></div>
+                <div class="progress mb-2" style="height:6px"><div class="progress-bar" style="width:75%;background:var(--lw-primary)"></div></div>
                 <p class="text-secondary small mb-0">250 slots remaining</p>
               </div></div>
             </div>
@@ -328,7 +328,7 @@
                 <h2 class="h5">Billing</h2>
                 <p><span class="badge text-bg-success">Active</span> Academy plan</p>
                 <p class="text-secondary small">Renews Jun 30, 2027 · ₱79,900 / year</p>
-                <button class="btn btn-outline-secondary btn-sm btn-ripple" onclick="toast('Invoice sent to finance@school.edu.ph')">Download invoice</button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="toast('Invoice sent to finance@school.edu.ph')">Download invoice</button>
               </div></div>
             </div>
           </div>
@@ -369,24 +369,16 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary btn-ripple" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary btn-ripple" onclick="submitBuy()">Submit request</button>
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="submitBuy()">Submit request</button>
         </div>
       </div>
       <div id="bd" hidden>
         <div class="modal-body text-center py-5">
-          <div class="success-checkmark mb-3">
-            <div class="check-icon">
-              <span class="icon-line line-tip"></span>
-              <span class="icon-line line-long"></span>
-              <div class="icon-circle"></div>
-              <div class="icon-fix"></div>
-            </div>
-          </div>
           <h5 class="mb-2">Request received</h5>
           <p>Reference: <strong id="ref"></strong></p>
           <p class="text-secondary small">Next: onboarding call within 2 days → data import → teacher training → go-live.</p>
-          <button class="btn btn-primary btn-ripple" data-bs-dismiss="modal">Done</button>
+          <button class="btn btn-primary" data-bs-dismiss="modal">Done</button>
         </div>
       </div>
     </div>
