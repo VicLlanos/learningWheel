@@ -1,4 +1,4 @@
-/* learningWheel – Role-Based LMS
+/* learningWheel – Role-Based LMS + PWA
    Roles: student, teacher, parent, principal
    Each role has scoped data, guarded tabs, and dedicated renderers.
 */
@@ -25,6 +25,7 @@ const state = {
 
 const T = m => {
   const t = $('#toast');
+  if (!t) return;
   t.textContent = m;
   t.hidden = false;
   clearTimeout(T.i);
@@ -44,7 +45,7 @@ function toggleSide(force) {
   if (!s) return;
   const open = force === undefined ? !s.classList.contains('open') : force;
   s.classList.toggle('open', open);
-  o.classList.toggle('open', open);
+  if (o) o.classList.toggle('open', open);
 }
 
 /* ========== Landing ========== */
@@ -54,25 +55,31 @@ const plans = [
   ['Enterprise', 'Division Enterprise', 'Custom', 'Unlimited schools', ['Division dashboards', 'SSO & data export', 'Dedicated manager', 'Custom training']]
 ];
 
-$('#plans').innerHTML = plans.map(p => `
-  <div class="col-md-4">
-    <div class="card h-100 ${p[0] === 'Academy' ? 'border-dark' : ''}">
-      <div class="card-body d-flex flex-column">
-        <div class="d-flex justify-content-between align-items-start mb-1">
-          <h3 class="h6 mb-0">${p[1]}</h3>
-          ${p[0] === 'Academy' ? '<span class="badge text-bg-dark">Popular</span>' : ''}
+const plansEl = $('#plans');
+if (plansEl) {
+  plansEl.innerHTML = plans.map(p => `
+    <div class="col-md-4">
+      <div class="card h-100 ${p[0] === 'Academy' ? 'border-dark' : ''}">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <h3 class="h6 mb-0">${p[1]}</h3>
+            ${p[0] === 'Academy' ? '<span class="badge text-bg-dark">Popular</span>' : ''}
+          </div>
+          <div class="fs-3 fw-bold mb-1">${p[2]}</div>
+          <p class="text-secondary small">${p[3]} / year</p>
+          <ul class="small text-secondary mb-3 flex-grow-1 ps-3">
+            ${p[4].map(x => `<li class="mb-1">${x}</li>`).join('')}
+          </ul>
+          <button class="btn ${p[0] === 'Academy' ? 'btn-primary' : 'btn-outline-secondary'} btn-sm w-100" onclick="openBuy('${p[0]}')">Choose plan</button>
         </div>
-        <div class="fs-3 fw-bold mb-1">${p[2]}</div>
-        <p class="text-secondary small">${p[3]} / year</p>
-        <ul class="small text-secondary mb-3 flex-grow-1 ps-3">
-          ${p[4].map(x => `<li class="mb-1">${x}</li>`).join('')}
-        </ul>
-        <button class="btn ${p[0] === 'Academy' ? 'btn-primary' : 'btn-outline-secondary'} btn-sm w-100" onclick="openBuy('${p[0]}')">Choose plan</button>
       </div>
-    </div>
-  </div>`).join('');
+    </div>`).join('');
+}
 
-$('#bp').innerHTML = plans.map(p => `<option value="${p[0]}">${p[1]} – ${p[2]}</option>`).join('');
+const bpEl = $('#bp');
+if (bpEl) {
+  bpEl.innerHTML = plans.map(p => `<option value="${p[0]}">${p[1]} – ${p[2]}</option>`).join('');
+}
 
 let buyModal;
 function openBuy(p) {
@@ -98,7 +105,9 @@ const R = [
 ];
 
 function drawRoles() {
-  $('#roles').innerHTML = R.map(r =>
+  const el = $('#roles');
+  if (!el) return;
+  el.innerHTML = R.map(r =>
     `<div class="col-6 col-sm-3">
       <button type="button" class="role-btn w-100 ${state.role === r[0] ? 'active' : ''}" onclick="state.role='${r[0]}';drawRoles()">${r[1]}</button>
     </div>`
@@ -189,10 +198,13 @@ function doLogin() {
   $('#av').textContent = USER_NAMES[state.role].charAt(0);
 
   // Parent child switcher only for parents
-  $('#kid').hidden = !isParent();
-  if (isParent()) {
-    state.kid = 0;
-    $('#kid').value = '0';
+  const kidEl = $('#kid');
+  if (kidEl) {
+    kidEl.hidden = !isParent();
+    if (isParent()) {
+      state.kid = 0;
+      kidEl.value = '0';
+    }
   }
 
   buildSideNav();
@@ -203,8 +215,10 @@ function doLogin() {
 }
 
 function buildSideNav() {
+  const el = $('#sideNav');
+  if (!el) return;
   const items = NAV[state.role] || [];
-  $('#sideNav').innerHTML = items.map(n =>
+  el.innerHTML = items.map(n =>
     `<a href="#" class="nav-link ${state.tab === n.k ? 'active' : ''}" onclick="tab('${n.k}');return false">
       <i class="bi ${n.ico}"></i> ${n.label}
     </a>`
@@ -475,6 +489,7 @@ const chips = (i, subj) =>
 /* ========== Student: Home ========== */
 function rHome() {
   const el = $('#p-home');
+  if (!el) return;
   if (isStudent()) return rHomeStudent(el);
   if (isTeacher()) return rHomeTeacher(el);
   if (isParent()) return rHomeParent(el);
@@ -493,7 +508,7 @@ function rHomeStudent(el) {
           <h1 class="h4 mb-1">Welcome back, Ana</h1>
           <p class="text-secondary small mb-0">Here is what is happening in your classes today.</p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap">
           <button class="btn btn-outline-secondary btn-sm" onclick="tab('todo')"><i class="bi bi-check2-square me-1"></i>To-Do</button>
           <button class="btn btn-primary btn-sm" onclick="tab('subj')"><i class="bi bi-journal-bookmark me-1"></i>Courses</button>
         </div>
@@ -568,7 +583,7 @@ function rHomeTeacher(el) {
           <h1 class="h4 mb-1">Teacher dashboard</h1>
           <p class="text-secondary small mb-0">Manage classes, post work, and track progress.</p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap">
           <button class="btn btn-outline-secondary btn-sm" onclick="tab('disc')"><i class="bi bi-chat-dots me-1"></i>Discussions</button>
           <button class="btn btn-primary btn-sm" onclick="tab('cls')"><i class="bi bi-plus-lg me-1"></i>Post to class</button>
         </div>
@@ -634,7 +649,7 @@ function rHomeParent(el) {
           <h1 class="h4 mb-1">Parent home</h1>
           <p class="text-secondary small mb-0">Overview for ${k.n} · ${k.g}</p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap">
           <button class="btn btn-outline-secondary btn-sm" onclick="tab('msg')"><i class="bi bi-envelope me-1"></i>Messages</button>
           <button class="btn btn-primary btn-sm" onclick="tab('sf9')"><i class="bi bi-file-earmark-text me-1"></i>Report card</button>
         </div>
@@ -680,7 +695,7 @@ function rHomePrincipal(el) {
           <h1 class="h4 mb-1">Principal dashboard</h1>
           <p class="text-secondary small mb-0">School-wide operations at a glance.</p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap">
           <button class="btn btn-outline-secondary btn-sm" onclick="tab('comp')"><i class="bi bi-clipboard-check me-1"></i>Compliance</button>
           <button class="btn btn-primary btn-sm" onclick="tab('ops')"><i class="bi bi-graph-up me-1"></i>Operations</button>
         </div>
@@ -765,6 +780,7 @@ function openSubj(id) {
 function rSubj() {
   if (!isStudent()) return T('Access denied');
   const el = $('#p-subj');
+  if (!el) return;
   if (!state.subj) {
     state.fresh = [];
     el.innerHTML = `<h1 class="h4 mb-1">My courses</h1>
@@ -809,16 +825,20 @@ function rSubj() {
 function rTodo() {
   if (!isStudent()) return T('Access denied');
   const l = sItems().filter(isT).sort((a, b) => (!!DB.done[a.id] - !!DB.done[b.id]) || (a.due > b.due ? 1 : -1));
-  $('#p-todo').innerHTML = `<h1 class="h4 mb-1">My to-do</h1>
+  const el = $('#p-todo');
+  if (!el) return;
+  el.innerHTML = `<h1 class="h4 mb-1">My to-do</h1>
     <p class="text-secondary small mb-4">Left border: urgent · later · done</p>
     ${l.map(i => sItem(i, 1)).join('') || empty('No tasks yet. You are all caught up.')}`;
 }
 
 function rAlerts() {
   if (!isStudent()) return T('Access denied');
+  const el = $('#p-alerts');
+  if (!el) return;
   const u = sItems().filter(i => !DB.read[i.id]);
   const um = DB.messages.filter(m => m.to === USER_NAMES.student && !m.read);
-  $('#p-alerts').innerHTML = `<h1 class="h4 mb-3">Notifications</h1>
+  el.innerHTML = `<h1 class="h4 mb-3">Notifications</h1>
     ${u.length || um.length
       ? `<button class="btn btn-outline-secondary btn-sm mb-3" onclick="markAllRead()">Mark all as read</button>
          ${um.map(m => `<div class="task-item border-info" style="cursor:pointer" onclick="tab('msg')">
@@ -909,6 +929,7 @@ function post(cid) {
 function rCls() {
   if (!isTeacher()) return T('Access denied');
   const el = $('#p-cls');
+  if (!el) return;
   if (!state.cls) {
     el.innerHTML = `<h1 class="h4 mb-1">My classes</h1>
       <p class="text-secondary small mb-4">Select a class to post tasks, homework, and announcements.</p>
@@ -985,14 +1006,18 @@ function rCls() {
 function rRecent() {
   if (!isTeacher()) return T('Access denied');
   const l = DB.items.filter(i => cls(i.cid) && cls(i.cid).t === USER_NAMES.teacher).sort((a, b) => b.at - a.at);
-  $('#p-recent').innerHTML = `<h1 class="h4 mb-1">Recent posts</h1>
+  const el = $('#p-recent');
+  if (!el) return;
+  el.innerHTML = `<h1 class="h4 mb-1">Recent posts</h1>
     <p class="text-secondary small mb-4">Everything you posted across all classes.</p>
     ${l.map(i => tItem(i, 1)).join('') || empty('No posts yet.')}`;
 }
 
 function rGrades() {
   if (!isTeacher()) return T('Access denied');
-  $('#p-grades').innerHTML = `<h1 class="h4 mb-1">Grade Center</h1>
+  const el = $('#p-grades');
+  if (!el) return;
+  el.innerHTML = `<h1 class="h4 mb-1">Grade Center</h1>
     <p class="text-secondary small mb-4">Select a class to open its gradebook.</p>
     <div class="row g-3">${myClasses().map(c =>
       `<div class="col-md-6 col-lg-4">
@@ -1011,11 +1036,11 @@ function rGrades() {
 function rDisc() {
   if (!isStudent() && !isTeacher()) return T('Access denied');
   const el = $('#p-disc');
+  if (!el) return;
   if (state.discId) {
     const d = DB.discussions.find(x => x.id == state.discId);
     if (!d) { state.discId = null; return rDisc(); }
     const c = cls(d.cid);
-    // Students can only view discussions for their section
     if (isStudent() && c && c.sec !== mySec) { state.discId = null; return rDisc(); }
     el.innerHTML = `
       <button class="btn btn-link btn-sm px-0 mb-2" onclick="state.discId=null;tab('disc')">← All discussions</button>
@@ -1105,6 +1130,7 @@ function postReply(id) {
 /* ========== Calendar ========== */
 function rCal() {
   const el = $('#p-cal');
+  if (!el) return;
   const now = new Date();
   const y = now.getFullYear();
   const m = now.getMonth();
@@ -1155,14 +1181,13 @@ function rCal() {
 /* ========== Messages ========== */
 function rMsg() {
   const el = $('#p-msg');
+  if (!el) return;
   const me = USER_NAMES[state.role];
-  // Only allow roles that have the Messages tab
   if (!isStudent() && !isTeacher() && !isParent() && !isPrincipal()) return T('Access denied');
 
   if (state.msgThread != null) {
     const m = DB.messages.find(x => x.id == state.msgThread);
     if (!m) { state.msgThread = null; return rMsg(); }
-    // Only allow opening messages that are to or from me
     if (m.from !== me && m.to !== me) { state.msgThread = null; return rMsg(); }
     m.read = true; save(); updateNotifBadge();
     el.innerHTML = `
@@ -1179,10 +1204,8 @@ function rMsg() {
     return;
   }
 
-  // Only show messages to or from me
   const list = DB.messages.filter(m => m.from === me || m.to === me).sort((a, b) => b.at - a.at);
 
-  // Recipients depend on role
   let recipients = [];
   if (isStudent()) recipients = ['Mrs. Santos', 'Mrs. Villanueva', 'Mr. Aquino', 'Ms. Castillo', 'School Admin'];
   else if (isTeacher()) recipients = ['Ana Dela Cruz', 'Miguel Reyes', 'Sofia Garcia', 'Dr. Reyes', 'School Admin'];
@@ -1250,6 +1273,7 @@ function sendReply(id) {
 /* ========== Resources ========== */
 function rRes() {
   const el = $('#p-res');
+  if (!el) return;
   if (!isStudent() && !isTeacher()) return T('Access denied');
   const list = isTeacher()
     ? DB.resources.filter(r => cls(r.cid) && cls(r.cid).t === USER_NAMES.teacher)
@@ -1334,7 +1358,9 @@ function pick(q, o) {
 }
 function drawQuiz() {
   if (!isStudent()) return T('Access denied');
-  $('#qz').innerHTML = Q.map((q, i) =>
+  const el = $('#qz');
+  if (!el) return;
+  el.innerHTML = Q.map((q, i) =>
     `<div class="mb-3"><div class="fw-semibold small mb-2">${i + 1}. ${q[0]}</div>
       ${q[1].map((o, j) =>
         `<div class="form-check"><input class="form-check-input" type="radio" name="q${i}" id="q${i}_${j}" ${qa[i] === j ? 'checked' : ''} onclick="pick(${i},${j})">
@@ -1423,6 +1449,7 @@ function approve(m) {
 function rOps() {
   if (!isPrincipal()) return T('Access denied');
   const el = $('#p-ops');
+  if (!el) return;
   el.innerHTML = `
     <div class="dash-hero">
       <div>
@@ -1458,7 +1485,9 @@ function bars(id, d, max, u, color) {
 /* ========== Principal: Compliance ========== */
 function rComp() {
   if (!isPrincipal()) return T('Access denied');
-  $('#p-comp').innerHTML = `
+  const el = $('#p-comp');
+  if (!el) return;
+  el.innerHTML = `
     <div class="dash-hero">
       <div>
         <h1 class="h4 mb-1"><i class="bi bi-clipboard-check me-1"></i>Compliance ledger</h1>
@@ -1488,7 +1517,9 @@ function rComp() {
 /* ========== Principal: Licenses ========== */
 function rLic() {
   if (!isPrincipal()) return T('Access denied');
-  $('#p-lic').innerHTML = `
+  const el = $('#p-lic');
+  if (!el) return;
+  el.innerHTML = `
     <div class="dash-hero">
       <div>
         <h1 class="h4 mb-1"><i class="bi bi-key me-1"></i>Licenses & billing</h1>
@@ -1544,6 +1575,7 @@ function rExams() {
 }
 
 function rExamsStudent(el) {
+  if (!el) return;
   const list = examsForUser();
   el.innerHTML = `
     <div class="dash-hero">
@@ -1578,6 +1610,7 @@ function rExamsStudent(el) {
 }
 
 function rExamsTeacher(el) {
+  if (!el) return;
   if (state.examEdit === 'new') return rExamBuilder(el);
   const list = (DB.exams || []).filter(e => e.cids.some(cid => myClasses().some(c => c.id === cid))).sort((a, b) => b.at - a.at);
   el.innerHTML = `
@@ -1676,7 +1709,7 @@ function rExamBuilder(el) {
         </div>
       </div>
       <hr>
-      <div class="d-flex justify-content-between align-items-center mb-2">
+      <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
         <h2 class="h6 mb-0">Questions</h2>
         <div class="btn-group btn-group-sm">
           <button type="button" class="btn btn-outline-secondary" onclick="addExQ('mc')">+ Multiple choice</button>
@@ -1791,6 +1824,7 @@ function openTake(id, review) {
 function rTake() {
   if (!isStudent()) return T('Access denied');
   const el = $('#p-take');
+  if (!el) return;
   const e = (DB.exams || []).find(x => x.id == state.examId);
   if (!e) {
     el.innerHTML = empty('Assessment not found.') + '<button class="btn btn-link" onclick="state.examId=null;tab(\'exams\')">Back</button>';
@@ -1879,9 +1913,12 @@ function submitExam(id) {
 }
 
 /* ========== Kid switcher ========== */
-$('#kid').innerHTML = kids.map((k, i) => `<option value="${i}">${k.n} (${k.g})</option>`).join('');
+const kidEl = $('#kid');
+if (kidEl) {
+  kidEl.innerHTML = kids.map((k, i) => `<option value="${i}">${k.n} (${k.g})</option>`).join('');
+}
 
-/* Hook the parent selector (was inline in HTML) */
+/* Hook the parent selector */
 document.addEventListener('change', e => {
   if (e.target && e.target.id === 'kid') {
     if (!isParent()) return;
@@ -1891,4 +1928,145 @@ document.addEventListener('change', e => {
   }
 });
 
-window.addEventListener('resize', () => { if ($('#p-sf9') && !$('#p-sf9').hidden) initSig(); });
+window.addEventListener('resize', () => {
+  if ($('#p-sf9') && !$('#p-sf9').hidden) initSig();
+});
+
+/* =========================================================
+   PWA: service worker registration + install prompt
+   ========================================================= */
+
+let deferredInstallPrompt = null;
+let swRegistration = null;
+let refreshing = false;
+
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.navigator.standalone === true;
+}
+
+function updateInstallUI() {
+  const topBtn = document.getElementById('installBtn');
+  const sideBtn = document.getElementById('installBtnSide');
+  const canInstall = !!deferredInstallPrompt && !isStandalone();
+
+  if (topBtn) topBtn.hidden = !canInstall;
+  if (sideBtn) sideBtn.hidden = !canInstall;
+}
+
+function promptInstall() {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(choice => {
+      if (choice.outcome === 'accepted') {
+        T('Installing learningWheel…');
+      } else {
+        T('Install dismissed');
+      }
+      deferredInstallPrompt = null;
+      updateInstallUI();
+    });
+    return;
+  }
+
+  if (isStandalone()) {
+    T('learningWheel is already installed');
+    return;
+  }
+
+  if (isIOS()) {
+    T('iOS: tap Share, then "Add to Home Screen"');
+    return;
+  }
+
+  T('Open the browser menu and choose "Install app"');
+}
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  updateInstallUI();
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  updateInstallUI();
+  T('learningWheel installed — launching from home screen');
+});
+
+/* ---------- Service worker registration ---------- */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(reg => {
+        swRegistration = reg;
+        console.log('[PWA] Service worker registered:', reg.scope);
+
+        if (reg.waiting) showUpdateBanner();
+
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          if (!newWorker) return;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              showUpdateBanner();
+            }
+          });
+        });
+      })
+      .catch(err => {
+        console.warn('[PWA] Service worker registration failed:', err);
+      });
+
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+  });
+}
+
+function showUpdateBanner() {
+  const b = document.getElementById('updateBanner');
+  if (b) b.hidden = false;
+}
+
+function applyUpdate() {
+  const b = document.getElementById('updateBanner');
+  if (b) b.hidden = true;
+  if (swRegistration && swRegistration.waiting) {
+    swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+  } else {
+    window.location.reload();
+  }
+}
+
+updateInstallUI();
+
+/* Deep-link support: ?tab=home|subj|todo|msg opens that tab after login. */
+(function handleDeepLink() {
+  const params = new URLSearchParams(window.location.search);
+  const wanted = params.get('tab');
+  if (!wanted) return;
+  window._pendingTab = wanted;
+})();
+
+(function wrapDoLogin() {
+  const original = window.doLogin;
+  if (typeof original !== 'function') return;
+  window.doLogin = function () {
+    original.apply(this, arguments);
+    const wanted = window._pendingTab;
+    if (wanted && tabAllowed(wanted)) {
+      window._pendingTab = null;
+      tab(wanted);
+    }
+  };
+})();
+
+window.addEventListener('offline', () => T('You are offline — using cached content'));
+window.addEventListener('online',  () => T('Back online'));
